@@ -1,55 +1,100 @@
-import Holo, { Dot } from './Holo'
+import { P, Led, ZoneRing } from './Prim'
+import { mat } from './materials'
 import HitBox from './HitBox'
 
-const ROOF_ANGLE = Math.atan2(0.9, 1.8) // ~26.6°
-const CYAN = '#35d6ff'
-const GOLD = '#ffc857'
+const TILT = THREE_TILT()
+function THREE_TILT() {
+  return -18 * (Math.PI / 180) // panels tilt toward +z (front / "south")
+}
+
+/** One framed PV module: dark-blue cell glass in an aluminium frame, on a rack. */
+function Panel({ position }) {
+  return (
+    <group position={position} rotation={[TILT, 0, 0]}>
+      <P geo="box" args={[0.78, 0.035, 1.0]} m={mat('solar', 'metal')} />
+      <P geo="box" args={[0.74, 0.012, 0.96]} position={[0, 0.024, 0]} m={mat('solar', 'solar')} />
+    </group>
+  )
+}
+
+/** Tilted rack of PV modules: `cols` × `rows` */
+function SolarArray({ position, cols, rows, name }) {
+  const w = 0.84
+  const d = 1.06
+  return (
+    <group name={name} position={position}>
+      {Array.from({ length: rows }).map((_, r) =>
+        Array.from({ length: cols }).map((_, c) => (
+          <Panel key={`${r}-${c}`} position={[(c - (cols - 1) / 2) * w, 0.22, (r - (rows - 1) / 2) * d]} />
+        )),
+      )}
+      {/* rack rails */}
+      {Array.from({ length: rows }).map((_, r) => (
+        <group key={r} position={[0, 0, (r - (rows - 1) / 2) * d]}>
+          <P geo="box" args={[cols * w, 0.04, 0.05]} position={[0, 0.06, 0.45]} m={mat('solar', 'darkMetal')} />
+          <P geo="box" args={[cols * w, 0.04, 0.05]} position={[0, 0.33, -0.45]} m={mat('solar', 'darkMetal')} />
+          {Array.from({ length: cols + 1 }).map((_, c) => (
+            <P key={c} geo="box" args={[0.05, 0.3, 0.05]} position={[(c - cols / 2) * w, 0.17, -0.45]} m={mat('solar', 'darkMetal')} />
+          ))}
+        </group>
+      ))}
+    </group>
+  )
+}
 
 /**
- * SMART_HOUSE + SOLAR_PANELS + SOLAR_INVERTER (plan §17 naming).
- * The house body belongs to group "house"; the solar objects to "solar".
+ * SMART_HOUSE — two-storey modern villa: dark composite base, white cantilevered
+ * upper volume with a continuous glass band, flat roofs carrying SOLAR_PANELS,
+ * SOLAR_INVERTER on the side wall. Group "house" for the building, "solar" for PV.
  */
 export default function SmartHouse() {
   return (
     <group name="SMART_HOUSE_ROOT">
-      {/* body */}
-      <Holo name="SMART_HOUSE" geo="box" args={[3.6, 2.0, 3.2]} position={[0, 1.0, 0]} group="house" color={CYAN} />
-      {/* door + windows (edge-only planes) */}
-      <Holo geo="plane" args={[0.7, 1.4]} position={[0.7, 0.7, 1.61]} group="house" faceOpacity={0.03} edgeOpacity={0.6} />
-      <Holo geo="plane" args={[0.9, 0.6]} position={[-0.8, 1.25, 1.61]} group="house" faceOpacity={0.05} edgeOpacity={0.6} />
-      <Holo geo="plane" args={[0.9, 0.6]} position={[1.81, 1.25, -0.6]} rotation={[0, Math.PI / 2, 0]} group="house" faceOpacity={0.05} edgeOpacity={0.6} />
-      <Holo geo="plane" args={[0.9, 0.6]} position={[1.81, 1.25, 0.6]} rotation={[0, Math.PI / 2, 0]} group="house" faceOpacity={0.05} edgeOpacity={0.6} />
-      {/* gable roof — two slabs, ridge along z */}
-      <Holo geo="box" args={[2.05, 0.08, 3.5]} position={[-0.9, 2.45, 0]} rotation={[0, 0, ROOF_ANGLE]} group="house" faceOpacity={0.09} />
-      <Holo geo="box" args={[2.05, 0.08, 3.5]} position={[0.9, 2.45, 0]} rotation={[0, 0, -ROOF_ANGLE]} group="house" faceOpacity={0.09}>
-        {/* SOLAR_PANELS — sit on the +x slope in the slab's local space */}
-        <group name="SOLAR_PANELS" position={[0, 0.08, 0]}>
-          {[-0.55, 0, 0.55].map((x) =>
-            [-1.05, 0, 1.05].map((z) => (
-              <Holo
-                key={`${x}${z}`}
-                geo="box"
-                args={[0.5, 0.04, 0.95]}
-                position={[x, 0, z]}
-                group="solar"
-                color={GOLD}
-                faceOpacity={0.16}
-                edgeOpacity={0.95}
-                pulse={0.12}
-              />
-            )),
-          )}
-        </group>
-      </Holo>
-      {/* SOLAR_INVERTER on the +x wall */}
-      <Holo name="SOLAR_INVERTER" geo="box" args={[0.16, 0.55, 0.38]} position={[1.9, 0.9, -1.0]} group="solar" color={GOLD} faceOpacity={0.12}>
-        <Dot position={[0.09, 0.15, 0]} color={GOLD} size={0.035} group="solar" blink={3} />
-        <Dot position={[0.09, 0.05, 0]} color={CYAN} size={0.035} group="solar" blink={5} />
-      </Holo>
-      {/* chimney / vent for silhouette */}
-      <Holo geo="box" args={[0.3, 0.6, 0.3]} position={[-1.2, 2.9, -1.0]} group="house" faceOpacity={0.06} />
+      <ZoneRing position={[0.3, 0.012, 0]} radius={4.4} color="#ffc857" group="solar" />
+      {/* plinth + terrace */}
+      <P geo="box" args={[6.4, 0.16, 5.6]} position={[0.2, 0.08, 0]} m={mat('house', 'concrete')} />
+      <P geo="box" args={[2.6, 0.02, 1.6]} position={[1.6, 0.17, 2.0]} m={mat('house', 'white', { color: '#c9d2dc' })} />
+      {/* ground floor */}
+      <group name="SMART_HOUSE">
+        <P geo="box" args={[4.4, 1.55, 3.5]} position={[0, 0.94, 0]} m={mat('house', 'body')} />
+        {/* front glass facade + warm interior */}
+        <P geo="box" args={[3.2, 1.25, 0.08]} position={[0.3, 0.95, 1.76]} m={mat('house', 'glassTint')} shadow={false} />
+        <P geo="plane" args={[3.0, 1.15]} position={[0.3, 0.95, 1.6]} m={mat('house', 'emissive', { color: '#ffb86b', intensity: 0.9 })} shadow={false} />
+        {/* side window */}
+        <P geo="box" args={[0.08, 0.8, 1.6]} position={[2.21, 1.0, -0.4]} m={mat('house', 'glassTint')} shadow={false} />
+        <P geo="plane" args={[1.5, 0.7]} position={[2.16, 1.0, -0.4]} rotation={[0, Math.PI / 2, 0]} m={mat('house', 'emissive', { color: '#ffb86b', intensity: 0.7 })} shadow={false} />
+        {/* lower flat roof (right part stays exposed → PV) */}
+        <P geo="box" args={[4.6, 0.12, 3.7]} position={[0, 1.76, 0]} m={mat('house', 'body', { color: '#0f1524' })} />
+        {/* upper cantilevered volume */}
+        <P geo="box" args={[3.4, 1.35, 3.0]} position={[-0.6, 2.5, -0.2]} m={mat('house', 'white')} />
+        <P geo="box" args={[3.44, 0.55, 3.04]} position={[-0.6, 2.45, -0.2]} m={mat('house', 'glassTint')} shadow={false} />
+        <P geo="box" args={[3.2, 0.45, 2.8]} position={[-0.6, 2.45, -0.2]} m={mat('house', 'emissive', { color: '#ffc57a', intensity: 0.5 })} shadow={false} />
+        {/* upper roof slab + parapet LED strip */}
+        <P geo="box" args={[3.6, 0.1, 3.2]} position={[-0.6, 3.22, -0.2]} m={mat('house', 'body', { color: '#0f1524' })} />
+        <P geo="box" args={[3.62, 0.02, 0.03]} position={[-0.6, 3.27, 1.4]} m={mat('house', 'emissive', { color: '#35d6ff', intensity: 2.2 })} shadow={false} />
+        <P geo="box" args={[0.03, 0.02, 3.22]} position={[1.21, 3.27, -0.2]} m={mat('house', 'emissive', { color: '#35d6ff', intensity: 2.2 })} shadow={false} />
+        <P geo="box" args={[0.03, 0.02, 3.22]} position={[-2.41, 3.27, -0.2]} m={mat('house', 'emissive', { color: '#35d6ff', intensity: 2.2 })} shadow={false} />
+        {/* entrance canopy + door */}
+        <P geo="box" args={[1.3, 0.06, 0.9]} position={[1.3, 1.5, 2.1]} m={mat('house', 'white')} />
+        <P geo="box" args={[0.04, 1.3, 0.04]} position={[1.9, 0.85, 2.5]} m={mat('house', 'darkMetal')} />
+        {/* chimney/vent unit */}
+        <P geo="box" args={[0.4, 0.5, 0.4]} position={[-1.8, 3.5, -1.2]} m={mat('house', 'darkMetal')} />
+      </group>
 
-      <HitBox serviceId="solar" position={[0.9, 2.55, 0]} args={[2.2, 0.9, 3.6]} />
+      {/* SOLAR_PANELS — upper roof 4×2, lower roof 2×2 */}
+      <SolarArray name="SOLAR_PANELS" position={[-0.6, 3.28, -0.2]} cols={4} rows={2} />
+      <SolarArray name="SOLAR_PANELS_02" position={[1.55, 1.82, 0.05]} cols={1} rows={2} />
+
+      {/* SOLAR_INVERTER on the right wall */}
+      <group name="SOLAR_INVERTER" position={[2.28, 0.85, 1.0]}>
+        <P geo="box" args={[0.14, 0.5, 0.36]} m={mat('solar', 'white')} />
+        <P geo="box" args={[0.02, 0.12, 0.2]} position={[0.075, 0.1, 0]} m={mat('solar', 'emissive', { color: '#35d6ff', intensity: 1.6 })} shadow={false} />
+        <Led position={[0.08, -0.12, 0.08]} color="#7cf5c2" size={0.02} group="solar" blink={2.5} />
+        <P geo="cylinder" args={[0.015, 0.015, 0.8, 6]} position={[0.07, -0.6, 0]} m={mat('solar', 'darkMetal')} />
+      </group>
+
+      <HitBox serviceId="solar" position={[-0.6, 3.6, -0.2]} args={[3.8, 0.9, 3.4]} />
+      <HitBox serviceId="solar" position={[1.6, 2.1, 0]} args={[1.2, 0.7, 2.6]} />
     </group>
   )
 }

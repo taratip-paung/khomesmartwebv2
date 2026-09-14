@@ -8,28 +8,28 @@
  */
 export const cameraTargets = {
   default: {
-    position: [18.5, 12.5, 20],
-    target: [2.6, 1.8, -1.2],
+    position: [6, 14.5, 27],
+    target: [1.6, 1.0, -0.5],
     duration: 1200,
   },
   solar: {
-    position: [6.5, 7.5, 9],
-    target: [0.3, 2.6, 0],
+    position: [4.5, 9.5, 11.5],
+    target: [-0.4, 2.4, -0.2],
     duration: 1000,
   },
   rnd: {
-    position: [-10.5, 4.8, 9.5],
-    target: [-5, 1.4, 3],
+    position: [-9.5, 5.2, 10.5],
+    target: [-6, 1.5, 3],
     duration: 1000,
   },
   network: {
-    position: [15.5, 9, -11.5],
-    target: [5, 3, -3],
+    position: [14.5, 10.5, 7.5],
+    target: [5.5, 3.4, -4],
     duration: 1000,
   },
   cloud: {
-    position: [12, 5.8, 10.5],
-    target: [5, 2, 3.5],
+    position: [12.5, 7, 12.5],
+    target: [6, 2.2, 3.5],
     duration: 1000,
   },
 }

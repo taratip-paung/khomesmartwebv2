@@ -1,5 +1,7 @@
 import { Suspense, useEffect, useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
+import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
+import * as THREE from 'three'
 import { useApp } from '../AppContext'
 import CameraController from './CameraController'
 import Environment from './Environment'
@@ -17,7 +19,7 @@ function SceneDriver() {
   const frames = useRef(0)
   useEffect(() => setSelected(selectedId), [selectedId])
   useFrame((_, dt) => {
-    tick(dt, reducedMotion)
+    tick(Math.min(dt, 0.1), reducedMotion)
     if (frames.current < 3 && ++frames.current === 3) setSceneReady(true)
   })
   return null
@@ -26,7 +28,7 @@ function SceneDriver() {
 /**
  * KHOME_SCENE — the whole smart ecosystem. To swap in the Blender GLB later,
  * replace the four system components with a <Gltf> loader whose nodes are
- * wired to the same highlight groups + HitBoxes.
+ * wired to the same highlight groups + HitBoxes (see README).
  */
 export default function Scene() {
   const { isMobile } = useApp()
@@ -34,11 +36,18 @@ export default function Scene() {
 
   return (
     <Canvas
+      shadows
       dpr={isMobile ? [1, 1.5] : [1, 2]}
-      camera={{ fov: 38, near: 0.1, far: 120, position: [17, 12, 19] }}
-      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-      style={{ background: 'transparent' }}
+      camera={{ fov: 36, near: 0.1, far: 120, position: [6, 14.5, 27] }}
+      gl={{
+        antialias: true,
+        powerPreference: 'high-performance',
+        toneMapping: THREE.ACESFilmicToneMapping,
+        toneMappingExposure: 1.05,
+      }}
     >
+      <color attach="background" args={['#070c1c']} />
+      <fog attach="fog" args={['#070c1c', 26, 60]} />
       <Suspense fallback={null}>
         <group name="KHOME_SCENE">
           <Environment lite={lite} />
@@ -51,8 +60,13 @@ export default function Scene() {
         </group>
         <CameraController />
         <SceneDriver />
+        {!lite && (
+          <EffectComposer multisampling={4}>
+            <Bloom mipmapBlur intensity={0.55} luminanceThreshold={1.0} luminanceSmoothing={0.25} radius={0.6} />
+            <Vignette eskil={false} offset={0.25} darkness={0.55} />
+          </EffectComposer>
+        )}
       </Suspense>
-      <fog attach="fog" args={['#060b1a', 22, 48]} />
     </Canvas>
   )
 }

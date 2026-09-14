@@ -22,7 +22,7 @@ export const services = [
     },
     cameraTarget: 'solar',
     objectGroup: 'solar',
-    markerPosition: [0, 4.6, 0],
+    markerPosition: [-0.6, 4.7, -0.2],
     href: '#services',
   },
   {
@@ -39,7 +39,7 @@ export const services = [
     },
     cameraTarget: 'rnd',
     objectGroup: 'rnd',
-    markerPosition: [-5.2, 4.2, 3.2],
+    markerPosition: [-6, 4.3, 3],
     href: '#services',
   },
   {
@@ -56,7 +56,7 @@ export const services = [
     },
     cameraTarget: 'network',
     objectGroup: 'network',
-    markerPosition: [4.4, 7.0, -3.4],
+    markerPosition: [5.5, 8.0, -4],
     href: '#services',
   },
   {
@@ -73,7 +73,7 @@ export const services = [
     },
     cameraTarget: 'cloud',
     objectGroup: 'cloud',
-    markerPosition: [5.4, 5.6, 3.6],
+    markerPosition: [6, 5.9, 3.5],
     href: '#services',
   },
 ]
