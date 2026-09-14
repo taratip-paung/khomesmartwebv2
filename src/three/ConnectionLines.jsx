@@ -17,7 +17,7 @@ const links = [
   { id: 'solar', name: 'CONNECTION_SOLAR', to: [-2.3, 1.4, 1.9], color: '#ffc857', lift: 1.2, pulses: 2 },
   { id: 'rnd', name: 'CONNECTION_RND', to: [RND_ORIGIN[0], 3.4, RND_ORIGIN[2]], color: '#7cf5c2', lift: 2.2, pulses: 3 },
   { id: 'network', name: 'CONNECTION_NETWORK', to: [NETWORK_ORIGIN[0], 5.6, NETWORK_ORIGIN[2]], color: '#35d6ff', lift: 2.6, pulses: 3 },
-  { id: 'cloud', name: 'CONNECTION_CLOUD', to: [CLOUD_ORIGIN[0], 2.8, CLOUD_ORIGIN[2]], color: '#a78bfa', lift: 2.4, pulses: 3 },
+  { id: 'cloud', name: 'CONNECTION_CLOUD', to: [CLOUD_ORIGIN[0], 3.0, CLOUD_ORIGIN[2] - 0.3], color: '#a78bfa', lift: 2.4, pulses: 3 },
 ]
 
 function Link({ link, pulseCount }) {

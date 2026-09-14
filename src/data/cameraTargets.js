@@ -34,8 +34,8 @@ export const cameraTargets = {
     duration: 1000,
   },
   cloud: {
-    position: [12, 6.5, 11.5],
-    target: [6, 1.6, 3.5],
+    position: [10.5, 4.2, 11.5],
+    target: [6, 1.3, 3.5],
     duration: 1000,
   },
 }

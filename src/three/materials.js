@@ -29,6 +29,9 @@ const KINDS = {
   wood: () => new THREE.MeshStandardMaterial({ color: '#9a6a44', metalness: 0.05, roughness: 0.7 }),
   stone: () => new THREE.MeshStandardMaterial({ color: '#6e737d', metalness: 0.05, roughness: 0.85 }),
   blackStone: () => new THREE.MeshStandardMaterial({ color: '#141821', metalness: 0.2, roughness: 0.45, envMapIntensity: 1.2 }),
+  graphite: () => new THREE.MeshStandardMaterial({ color: '#2a3244', metalness: 0.8, roughness: 0.3, envMapIntensity: 2.0, flatShading: true }),
+  graphiteBody: () => new THREE.MeshStandardMaterial({ color: '#171c28', metalness: 0.6, roughness: 0.5, envMapIntensity: 1.0 }),
+  grille: () => new THREE.MeshStandardMaterial({ map: grilleTexture(), color: '#ffffff', metalness: 0.5, roughness: 0.6 }),
   fabric: () => new THREE.MeshStandardMaterial({ color: '#c9c2b6', metalness: 0, roughness: 0.95 }),
   water: () =>
     new THREE.MeshPhysicalMaterial({
@@ -192,6 +195,24 @@ function solarTexture(black = false) {
   tex.anisotropy = 8
   _solarTexCache[black] = tex
   return tex
+}
+
+let _grille
+function grilleTexture() {
+  if (_grille) return _grille
+  const c = document.createElement('canvas')
+  c.width = 128
+  c.height = 128
+  const g = c.getContext('2d')
+  g.fillStyle = '#0a0d14'
+  g.fillRect(0, 0, 128, 128)
+  g.fillStyle = '#2a3040'
+  for (let y = 4; y < 128; y += 8) for (let x = 4; x < 128; x += 8) g.fillRect(x - 2, y - 2, 4, 4)
+  _grille = new THREE.CanvasTexture(c)
+  _grille.wrapS = _grille.wrapT = THREE.RepeatWrapping
+  _grille.repeat.set(6, 14)
+  _grille.colorSpace = THREE.SRGBColorSpace
+  return _grille
 }
 
 /* ---------- geometry cache (shared across meshes) ---------- */
