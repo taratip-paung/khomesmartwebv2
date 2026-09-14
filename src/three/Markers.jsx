@@ -28,7 +28,7 @@ export default function Markers() {
             <span className="marker__dot">{icons[s.icon]}</span>
             <span>
               <b>
-                {s.number} {t(s.title)}
+                [{s.number}] {t(s.title)}
               </b>
               <small>{t(s.tagline)}</small>
             </span>
