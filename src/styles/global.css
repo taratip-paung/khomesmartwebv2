@@ -4,8 +4,8 @@
   --bg: #eef3fa;
   --bg-2: #e2eaf5;
   --ink: #0b1630;
-  --ink-2: #3f4d6b;
-  --ink-3: #7a879f;
+  --ink-2: #33415f;
+  --ink-3: #6b7890;
   --cyan: #0aa8dc;
   --cyan-raw: #35d6ff;
   --blue: #2f6fe8;
@@ -22,7 +22,7 @@
   --track: rgba(11, 22, 48, 0.1);
   --header-fade: rgba(238, 243, 250, 0.85);
   --brand-a: #0b1630;
-  --brand-b: #0aa8dc;
+  --brand-b: #0a7fb3;
   --bg-glow-1: rgba(10, 168, 220, 0.14);
   --bg-glow-2: rgba(47, 111, 232, 0.12);
   --primary-ink: #04101f;
@@ -494,14 +494,23 @@ button {
   max-width: 400px;
 }
 .hero-content::before {
-  /* soft backdrop so the headline stays readable over the 3D scene */
+  /* frosted backdrop that fades out to the right — keeps the headline legible over
+     the 3D scene without drawing a hard box */
   content: '';
   position: absolute;
-  inset: -60px -80px -60px -120px;
+  inset: -56px -140px -56px -120px;
   z-index: -1;
   pointer-events: none;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--bg) 88%, transparent), transparent);
-  filter: blur(18px);
+  background: linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 88%, transparent) 55%, transparent 100%);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  mask: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+  -webkit-mask: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+}
+:root[data-theme='dark'] .hero-content::before {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--bg) 80%, transparent) 0%, color-mix(in srgb, var(--bg) 55%, transparent) 55%, transparent 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 .hero-content h1 {
   margin: 14px 0 6px;
@@ -521,7 +530,32 @@ button {
   margin-top: 10px;
 }
 .hero-content .kicker {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  border: 1px solid var(--glass-border-hi);
+  font-size: 10.5px;
+}
+.hero-content .kicker::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-text);
+  box-shadow: 0 0 8px var(--accent-text);
+}
+:root:not([data-theme='dark']) .hero-content h1 {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7), 0 8px 24px rgba(20, 50, 100, 0.12);
+}
+.hero-content h1 .brand {
+  text-shadow: none; /* gradient text must not carry a shadow (shows through the transparent fill) */
+}
+:root:not([data-theme='dark']) .hero-content p,
+:root:not([data-theme='dark']) .hero-content .cats {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 .hero-content p {
   color: var(--ink-2);
