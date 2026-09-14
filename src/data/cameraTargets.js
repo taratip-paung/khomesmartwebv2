@@ -7,6 +7,12 @@
  * Distances are in scene units (the house is ~3 units wide).
  */
 export const cameraTargets = {
+  /** debug/preview framing of the house only — open with ?cam=showcase */
+  showcase: {
+    position: [3.5, 8.5, 13],
+    target: [0, 1.3, 0],
+    duration: 1000,
+  },
   default: {
     position: [6, 14.5, 27],
     target: [1.6, 1.0, -0.5],

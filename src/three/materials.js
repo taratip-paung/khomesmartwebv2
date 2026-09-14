@@ -26,6 +26,19 @@ const KINDS = {
   foliage: () => new THREE.MeshStandardMaterial({ color: '#2a6e45', metalness: 0, roughness: 0.95, flatShading: true }),
   foliage2: () => new THREE.MeshStandardMaterial({ color: '#3a8a55', metalness: 0, roughness: 0.95, flatShading: true }),
   bark: () => new THREE.MeshStandardMaterial({ color: '#4a3527', metalness: 0, roughness: 1 }),
+  wood: () => new THREE.MeshStandardMaterial({ color: '#9a6a44', metalness: 0.05, roughness: 0.7 }),
+  stone: () => new THREE.MeshStandardMaterial({ color: '#6e737d', metalness: 0.05, roughness: 0.85 }),
+  water: () =>
+    new THREE.MeshPhysicalMaterial({
+      color: '#4fc8e8',
+      metalness: 0.1,
+      roughness: 0.05,
+      transparent: true,
+      opacity: 0.75,
+      envMapIntensity: 2.2,
+      clearcoat: 1,
+      clearcoatRoughness: 0.02,
+    }),
   // real refractive glass — use sparingly (transmission is expensive)
   glass: () =>
     new THREE.MeshPhysicalMaterial({
@@ -79,6 +92,8 @@ const THEME_COLORS = {
   asphalt: { dark: '#10151f', light: '#4a5468' },
   lawn: { dark: '#1c3b30', light: '#5b9a6a' },
   body: { dark: '#151d2f', light: '#2b3650' },
+  wood: { dark: '#8a5c3a', light: '#b07a4e' },
+  stone: { dark: '#4f545e', light: '#8d939d' },
   foliage: { dark: '#2a6e45', light: '#3f9a5c' },
   foliage2: { dark: '#3a8a55', light: '#58b774' },
 }
@@ -180,6 +195,18 @@ const geometryFactories = {
   plane: (a) => new THREE.PlaneGeometry(...a),
   ring: (a) => new THREE.RingGeometry(...a),
   capsule: (a) => new THREE.CapsuleGeometry(...a),
+  // right-triangle prism: width w along x (tall side at -x), rise h, depth d along z
+  wedge: ([w, h, d]) => {
+    const sh = new THREE.Shape()
+    sh.moveTo(-w / 2, 0)
+    sh.lineTo(w / 2, 0)
+    sh.lineTo(-w / 2, h)
+    sh.closePath()
+    const g = new THREE.ExtrudeGeometry(sh, { depth: d, bevelEnabled: false })
+    g.translate(0, 0, -d / 2)
+    g.computeVertexNormals()
+    return g
+  },
 }
 export function geo(kind, args) {
   const key = `${kind}|${args.join(',')}`

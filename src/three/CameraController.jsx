@@ -47,9 +47,16 @@ export default function CameraController() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId, resetNonce])
 
-  // initial placement
+  // initial placement (?cam=<key> overrides for previews)
   useEffect(() => {
-    flyTo('default', true)
+    let key = 'default'
+    try {
+      const q = new URLSearchParams(window.location.search).get('cam')
+      if (q && cameraTargets[q]) key = q
+    } catch {
+      /* ignore */
+    }
+    flyTo(key, true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
