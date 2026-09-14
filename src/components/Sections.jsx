@@ -29,7 +29,7 @@ export default function Sections() {
         </div>
         <div className="grid-4">
           {services.map((sv) => (
-            <article key={sv.id} className="tile glass" style={{ '--accent': accent(sv) }}>
+            <article key={sv.id} className="tile liquid" style={{ '--accent': accent(sv) }}>
               <span className="card__icon">{icons[sv.icon]}</span>
               <span className="card__num">[{sv.number}]</span>
               <h3>{t(sv.title)}</h3>
@@ -49,7 +49,7 @@ export default function Sections() {
         </div>
         <div className="grid-3">
           {s.why.items.map((it, i) => (
-            <article key={i} className="tile glass">
+            <article key={i} className="tile liquid">
               <span className="kicker">0{i + 1}</span>
               <h3>{it.title}</h3>
               <p>{it.body}</p>
@@ -66,7 +66,7 @@ export default function Sections() {
         </div>
         <div className="grid-3">
           {[1, 2, 3].map((n) => (
-            <div key={n} className="tile tile--ph glass">
+            <div key={n} className="tile tile--ph liquid">
               PROJECT 0{n} — COMING SOON
             </div>
           ))}
@@ -74,7 +74,7 @@ export default function Sections() {
       </section>
 
       <section id="contact" className="section">
-        <div className="cta-band glass glass--strong">
+        <div className="cta-band liquid">
           <span className="kicker">{s.contact.kicker}</span>
           <h2>{s.contact.title}</h2>
           <p>{s.contact.body}</p>

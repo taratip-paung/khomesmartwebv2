@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useLang } from '../i18n/LangContext'
 import { LogoMark, icons } from './Icons'
 import { useTheme } from '../ThemeContext'
@@ -34,6 +34,70 @@ export function ThemeToggle() {
   )
 }
 
+/**
+ * Liquid-glass nav: a "lens" pill slides under the hovered / active item.
+ * Active item follows the section in view (scroll spy).
+ */
+function GlassNav() {
+  const { ui, lang } = useLang()
+  const navRef = useRef()
+  const itemRefs = useRef([])
+  const [active, setActive] = useState(0)
+  const [hover, setHover] = useState(null)
+  const [pill, setPill] = useState({ x: 0, w: 0, ready: false })
+
+  // scroll spy
+  useEffect(() => {
+    const ids = links.map((l) => l.href.slice(1))
+    const els = ids.map((id) => document.getElementById(id)).filter(Boolean)
+    if (!els.length) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)
+        if (visible[0]) setActive(ids.indexOf(visible[0].target.id))
+      },
+      { rootMargin: '-40% 0px -50% 0px', threshold: [0, 0.2, 0.5] },
+    )
+    els.forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+
+  // move the lens
+  const target = hover ?? active
+  useLayoutEffect(() => {
+    const el = itemRefs.current[target]
+    const nav = navRef.current
+    if (!el || !nav) return
+    const r = el.getBoundingClientRect()
+    const n = nav.getBoundingClientRect()
+    setPill({ x: r.left - n.left, w: r.width, ready: true })
+  }, [target, lang])
+  useEffect(() => {
+    const onResize = () => setPill((p) => ({ ...p, ready: false }))
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  return (
+    <nav ref={navRef} className="nav liquid" aria-label="Main" onMouseLeave={() => setHover(null)}>
+      <span className="nav__lens" data-ready={pill.ready} style={{ transform: `translateX(${pill.x}px)`, width: pill.w }} aria-hidden="true" />
+      {links.map((l, i) => (
+        <a
+          key={l.key}
+          href={l.href}
+          ref={(el) => (itemRefs.current[i] = el)}
+          aria-current={i === active ? 'page' : undefined}
+          onMouseEnter={() => setHover(i)}
+          onFocus={() => setHover(i)}
+          onBlur={() => setHover(null)}
+        >
+          {ui.nav[l.key]}
+        </a>
+      ))}
+    </nav>
+  )
+}
+
 export default function Header() {
   const { ui } = useLang()
   const [open, setOpen] = useState(false)
@@ -56,15 +120,9 @@ export default function Header() {
           <span>KHOME SMART</span>
         </a>
 
-        <nav className="nav glass" aria-label="Main">
-          {links.map((l) => (
-            <a key={l.key} href={l.href} aria-current={l.key === 'home' ? 'page' : undefined}>
-              {ui.nav[l.key]}
-            </a>
-          ))}
-        </nav>
+        <GlassNav />
 
-        <div className="header__right">
+        <div className="header__right liquid">
           <LangToggle />
           <ThemeToggle />
           <a className="btn btn--primary btn--sm" href="#contact">
@@ -86,14 +144,16 @@ export default function Header() {
 
       {open && (
         <div id="mobile-drawer" className="drawer" role="dialog" aria-label="Menu">
-          {links.map((l) => (
-            <a key={l.key} href={l.href} onClick={() => setOpen(false)}>
-              {ui.nav[l.key]}
+          <div className="drawer__sheet liquid">
+            {links.map((l) => (
+              <a key={l.key} href={l.href} onClick={() => setOpen(false)}>
+                {ui.nav[l.key]}
+              </a>
+            ))}
+            <a className="btn btn--primary" href="#contact" onClick={() => setOpen(false)}>
+              {ui.cta.getInTouch} <span className="arrow">→</span>
             </a>
-          ))}
-          <a className="btn btn--primary" href="#contact" onClick={() => setOpen(false)}>
-            {ui.cta.getInTouch} <span className="arrow">→</span>
-          </a>
+          </div>
         </div>
       )}
     </>

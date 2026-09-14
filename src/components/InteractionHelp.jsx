@@ -7,7 +7,7 @@ export default function InteractionHelp() {
   const { resetCamera, isMobile } = useApp()
   const h = ui.help
   return (
-    <div className="help glass">
+    <div className="help liquid">
       <span className="help__k desktop-only">{h.title}</span>
       <span className="sep desktop-only" />
       <span>{isMobile ? h.touchDrag : h.drag}</span>

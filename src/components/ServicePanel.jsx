@@ -57,7 +57,7 @@ export default function ServicePanel() {
   const { ui } = useLang()
   const { selectedId, select, selected } = useApp()
   return (
-    <aside className="panel glass" aria-label={ui.panel.title}>
+    <aside className="panel liquid" aria-label={ui.panel.title}>
       <div className="panel__title">
         <span className="kicker">{ui.panel.title}</span>
         <span className="panel__hint">{ui.panel.hint}</span>
