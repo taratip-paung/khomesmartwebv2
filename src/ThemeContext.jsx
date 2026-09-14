@@ -2,8 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 
 /**
  * Theme = 'light' | 'dark'.
- * Default follows the OS (prefers-color-scheme) and keeps following it until the
- * user picks one explicitly with the header toggle (saved in localStorage).
+ * Follows the OS (prefers-color-scheme). The header toggle overrides it (saved in
+ * localStorage) until the OS appearance changes again — then the OS wins.
  * index.html applies the same rule before first paint to avoid a flash.
  */
 const ThemeContext = createContext(null)
@@ -24,14 +24,20 @@ function initial() {
 export function ThemeProvider({ children }) {
   const [{ theme, explicit }, setState] = useState(initial)
 
-  // follow OS changes while the user hasn't chosen explicitly
+  // an OS appearance change always wins (like most sites): it clears any manual choice
   useEffect(() => {
-    if (explicit) return
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    const onChange = (e) => setState({ theme: e.matches ? 'dark' : 'light', explicit: false })
+    const onChange = (e) => {
+      try {
+        localStorage.removeItem(STORAGE_KEY)
+      } catch {
+        /* ignore */
+      }
+      setState({ theme: e.matches ? 'dark' : 'light', explicit: false })
+    }
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)
-  }, [explicit])
+  }, [])
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme

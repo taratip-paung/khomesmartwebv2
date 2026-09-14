@@ -11,7 +11,7 @@ function initialLang() {
   } catch {
     /* storage unavailable */
   }
-  return navigator.language?.toLowerCase().startsWith('th') ? 'th' : 'en'
+  return 'en' // English first for every new visitor; the toggle is remembered afterwards
 }
 
 export function LangProvider({ children }) {

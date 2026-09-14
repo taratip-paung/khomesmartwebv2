@@ -28,8 +28,14 @@ export function ScrollCue() {
   const { ui } = useLang()
   return (
     <a className="scroll-cue" href="#services" aria-label={ui.help.scroll}>
+      <span className="scroll-cue__ring liquid">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 5l6 5 6-5" />
+          <path d="M6 10l6 5 6-5" />
+          <path d="M6 15l6 5 6-5" />
+        </svg>
+      </span>
       <span>{ui.help.scroll}</span>
-      <i />
     </a>
   )
 }

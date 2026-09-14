@@ -87,11 +87,14 @@ export default function Sections() {
       <footer className="footer">
         <div className="logo" style={{ color: 'var(--ink-2)' }}>
           <LogoMark />
-          <span>KHOME SMART</span>
+          <span className="logo__text">
+            <b>BE CONNECTED</b>
+            <small>Network &amp; Solution Co.,Ltd.</small>
+          </span>
         </div>
         <span>{ui.footer.tagline}</span>
         <span>
-          © {new Date().getFullYear()} KHOME SMART · {ui.footer.rights}
+          © {new Date().getFullYear()} Be Connected Network &amp; Solution Co.,Ltd. · {ui.footer.rights}
         </span>
       </footer>
     </>

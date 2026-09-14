@@ -14,7 +14,7 @@ export function supportsWebGL() {
 export function StaticFallback() {
   const { ui } = useLang()
   return (
-    <div className="fallback" role="img" aria-label="KHOME SMART smart ecosystem illustration">
+    <div className="fallback" role="img" aria-label="Be Connected smart ecosystem illustration">
       <svg className="fallback__art" viewBox="0 0 520 320" fill="none" stroke="#35d6ff" strokeWidth="1.2" opacity="0.9">
         <ellipse cx="260" cy="250" rx="230" ry="50" opacity="0.5" />
         <ellipse cx="260" cy="250" rx="200" ry="42" opacity="0.25" />

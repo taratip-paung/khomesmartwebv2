@@ -289,6 +289,23 @@ button {
   height: 30px;
   flex: 0 0 auto;
 }
+.logo__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.logo__text b {
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  font-size: 14px;
+}
+.logo__text small {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  font-size: 10.5px;
+  color: var(--ink-3);
+  text-transform: none;
+}
 .nav {
   display: flex;
   gap: 2px;
@@ -527,9 +544,11 @@ button {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  font-size: 0.66em;
-  letter-spacing: 0.14em;
-  margin-top: 10px;
+  font-size: 0.42em;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  margin-top: 12px;
+  font-weight: 600;
 }
 .hero-content .kicker {
   display: inline-flex;
@@ -781,29 +800,85 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  color: var(--ink-3);
-  font-size: 10px;
-  letter-spacing: 0.2em;
+  gap: 8px;
+  color: var(--ink-2);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  transition: color 0.25s, transform 0.3s var(--ease);
 }
-.scroll-cue i {
-  width: 1px;
-  height: 34px;
-  background: linear-gradient(var(--cyan), transparent);
-  animation: cue 1.8s infinite;
+.scroll-cue:hover {
+  color: var(--accent-text);
+  transform: translateX(-50%) translateY(2px);
 }
-@keyframes cue {
-  0% {
-    transform: scaleY(0);
-    transform-origin: top;
+.scroll-cue__ring {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  position: relative;
+  animation: cueFloat 2.4s ease-in-out infinite;
+}
+.scroll-cue__ring::after {
+  /* expanding halo */
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent-text);
+  animation: cueHalo 2.4s ease-out infinite;
+  pointer-events: none;
+}
+.scroll-cue svg {
+  width: 22px;
+  height: 22px;
+  color: var(--accent-text);
+  overflow: visible;
+}
+.scroll-cue svg path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: cueChevron 2.4s ease-in-out infinite;
+}
+.scroll-cue svg path:nth-child(2) {
+  animation-delay: 0.25s;
+}
+.scroll-cue svg path:nth-child(3) {
+  animation-delay: 0.5s;
+}
+@keyframes cueFloat {
+  0%,
+  100% {
+    transform: translateY(0);
   }
   50% {
-    transform: scaleY(1);
-    transform-origin: top;
+    transform: translateY(5px);
+  }
+}
+@keyframes cueHalo {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.8;
   }
   100% {
-    transform: scaleY(0);
-    transform-origin: bottom;
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+@keyframes cueChevron {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: translateY(-2px);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(2px);
   }
 }
 

@@ -45,6 +45,7 @@ function GlassNav() {
   const [active, setActive] = useState(0)
   const [hover, setHover] = useState(null)
   const [pill, setPill] = useState({ x: 0, w: 0, ready: false })
+  const lockUntil = useRef(0) // ignore scroll-spy while a click-triggered smooth scroll is in flight
 
   // scroll spy
   useEffect(() => {
@@ -53,6 +54,7 @@ function GlassNav() {
     if (!els.length) return
     const io = new IntersectionObserver(
       (entries) => {
+        if (performance.now() < lockUntil.current) return
         const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)
         if (visible[0]) setActive(ids.indexOf(visible[0].target.id))
       },
@@ -90,6 +92,10 @@ function GlassNav() {
           onMouseEnter={() => setHover(i)}
           onFocus={() => setHover(i)}
           onBlur={() => setHover(null)}
+          onClick={() => {
+            setActive(i)
+            lockUntil.current = performance.now() + 1200 // smooth-scroll duration
+          }}
         >
           {ui.nav[l.key]}
         </a>
@@ -115,9 +121,12 @@ export default function Header() {
   return (
     <>
       <header className="header">
-        <a className="logo" href="#home" aria-label="KHOME SMART — home">
+        <a className="logo" href="#home" aria-label="Be Connected Network & Solution — home">
           <LogoMark />
-          <span>KHOME SMART</span>
+          <span className="logo__text">
+            <b>BE CONNECTED</b>
+            <small>Network &amp; Solution Co.,Ltd.</small>
+          </span>
         </a>
 
         <GlassNav />
