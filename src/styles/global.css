@@ -498,19 +498,21 @@ button {
      the 3D scene without drawing a hard box */
   content: '';
   position: absolute;
-  inset: -56px -140px -56px -120px;
+  inset: -40px 10px -40px -120px; /* stays inside the text column — never reaches the model */
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 88%, transparent) 55%, transparent 100%);
-  backdrop-filter: blur(12px) saturate(120%);
-  -webkit-backdrop-filter: blur(12px) saturate(120%);
-  mask: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
-  -webkit-mask: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+  background: linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 70%, transparent) 45%, color-mix(in srgb, var(--bg) 25%, transparent) 78%, transparent 100%);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  mask: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent), linear-gradient(90deg, #000 60%, transparent 100%);
+  -webkit-mask: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent), linear-gradient(90deg, #000 60%, transparent 100%);
+  mask-composite: intersect;
+  -webkit-mask-composite: source-in;
 }
 :root[data-theme='dark'] .hero-content::before {
-  background: linear-gradient(90deg, color-mix(in srgb, var(--bg) 80%, transparent) 0%, color-mix(in srgb, var(--bg) 55%, transparent) 55%, transparent 100%);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--bg) 75%, transparent) 0%, color-mix(in srgb, var(--bg) 40%, transparent) 50%, transparent 100%);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 .hero-content h1 {
   margin: 14px 0 6px;
@@ -548,14 +550,14 @@ button {
   box-shadow: 0 0 8px var(--accent-text);
 }
 :root:not([data-theme='dark']) .hero-content h1 {
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7), 0 8px 24px rgba(20, 50, 100, 0.12);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 18px rgba(238, 243, 250, 0.9), 0 8px 24px rgba(20, 50, 100, 0.14);
 }
 .hero-content h1 .brand {
   text-shadow: none; /* gradient text must not carry a shadow (shows through the transparent fill) */
 }
 :root:not([data-theme='dark']) .hero-content p,
 :root:not([data-theme='dark']) .hero-content .cats {
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 12px rgba(238, 243, 250, 0.9);
 }
 .hero-content p {
   color: var(--ink-2);
