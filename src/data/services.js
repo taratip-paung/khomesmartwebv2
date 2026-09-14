@@ -24,7 +24,7 @@ export const services = [
     },
     cameraTarget: 'solar',
     objectGroup: 'solar',
-    markerPosition: [-0.6, 4.7, -0.2],
+    markerPosition: [0.2, 5.3, -0.4],
     href: '#services',
   },
   {

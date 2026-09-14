@@ -7,14 +7,14 @@ import { RND_ORIGIN } from './SensorSystem'
 import { NETWORK_ORIGIN } from './NetworkSystem'
 import { CLOUD_ORIGIN } from './CloudServer'
 
-const HUB = new THREE.Vector3(-0.6, 3.5, -0.2) // house roof — ecosystem hub
+const HUB = new THREE.Vector3(0.2, 4.4, -0.4) // house roof — ecosystem hub
 
 /**
  * CONNECTION_SOLAR / RND / NETWORK / CLOUD — glowing bezier links from the
  * house to each service zone, with data pulses travelling along them.
  */
 const links = [
-  { id: 'solar', name: 'CONNECTION_SOLAR', to: [1.55, 2.2, 0.05], color: '#ffc857', lift: 0.9, pulses: 2 },
+  { id: 'solar', name: 'CONNECTION_SOLAR', to: [-2.3, 1.4, 1.9], color: '#ffc857', lift: 1.2, pulses: 2 },
   { id: 'rnd', name: 'CONNECTION_RND', to: [RND_ORIGIN[0], 3.4, RND_ORIGIN[2]], color: '#7cf5c2', lift: 2.2, pulses: 3 },
   { id: 'network', name: 'CONNECTION_NETWORK', to: [NETWORK_ORIGIN[0], 5.6, NETWORK_ORIGIN[2]], color: '#35d6ff', lift: 2.6, pulses: 3 },
   { id: 'cloud', name: 'CONNECTION_CLOUD', to: [CLOUD_ORIGIN[0], 2.8, CLOUD_ORIGIN[2]], color: '#a78bfa', lift: 2.4, pulses: 3 },

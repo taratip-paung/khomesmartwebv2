@@ -9,8 +9,8 @@
 export const cameraTargets = {
   /** debug/preview framing of the house only — open with ?cam=showcase */
   showcase: {
-    position: [3.5, 8.5, 13],
-    target: [0, 1.3, 0],
+    position: [3, 6.5, 17],
+    target: [0.2, 1.8, 0],
     duration: 1000,
   },
   default: {
@@ -19,8 +19,8 @@ export const cameraTargets = {
     duration: 1200,
   },
   solar: {
-    position: [9.5, 9.5, 7.5],
-    target: [-0.2, 2.6, -0.2],
+    position: [6.5, 10.5, 10],
+    target: [0.2, 3.2, -0.4],
     duration: 1000,
   },
   rnd: {

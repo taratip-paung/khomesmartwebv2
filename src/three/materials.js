@@ -28,6 +28,8 @@ const KINDS = {
   bark: () => new THREE.MeshStandardMaterial({ color: '#4a3527', metalness: 0, roughness: 1 }),
   wood: () => new THREE.MeshStandardMaterial({ color: '#9a6a44', metalness: 0.05, roughness: 0.7 }),
   stone: () => new THREE.MeshStandardMaterial({ color: '#6e737d', metalness: 0.05, roughness: 0.85 }),
+  blackStone: () => new THREE.MeshStandardMaterial({ color: '#141821', metalness: 0.2, roughness: 0.45, envMapIntensity: 1.2 }),
+  fabric: () => new THREE.MeshStandardMaterial({ color: '#c9c2b6', metalness: 0, roughness: 0.95 }),
   water: () =>
     new THREE.MeshPhysicalMaterial({
       color: '#4fc8e8',
@@ -74,6 +76,15 @@ const KINDS = {
       roughness: 1,
     }),
   // solar cells — dark blue glass with a procedural cell grid
+  // all-black frameless PV (premium look)
+  solarBlack: () =>
+    new THREE.MeshStandardMaterial({
+      map: solarTexture(true),
+      color: '#ffffff',
+      metalness: 0.7,
+      roughness: 0.12,
+      envMapIntensity: 2.4,
+    }),
   solar: () =>
     new THREE.MeshStandardMaterial({
       map: solarTexture(),
@@ -130,21 +141,21 @@ export function mat(group, kind, overrides = {}) {
   return m
 }
 
-let _solarTex
-function solarTexture() {
-  if (_solarTex) return _solarTex
+const _solarTexCache = {}
+function solarTexture(black = false) {
+  if (_solarTexCache[black]) return _solarTexCache[black]
   const c = document.createElement('canvas')
   c.width = 384
   c.height = 256
   const g = c.getContext('2d')
   // base: deep blue cell colour with slight gradient
   const grad = g.createLinearGradient(0, 0, 384, 256)
-  grad.addColorStop(0, '#1d4ba6')
-  grad.addColorStop(1, '#10317a')
+  grad.addColorStop(0, black ? '#171b26' : '#1d4ba6')
+  grad.addColorStop(1, black ? '#0b0e16' : '#10317a')
   g.fillStyle = grad
   g.fillRect(0, 0, 384, 256)
-  // cell grid (10 × 6) with silver gaps
-  g.strokeStyle = '#d6e0ec'
+  // cell grid (10 × 6)
+  g.strokeStyle = black ? '#2b3140' : '#d6e0ec'
   g.lineWidth = 3
   for (let i = 0; i <= 10; i++) {
     const x = (i * 384) / 10
@@ -161,7 +172,7 @@ function solarTexture() {
     g.stroke()
   }
   // busbars (thin lines inside each cell)
-  g.strokeStyle = 'rgba(210,225,240,0.6)'
+  g.strokeStyle = black ? 'rgba(70,78,95,0.6)' : 'rgba(210,225,240,0.6)'
   g.lineWidth = 1
   for (let j = 0; j < 6; j++) {
     for (let b = 1; b <= 2; b++) {
@@ -173,13 +184,14 @@ function solarTexture() {
     }
   }
   // frame border
-  g.strokeStyle = '#9aa8b8'
+  g.strokeStyle = black ? '#1a1e28' : '#9aa8b8'
   g.lineWidth = 6
   g.strokeRect(0, 0, 384, 256)
-  _solarTex = new THREE.CanvasTexture(c)
-  _solarTex.colorSpace = THREE.SRGBColorSpace
-  _solarTex.anisotropy = 8
-  return _solarTex
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  tex.anisotropy = 8
+  _solarTexCache[black] = tex
+  return tex
 }
 
 /* ---------- geometry cache (shared across meshes) ---------- */
