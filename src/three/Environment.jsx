@@ -45,6 +45,42 @@ function Backyard() {
   )
 }
 
+function Tree({ position, s = 1 }) {
+  const [x, y, z] = position
+  return (
+    <group position={[x, y, z]} scale={s}>
+      <P geo="cylinder" args={[0.06, 0.09, 0.7, 7]} position={[0, 0.35, 0]} m={mat('base', 'bark')} />
+      <P geo="icosahedron" args={[0.58, 1]} position={[0, 1.0, 0]} rotation={[0.3, 0.5, 0]} m={mat('base', 'foliage')} />
+      <P geo="icosahedron" args={[0.44, 1]} position={[0.26, 1.38, 0.1]} rotation={[0.8, 0.2, 0.4]} m={mat('base', 'foliage2')} />
+      <P geo="icosahedron" args={[0.38, 1]} position={[-0.3, 1.3, -0.15]} rotation={[0.1, 1.2, 0.6]} m={mat('base', 'foliage')} />
+    </group>
+  )
+}
+
+function StreetLight({ position, rotation = 0 }) {
+  return (
+    <group position={position} rotation={[0, rotation, 0]}>
+      <P geo="cylinder" args={[0.03, 0.05, 2.6, 8]} position={[0, 1.3, 0]} m={mat('base', 'darkMetal')} />
+      <P geo="box" args={[0.6, 0.04, 0.04]} position={[0.28, 2.6, 0]} m={mat('base', 'darkMetal')} />
+      <P geo="box" args={[0.3, 0.05, 0.14]} position={[0.55, 2.58, 0]} m={mat('base', 'darkMetal')} />
+      <P geo="box" args={[0.26, 0.01, 0.1]} position={[0.55, 2.55, 0]} m={mat('base', 'emissive', { color: '#dff4ff', intensity: 2 })} shadow={false} />
+    </group>
+  )
+}
+
+/** Road with centre dashes */
+function Road({ position, length, rotation = 0, width = 1.6 }) {
+  const dashes = Math.floor(length / 0.9)
+  return (
+    <group position={position} rotation={[0, rotation, 0]}>
+      <P geo="box" args={[width, 0.02, length]} m={mat('base', 'asphalt')} shadow={false} />
+      {Array.from({ length: dashes }).map((_, i) => (
+        <P key={i} geo="box" args={[0.05, 0.005, 0.4]} position={[0, 0.012, -length / 2 + 0.5 + i * 0.9]} m={mat('base', 'white', { color: '#e6ecf3' })} shadow={false} />
+      ))}
+    </group>
+  )
+}
+
 /**
  * Floating platform, roads, greenery, street lights, lighting rig,
  * contact shadows and ambient particles.
