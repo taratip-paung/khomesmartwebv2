@@ -28,24 +28,11 @@ function Rack({ name, position }) {
 
 /**
  * CLOUD_SERVER_RACK ×3 inside a glass-walled edge data-centre module with
- * rooftop cooling units; CLOUD_CORE — a floating glass sphere with a glowing
- * core and orbit rings, tethered to the module by a light beam. Group "cloud".
+ * rooftop cooling units. Group "cloud".
  */
 export default function CloudServer() {
-  const core = useRef()
-  const inner = useRef()
-  const ringA = useRef()
-  const ringB = useRef()
   const fans = useRef([])
-  useFrame(({ clock }, dt) => {
-    const t = clock.elapsedTime
-    if (core.current) core.current.position.y = 4.1 + Math.sin(t * 1.1) * 0.12
-    if (inner.current) {
-      inner.current.rotation.y += dt * 0.5
-      inner.current.rotation.x = Math.sin(t * 0.6) * 0.3
-    }
-    if (ringA.current) ringA.current.rotation.z += dt * 0.4
-    if (ringB.current) ringB.current.rotation.x += dt * 0.3
+  useFrame((_, dt) => {
     fans.current.forEach((f) => f && (f.rotation.y += dt * 9))
   })
   const W = 3.4
@@ -82,23 +69,7 @@ export default function CloudServer() {
           </group>
         </group>
       ))}
-      {/* uplink beam + floating core */}
-      <P geo="cylinder" args={[0.03, 0.09, 1.3, 12, 1, true]} position={[0, 3.35, 0]} m={mat('cloud', 'emissive', { color: VIOLET, intensity: 1.2, opacity: 0.35 })} shadow={false} />
-      <group ref={core} name="CLOUD_CORE" position={[0, 4.1, 0]}>
-        <P geo="sphere" args={[0.72, 48, 32]} m={mat('cloud', 'glass')} shadow={false} />
-        <group ref={inner}>
-          <P geo="icosahedron" args={[0.36, 1]} m={mat('cloud', 'emissive', { color: VIOLET, intensity: 1.5 })} shadow={false} />
-          <P geo="icosahedron" args={[0.42, 1]} m={mat('cloud', 'glassTint', { color: '#d9ccff', opacity: 0.35 })} shadow={false} />
-        </group>
-        <group ref={ringA} rotation={[Math.PI / 2.3, 0, 0]}>
-          <P geo="torus" args={[1.0, 0.018, 8, 80]} m={mat('cloud', 'emissive', { color: VIOLET, intensity: 1.3 })} shadow={false} />
-        </group>
-        <group ref={ringB} rotation={[0.3, 0.5, 0]}>
-          <P geo="torus" args={[1.15, 0.012, 8, 80]} m={mat('cloud', 'emissive', { color: '#35d6ff', intensity: 1.6 })} shadow={false} />
-        </group>
-      </group>
-
-      <HitBox serviceId="cloud" position={[0, 2.4, 0]} args={[4, 5.4, 3]} />
+      <HitBox serviceId="cloud" position={[0, 1.4, 0]} args={[4, 3.2, 3]} />
     </group>
   )
 }

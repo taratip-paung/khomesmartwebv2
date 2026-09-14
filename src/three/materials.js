@@ -119,48 +119,48 @@ let _solarTex
 function solarTexture() {
   if (_solarTex) return _solarTex
   const c = document.createElement('canvas')
-  c.width = 256
-  c.height = 384
+  c.width = 384
+  c.height = 256
   const g = c.getContext('2d')
   // base: deep blue cell colour with slight gradient
-  const grad = g.createLinearGradient(0, 0, 256, 384)
-  grad.addColorStop(0, '#173f8f')
-  grad.addColorStop(1, '#0d2a66')
+  const grad = g.createLinearGradient(0, 0, 384, 256)
+  grad.addColorStop(0, '#1d4ba6')
+  grad.addColorStop(1, '#10317a')
   g.fillStyle = grad
-  g.fillRect(0, 0, 256, 384)
-  // cell grid (6 × 10) with silver gaps
-  g.strokeStyle = '#c9d6e6'
+  g.fillRect(0, 0, 384, 256)
+  // cell grid (10 × 6) with silver gaps
+  g.strokeStyle = '#d6e0ec'
   g.lineWidth = 3
-  for (let i = 0; i <= 6; i++) {
-    const x = (i * 256) / 6
+  for (let i = 0; i <= 10; i++) {
+    const x = (i * 384) / 10
     g.beginPath()
     g.moveTo(x, 0)
-    g.lineTo(x, 384)
+    g.lineTo(x, 256)
     g.stroke()
   }
-  for (let j = 0; j <= 10; j++) {
-    const y = (j * 384) / 10
+  for (let j = 0; j <= 6; j++) {
+    const y = (j * 256) / 6
     g.beginPath()
     g.moveTo(0, y)
-    g.lineTo(256, y)
+    g.lineTo(384, y)
     g.stroke()
   }
-  // busbars (thin vertical lines inside each cell)
-  g.strokeStyle = 'rgba(200,215,235,0.55)'
+  // busbars (thin lines inside each cell)
+  g.strokeStyle = 'rgba(210,225,240,0.6)'
   g.lineWidth = 1
-  for (let i = 0; i < 6; i++) {
+  for (let j = 0; j < 6; j++) {
     for (let b = 1; b <= 2; b++) {
-      const x = (i * 256) / 6 + (b * 256) / 18
+      const y = (j * 256) / 6 + (b * 256) / 18
       g.beginPath()
-      g.moveTo(x, 0)
-      g.lineTo(x, 384)
+      g.moveTo(0, y)
+      g.lineTo(384, y)
       g.stroke()
     }
   }
   // frame border
   g.strokeStyle = '#9aa8b8'
   g.lineWidth = 6
-  g.strokeRect(0, 0, 256, 384)
+  g.strokeRect(0, 0, 384, 256)
   _solarTex = new THREE.CanvasTexture(c)
   _solarTex.colorSpace = THREE.SRGBColorSpace
   _solarTex.anisotropy = 8

@@ -2,39 +2,37 @@ import { P, Led, ZoneRing } from './Prim'
 import { mat } from './materials'
 import HitBox from './HitBox'
 
-const TILT = THREE_TILT()
-function THREE_TILT() {
-  return -18 * (Math.PI / 180) // panels tilt toward +z (front / "south")
-}
+const TILT = -24 * (Math.PI / 180) // panels tilt toward +x (right side, facing the solar camera)
 
 /** One framed PV module: dark-blue cell glass in an aluminium frame, on a rack. */
 function Panel({ position }) {
   return (
-    <group position={position} rotation={[TILT, 0, 0]}>
-      <P geo="box" args={[0.78, 0.035, 1.0]} m={mat('solar', 'metal')} />
-      <P geo="box" args={[0.74, 0.012, 0.96]} position={[0, 0.024, 0]} m={mat('solar', 'solar')} />
+    <group position={position} rotation={[0, 0, TILT]}>
+      <P geo="box" args={[1.0, 0.035, 0.78]} m={mat('solar', 'metal')} />
+      <P geo="box" args={[0.96, 0.012, 0.74]} position={[0, 0.024, 0]} m={mat('solar', 'solar')} />
     </group>
   )
 }
 
 /** Tilted rack of PV modules: `cols` × `rows` */
+/** Tilted rack of PV modules: `rows` along x (each row tilts toward +x), `cols` along z */
 function SolarArray({ position, cols, rows, name }) {
-  const w = 0.84
-  const d = 1.06
+  const w = 1.06 // pitch along x (row spacing)
+  const d = 0.84 // pitch along z (module spacing)
   return (
     <group name={name} position={position}>
       {Array.from({ length: rows }).map((_, r) =>
         Array.from({ length: cols }).map((_, c) => (
-          <Panel key={`${r}-${c}`} position={[(c - (cols - 1) / 2) * w, 0.22, (r - (rows - 1) / 2) * d]} />
+          <Panel key={`${r}-${c}`} position={[(r - (rows - 1) / 2) * w, 0.24, (c - (cols - 1) / 2) * d]} />
         )),
       )}
-      {/* rack rails */}
+      {/* rack rails: low rail on +x, high rail on -x */}
       {Array.from({ length: rows }).map((_, r) => (
-        <group key={r} position={[0, 0, (r - (rows - 1) / 2) * d]}>
-          <P geo="box" args={[cols * w, 0.04, 0.05]} position={[0, 0.06, 0.45]} m={mat('solar', 'darkMetal')} />
-          <P geo="box" args={[cols * w, 0.04, 0.05]} position={[0, 0.33, -0.45]} m={mat('solar', 'darkMetal')} />
+        <group key={r} position={[(r - (rows - 1) / 2) * w, 0, 0]}>
+          <P geo="box" args={[0.05, 0.04, cols * d]} position={[0.45, 0.06, 0]} m={mat('solar', 'darkMetal')} />
+          <P geo="box" args={[0.05, 0.04, cols * d]} position={[-0.45, 0.4, 0]} m={mat('solar', 'darkMetal')} />
           {Array.from({ length: cols + 1 }).map((_, c) => (
-            <P key={c} geo="box" args={[0.05, 0.3, 0.05]} position={[(c - cols / 2) * w, 0.17, -0.45]} m={mat('solar', 'darkMetal')} />
+            <P key={c} geo="box" args={[0.05, 0.38, 0.05]} position={[-0.45, 0.2, (c - cols / 2) * d]} m={mat('solar', 'darkMetal')} />
           ))}
         </group>
       ))}
@@ -82,8 +80,8 @@ export default function SmartHouse() {
       </group>
 
       {/* SOLAR_PANELS — upper roof 4×2, lower roof 2×2 */}
-      <SolarArray name="SOLAR_PANELS" position={[-0.6, 3.28, -0.2]} cols={4} rows={2} />
-      <SolarArray name="SOLAR_PANELS_02" position={[1.55, 1.82, 0.05]} cols={1} rows={2} />
+      <SolarArray name="SOLAR_PANELS" position={[-0.6, 3.28, -0.2]} cols={3} rows={3} />
+      <SolarArray name="SOLAR_PANELS_02" position={[1.55, 1.82, 0.05]} cols={3} rows={1} />
 
       {/* SOLAR_INVERTER on the right wall */}
       <group name="SOLAR_INVERTER" position={[2.28, 0.85, 1.0]}>

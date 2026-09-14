@@ -563,13 +563,43 @@ button {
 }
 .panel__title {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 6px;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 4px 10px;
 }
-.panel__hint {
-  font-size: 11px;
-  color: var(--ink-3);
+.panel__title h2 {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: 0.22em;
+  font-weight: 700;
+  color: var(--ink);
+}
+.panel__bar {
+  width: 6px;
+  height: 22px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--cyan), var(--blue));
+  box-shadow: 0 0 14px var(--cyan);
+}
+.panel.liquid {
+  background: var(--glass-2);
+  box-shadow:
+    inset 0 1.5px 0 var(--lg-edge),
+    inset 0 -2px 3px rgba(10, 30, 70, 0.1),
+    0 24px 60px rgba(20, 50, 100, 0.22),
+    0 0 0 1px var(--glass-border-hi);
+}
+:root[data-theme='dark'] .panel.liquid {
+  background: rgba(10, 18, 48, 0.72);
+  box-shadow:
+    inset 0 1.5px 0 var(--lg-edge),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.35),
+    0 24px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(53, 214, 255, 0.35),
+    0 0 40px rgba(53, 214, 255, 0.12);
+}
+.panel .card__title {
+  font-size: 16px;
 }
 .card {
   display: grid;

@@ -59,8 +59,8 @@ export default function ServicePanel() {
   return (
     <aside className="panel liquid" aria-label={ui.panel.title}>
       <div className="panel__title">
-        <span className="kicker">{ui.panel.title}</span>
-        <span className="panel__hint">{ui.panel.hint}</span>
+        <span className="panel__bar" aria-hidden="true" />
+        <h2>{ui.panel.title}</h2>
       </div>
       {services.map((s) => (
         <ServiceCard key={s.id} service={s} active={selectedId === s.id} onSelect={select} />

@@ -13,8 +13,8 @@ export const cameraTargets = {
     duration: 1200,
   },
   solar: {
-    position: [4.5, 9.5, 11.5],
-    target: [-0.4, 2.4, -0.2],
+    position: [9.5, 9.5, 7.5],
+    target: [-0.2, 2.6, -0.2],
     duration: 1000,
   },
   rnd: {
@@ -28,8 +28,8 @@ export const cameraTargets = {
     duration: 1000,
   },
   cloud: {
-    position: [12.5, 7, 12.5],
-    target: [6, 2.2, 3.5],
+    position: [12, 6.5, 11.5],
+    target: [6, 1.6, 3.5],
     duration: 1000,
   },
 }
