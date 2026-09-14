@@ -138,7 +138,7 @@ function Cabinet({ name, position, phase = 0, grille = false }) {
 export default function CloudServer() {
   const pitch = CAB_W + 0.12
   return (
-    <group name="CLOUD_ROOT" position={CLOUD_ORIGIN}>
+    <group name="CLOUD_ROOT" position={CLOUD_ORIGIN} scale={0.8}>
       <ZoneRing position={[0, 0.012, 0]} radius={3.0} color={VIOLET} group="cloud" />
       {/* raised floor + underglow */}
       <P geo="box" args={[5.4, 0.16, 2.6]} position={[0, 0.08, 0]} m={mat('cloud', 'concrete', { color: '#1c222e' })} />

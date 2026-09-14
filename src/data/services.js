@@ -78,7 +78,7 @@ export const services = [
     },
     cameraTarget: 'cloud',
     objectGroup: 'cloud',
-    markerPosition: [6, 3.6, 3.5],
+    markerPosition: [6, 3.0, 3.5],
     href: '#services',
   },
 ]
