@@ -33,8 +33,8 @@ function Interior() {
     <group name="INTERIOR">
       {/* floor, warm timber back wall, ceiling */}
       <P geo="box" args={[6.6, 0.04, 3.3]} position={[0.2, 0.2, 0]} m={H('white', { color: '#cfc7bb' })} />
-      <P geo="box" args={[6.6, 1.7, 0.08]} position={[0.2, 1.05, -1.7]} m={H('wood', { color: '#a8865e' })} />
-      <Slats position={[-0.6, 1.05, -1.62]} width={2.4} height={1.66} count={16} m={H('wood', { color: '#c9a67a' })} thickness={0.03} />
+      <P geo="box" args={[2.4, 1.7, 0.08]} position={[-0.7, 1.05, -1.7]} m={H('wood', { color: '#a8865e' })} />
+      <Slats position={[-0.7, 1.05, -1.62]} width={2.0} height={1.66} count={14} m={H('wood', { color: '#c9a67a' })} thickness={0.03} />
       {/* ceiling light coves */}
       <P geo="box" args={[6.4, 0.02, 0.12]} position={[0.2, 1.86, -1.5]} m={H('emissive', { color: '#ffe3b8', intensity: 2 })} shadow={false} />
       <P geo="box" args={[6.4, 0.02, 0.12]} position={[0.2, 1.86, 1.4]} m={H('emissive', { color: '#ffe3b8', intensity: 1.6 })} shadow={false} />
@@ -111,7 +111,14 @@ export default function HouseE() {
           <Led position={[0.3, -0.2, 0.08]} color="#7cf5c2" size={0.015} group="solar" />
         </group>
         {/* back + side walls (glass at the front and right) */}
-        <P geo="box" args={[5.6, 1.7, 0.1]} position={[1.0, 1.05, -1.75]} m={H('white', { color: '#e3e7ec' })} />
+        <P geo="box" args={[2.2, 1.7, 0.1]} position={[-0.7, 1.05, -1.75]} m={H('white', { color: '#e3e7ec' })} />
+        <P geo="box" args={[3.4, 1.7, 0.06]} position={[2.1, 1.05, -1.76]} m={H('glassTint', { color: '#8fc8ff', opacity: 0.18 })} shadow={false} />
+        {[0.5, 1.2, 1.9, 2.6, 3.3].map((x) => (
+          <P key={`b${x}`} geo="box" args={[0.06, 1.7, 0.1]} position={[x, 1.05, -1.76]} m={H('body', { color: '#05070c' })} />
+        ))}
+        {/* rear terrace + steps down to the backyard */}
+        <P geo="box" args={[3.6, 0.06, 1.0]} position={[2.1, 0.22, -2.3]} m={H('white', { color: '#cfd5dd' })} />
+        <Slats position={[0.2, 3.06, -1.95]} width={5.8} height={1.46} count={40} m={H('body', { color: '#0a0d14' })} thickness={0.03} />
         <P geo="box" args={[0.1, 1.7, 3.5]} position={[3.8, 1.05, 0]} m={H('glassTint', { color: '#8fc8ff', opacity: 0.25 })} shadow={false} />
         {/* front glazing + black mullions */}
         <P geo="box" args={[5.6, 1.7, 0.06]} position={[1.0, 1.05, 1.76]} m={H('glassTint', { color: '#8fc8ff', opacity: 0.18 })} shadow={false} />
