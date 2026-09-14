@@ -23,7 +23,7 @@ function ReadyFlag() {
 }
 
 function Hero() {
-  const { sceneReady, setSceneReady } = useApp()
+  const { sceneReady, setSceneReady, resetCamera } = useApp()
   const webgl = useMemo(supportsWebGL, [])
 
   // no WebGL → nothing to wait for
@@ -33,7 +33,14 @@ function Hero() {
 
   return (
     <section id="home" className="hero" data-ready={sceneReady}>
-      <div className="hero__canvas">
+      <div
+        className="hero__canvas"
+        onContextMenu={(e) => {
+          // right-click anywhere on the 3D scene = reset view (no browser menu)
+          e.preventDefault()
+          resetCamera()
+        }}
+      >
         {webgl ? (
           <SceneErrorBoundary onFail={() => setSceneReady(true)}>
             <Suspense fallback={null}>

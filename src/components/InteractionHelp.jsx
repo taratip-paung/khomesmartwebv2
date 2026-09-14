@@ -13,6 +13,12 @@ export default function InteractionHelp() {
       <span>{isMobile ? h.touchDrag : h.drag}</span>
       <span className="sep" />
       <span>{isMobile ? h.pinch : h.wheel}</span>
+      {!isMobile && (
+        <>
+          <span className="sep" />
+          <span>{h.rightClick}</span>
+        </>
+      )}
       <span className="sep" />
       <button onClick={resetCamera} aria-label={h.reset}>
         <span className="icon" style={{ width: 14, height: 14, display: 'inline-flex' }}>
