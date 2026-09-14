@@ -2,6 +2,7 @@ import { useApp } from '../AppContext'
 import { services } from '../data/services'
 import { useLang } from '../i18n/LangContext'
 import { icons, LogoMark } from './Icons'
+import { useTheme } from '../ThemeContext'
 
 /**
  * Placeholder sections below the hero (plan §26). Content is temporary —
@@ -10,6 +11,7 @@ import { icons, LogoMark } from './Icons'
 export default function Sections() {
   const { ui, t } = useLang()
   const { select } = useApp()
+  const { accent } = useTheme()
   const s = ui.sections
 
   const focusHero = (id) => {
@@ -27,7 +29,7 @@ export default function Sections() {
         </div>
         <div className="grid-4">
           {services.map((sv) => (
-            <article key={sv.id} className="tile glass" style={{ '--accent': sv.accent }}>
+            <article key={sv.id} className="tile glass" style={{ '--accent': accent(sv) }}>
               <span className="card__icon">{icons[sv.icon]}</span>
               <span className="card__num">[{sv.number}]</span>
               <h3>{t(sv.title)}</h3>

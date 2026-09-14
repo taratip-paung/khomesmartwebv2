@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLang } from '../i18n/LangContext'
-import { LogoMark } from './Icons'
+import { LogoMark, icons } from './Icons'
+import { useTheme } from '../ThemeContext'
 
 const links = [
   { key: 'home', href: '#home' },
@@ -20,6 +21,15 @@ export function LangToggle() {
     >
       <span data-active={lang === 'th'}>TH</span>
       <span data-active={lang === 'en'}>EN</span>
+    </button>
+  )
+}
+
+export function ThemeToggle() {
+  const { isDark, toggle } = useTheme()
+  return (
+    <button className="theme-toggle" onClick={toggle} aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'} title={isDark ? 'Light mode' : 'Dark mode'}>
+      {isDark ? icons.sun : icons.moon}
     </button>
   )
 }
@@ -56,6 +66,7 @@ export default function Header() {
 
         <div className="header__right">
           <LangToggle />
+          <ThemeToggle />
           <a className="btn btn--primary btn--sm" href="#contact">
             {ui.cta.getInTouch} <span className="arrow">→</span>
           </a>

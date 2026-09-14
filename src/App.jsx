@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo } from 'react'
 import { AppProvider, useApp } from './AppContext'
 import { LangProvider } from './i18n/LangContext'
+import { ThemeProvider } from './ThemeContext'
 import Header from './components/Header'
 import HeroContent from './components/HeroContent'
 import ServicePanel, { MobileServices } from './components/ServicePanel'
@@ -59,6 +60,7 @@ function Hero() {
 
 export default function App() {
   return (
+    <ThemeProvider>
     <LangProvider>
       <AppProvider>
         <ReadyFlag />
@@ -70,5 +72,6 @@ export default function App() {
         </main>
       </AppProvider>
     </LangProvider>
+    </ThemeProvider>
   )
 }

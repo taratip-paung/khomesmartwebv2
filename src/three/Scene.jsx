@@ -12,12 +12,16 @@ import CloudServer from './CloudServer'
 import ConnectionLines from './ConnectionLines'
 import Markers from './Markers'
 import { setSelected, tick } from './highlight'
+import { applyTheme } from './materials'
+import { useTheme } from '../ThemeContext'
 
 /** Drives the highlight store + reports first rendered frame */
 function SceneDriver() {
   const { selectedId, setSceneReady, reducedMotion } = useApp()
+  const { theme } = useTheme()
   const frames = useRef(0)
   useEffect(() => setSelected(selectedId), [selectedId])
+  useEffect(() => applyTheme(theme), [theme])
   useFrame((_, dt) => {
     tick(Math.min(dt, 0.1), reducedMotion)
     if (frames.current < 3 && ++frames.current === 3) setSceneReady(true)
@@ -32,7 +36,9 @@ function SceneDriver() {
  */
 export default function Scene() {
   const { isMobile } = useApp()
+  const { isDark } = useTheme()
   const lite = isMobile
+  const bg = isDark ? '#070c1c' : '#e9eff8'
 
   return (
     <Canvas
@@ -43,14 +49,14 @@ export default function Scene() {
         antialias: true,
         powerPreference: 'high-performance',
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.05,
+        toneMappingExposure: isDark ? 1.05 : 1.0,
       }}
     >
-      <color attach="background" args={['#070c1c']} />
-      <fog attach="fog" args={['#070c1c', 26, 60]} />
+      <color attach="background" args={[bg]} />
+      <fog attach="fog" args={[bg, 26, 60]} />
       <Suspense fallback={null}>
         <group name="KHOME_SCENE">
-          <Environment lite={lite} />
+          <Environment lite={lite} dark={isDark} />
           <SmartHouse />
           <SensorSystem />
           <NetworkSystem />
@@ -62,8 +68,8 @@ export default function Scene() {
         <SceneDriver />
         {!lite && (
           <EffectComposer multisampling={4}>
-            <Bloom mipmapBlur intensity={0.55} luminanceThreshold={1.0} luminanceSmoothing={0.25} radius={0.6} />
-            <Vignette eskil={false} offset={0.25} darkness={0.55} />
+            <Bloom mipmapBlur intensity={isDark ? 0.55 : 0.3} luminanceThreshold={isDark ? 1.0 : 1.3} luminanceSmoothing={0.25} radius={0.6} />
+            <Vignette eskil={false} offset={0.25} darkness={isDark ? 0.55 : 0.25} />
           </EffectComposer>
         )}
       </Suspense>

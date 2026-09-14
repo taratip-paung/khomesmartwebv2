@@ -71,6 +71,26 @@ const KINDS = {
     }),
 }
 
+/* ---------- theme ---------- */
+/** Ground/architecture colours that differ between the dark (night) and light (day) scene */
+const THEME_COLORS = {
+  ground: { dark: '#141b2c', light: '#a9b7c9' },
+  concrete: { dark: '#2a3244', light: '#94a1b3' },
+  asphalt: { dark: '#10151f', light: '#4a5468' },
+  lawn: { dark: '#1c3b30', light: '#5b9a6a' },
+  body: { dark: '#151d2f', light: '#2b3650' },
+  foliage: { dark: '#2a6e45', light: '#3f9a5c' },
+  foliage2: { dark: '#3a8a55', light: '#58b774' },
+}
+let currentTheme = 'dark'
+export function applyTheme(theme) {
+  currentTheme = theme
+  for (const m of cache.values()) {
+    if (!m.userData.themed) continue
+    m.userData.base.color.set(THEME_COLORS[m.userData.kind][theme])
+  }
+}
+
 export function mat(group, kind, overrides = {}) {
   const key = `${group}|${kind}|${JSON.stringify(overrides)}`
   if (cache.has(key)) return cache.get(key)
@@ -82,6 +102,9 @@ export function mat(group, kind, overrides = {}) {
     m.transparent = true
     m.opacity = overrides.opacity
   }
+  m.userData.kind = kind
+  m.userData.themed = kind in THEME_COLORS && !overrides.color
+  if (m.userData.themed) m.color.set(THEME_COLORS[kind][currentTheme])
   m.userData.base = {
     color: kind === 'emissive' ? null : m.color.clone(),
     ei: m.emissiveIntensity > 0 && kind === 'emissive' ? m.emissiveIntensity : undefined,

@@ -4,6 +4,7 @@
  * Text is bilingual: pick with t(service.title) / service.title[lang].
  *
  * `cameraTarget` maps to src/data/cameraTargets.js
+ * `accent` / `accentLight` are the UI accent colours for dark / light theme (3D uses `accent`)
  * `objectGroup`  is the 3D highlight group id (matches Blender group naming, e.g. SOLAR_*)
  * `markerPosition` is the world-space anchor for the floating 3D marker
  */
@@ -13,6 +14,7 @@ export const services = [
     number: '01',
     icon: 'sun',
     accent: '#ffc857',
+    accentLight: '#c98f00',
     title: { th: 'Solar Cell', en: 'Solar Cell' },
     subtitle: { th: 'Solar Energy Solution', en: 'Solar Energy Solution' },
     tagline: { th: 'Rooftop Solar', en: 'Rooftop Solar' },
@@ -30,6 +32,7 @@ export const services = [
     number: '02',
     icon: 'sensor',
     accent: '#7cf5c2',
+    accentLight: '#149c66',
     title: { th: 'R&D & Sensor', en: 'R&D & Sensor' },
     subtitle: { th: 'Custom IoT Solutions', en: 'Custom IoT Solutions' },
     tagline: { th: 'Custom IoT', en: 'Custom IoT' },
@@ -47,6 +50,7 @@ export const services = [
     number: '03',
     icon: 'network',
     accent: '#35d6ff',
+    accentLight: '#0a8fc4',
     title: { th: 'Network', en: 'Network' },
     subtitle: { th: 'WiFi / LAN / Fiber / LPWAN', en: 'WiFi / LAN / Fiber / LPWAN' },
     tagline: { th: 'WiFi / LAN / Fiber / LPWAN', en: 'WiFi / LAN / Fiber / LPWAN' },
@@ -64,6 +68,7 @@ export const services = [
     number: '04',
     icon: 'cloud',
     accent: '#a78bfa',
+    accentLight: '#7250ea',
     title: { th: 'Cloud VPS', en: 'Cloud VPS' },
     subtitle: { th: 'Secure & Scalable', en: 'Secure & Scalable' },
     tagline: { th: 'Secure & Scalable', en: 'Secure & Scalable' },

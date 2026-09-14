@@ -35,6 +35,11 @@ export const icons = {
       <path d="M7 18a4 4 0 0 1-.6-7.95A6 6 0 0 1 18 9.5a3.5 3.5 0 0 1-.5 7H7z" />
     </svg>
   ),
+  moon: (
+    <svg {...common}>
+      <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
+    </svg>
+  ),
   reset: (
     <svg {...common}>
       <path d="M3 12a9 9 0 1 0 3-6.7" />

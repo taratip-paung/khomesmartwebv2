@@ -3,6 +3,7 @@ import { useApp } from '../AppContext'
 import { services } from '../data/services'
 import { useLang } from '../i18n/LangContext'
 import { icons } from '../components/Icons'
+import { useTheme } from '../ThemeContext'
 
 /**
  * Floating 3D markers anchored in world space. Clicking one performs exactly
@@ -11,13 +12,14 @@ import { icons } from '../components/Icons'
 export default function Markers() {
   const { selectedId, select } = useApp()
   const { t } = useLang()
+  const { accent } = useTheme()
   return (
     <>
       {services.map((s) => (
         <Html key={s.id} position={s.markerPosition} zIndexRange={[5, 0]} style={{ pointerEvents: 'none' }}>
           <button
             className="marker"
-            style={{ '--accent': s.accent }}
+            style={{ '--accent': accent(s) }}
             data-active={selectedId === s.id}
             data-dim={selectedId && selectedId !== s.id}
             onClick={() => select(s.id)}

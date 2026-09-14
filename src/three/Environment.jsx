@@ -47,7 +47,7 @@ function Road({ position, length, rotation = 0, width = 1.6 }) {
  * Floating platform, roads, greenery, street lights, lighting rig,
  * contact shadows and ambient particles.
  */
-export default function Environment({ lite = false }) {
+export default function Environment({ lite = false, dark = true }) {
   return (
     <group name="ENVIRONMENT">
       {/* platform: dark top, chamfered edge, glowing rim */}
@@ -72,11 +72,11 @@ export default function Environment({ lite = false }) {
       <StreetLight position={[-4.2, 0, 6.2]} rotation={0} />
 
       {/* ---- lighting ---- */}
-      <hemisphereLight args={['#8fc4ff', '#0a0f1e', 0.55]} />
+      <hemisphereLight args={dark ? ['#8fc4ff', '#0a0f1e', 0.55] : ['#dbe9ff', '#6b7890', 0.85]} />
       <directionalLight
         position={[9, 14, 7]}
-        intensity={2.4}
-        color="#ffe9d2"
+        intensity={dark ? 2.4 : 2.6}
+        color={dark ? '#ffe9d2' : '#fff4e6'}
         castShadow
         shadow-mapSize={lite ? [1024, 1024] : [2048, 2048]}
         shadow-camera-left={-13}
@@ -88,17 +88,18 @@ export default function Environment({ lite = false }) {
         shadow-bias={-0.0004}
         shadow-normalBias={0.02}
       />
-      <directionalLight position={[-10, 6, -8]} intensity={0.9} color="#35d6ff" />
+      <directionalLight position={[-10, 6, -8]} intensity={dark ? 0.9 : 0.6} color={dark ? '#35d6ff' : '#bfe0ff'} />
       {/* studio-style environment map (no external HDR needed) */}
-      <DreiEnv resolution={256} frames={1}>
-        <Lightformer form="rect" intensity={3} color="#dfe9ff" position={[0, 8, -4]} scale={[14, 6, 1]} target={[0, 0, 0]} />
+      <DreiEnv key={dark ? 'night' : 'day'} resolution={256} frames={1}>
+        <Lightformer form="rect" intensity={dark ? 3 : 5} color={dark ? '#dfe9ff' : '#ffffff'} position={[0, 8, -4]} scale={[14, 6, 1]} target={[0, 0, 0]} />
+        {!dark && <Lightformer form="rect" intensity={2.5} color="#eaf2ff" position={[0, 2, 10]} scale={[16, 8, 1]} target={[0, 0, 0]} />}
         <Lightformer form="rect" intensity={1.6} color="#35d6ff" position={[-9, 3, 4]} scale={[6, 4, 1]} target={[0, 0, 0]} />
         <Lightformer form="rect" intensity={1.2} color="#ffb070" position={[9, 2, 6]} scale={[5, 3, 1]} target={[0, 0, 0]} />
         <Lightformer form="ring" intensity={0.8} color="#4f8cff" position={[0, -6, 0]} scale={10} target={[0, 0, 0]} />
       </DreiEnv>
-      <ContactShadows position={[0, 0.005, 0]} opacity={0.65} scale={24} blur={2.4} far={5} resolution={lite ? 256 : 512} frames={1} color="#000814" />
+      <ContactShadows key={dark ? 'cs-n' : 'cs-d'} position={[0, 0.005, 0]} opacity={dark ? 0.65 : 0.45} scale={24} blur={2.4} far={5} resolution={lite ? 256 : 512} frames={1} color="#000814" />
 
-      {!lite && <Sparkles count={60} scale={[22, 9, 22]} position={[0, 4.5, 0]} size={0.9} speed={0.2} color="#8fd9ff" opacity={0.4} />}
+      {!lite && dark && <Sparkles count={60} scale={[22, 9, 22]} position={[0, 4.5, 0]} size={0.9} speed={0.2} color="#8fd9ff" opacity={0.4} />}
     </group>
   )
 }

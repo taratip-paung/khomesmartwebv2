@@ -2,15 +2,17 @@ import { useApp } from '../AppContext'
 import { services } from '../data/services'
 import { useLang } from '../i18n/LangContext'
 import { icons } from './Icons'
+import { useTheme } from '../ThemeContext'
 
 export function ServiceCard({ service, active, onSelect, compact = false }) {
   const { t } = useLang()
+  const { accent } = useTheme()
   return (
     <button
       className="card"
       aria-pressed={active}
       onClick={() => onSelect(service.id)}
-      style={{ '--accent': service.accent }}
+      style={{ '--accent': accent(service) }}
     >
       <span className="card__icon">{icons[service.icon]}</span>
       <span>
@@ -25,6 +27,7 @@ export function ServiceCard({ service, active, onSelect, compact = false }) {
 
 export function ServiceDetail({ service }) {
   const { t, ui } = useLang()
+  const { accent } = useTheme()
   if (!service) {
     return (
       <div className="detail" key="intro">
@@ -35,9 +38,9 @@ export function ServiceDetail({ service }) {
     )
   }
   return (
-    <div className="detail" key={service.id} style={{ '--accent': service.accent }}>
+    <div className="detail" key={service.id} style={{ '--accent': accent(service) }}>
       <div className="detail__bar" />
-      <span className="kicker" style={{ color: service.accent }}>
+      <span className="kicker" style={{ color: 'var(--accent)' }}>
         {service.number} — {t(service.subtitle)}
       </span>
       <h3>{t(service.title)}</h3>
