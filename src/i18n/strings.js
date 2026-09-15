@@ -15,14 +15,38 @@ export const strings = {
     },
     bee: {
       name: 'น้องบี',
-      lines: [
-        'สวัสดีครับ ผมน้องบี ผู้ช่วยของ Be Connected ยินดีต้อนรับครับ',
-        'ลากหมุนโมเดลด้านขวาได้เลย ผมพาชมได้ทุกมุม',
-        'แผงโซลาร์บนหลังคาคือพลังงานสะอาดที่เราออกแบบและติดตั้งเอง',
-        'เซ็นเซอร์ IoT ในบ้านมาจากห้อง R&D ของเรา ออกแบบเพื่องานจริง',
-        'คลิกบริการทางขวา ผมจะพาไปดูจุดนั้นในโมเดลครับ',
-        'อยากคุยกับทีม? กด "ติดต่อเรา" ได้เลยครับ',
-      ],
+      lines: {
+        home: [
+          'สวัสดีครับ ผมน้องบี ผู้ช่วยของ Be Connected ยินดีต้อนรับครับ',
+          'ลากหมุนโมเดลด้านขวาได้เลย ผมพาชมได้ทุกมุม',
+          'แผงโซลาร์บนหลังคาคือพลังงานสะอาดที่เราออกแบบและติดตั้งเอง',
+          'เซ็นเซอร์ IoT ในบ้านมาจากห้อง R&D ของเรา ออกแบบเพื่องานจริง',
+          'คลิกบริการทางขวา ผมจะพาไปดูจุดนั้นในโมเดลครับ',
+          'อยากคุยกับทีม? กด "ติดต่อเรา" ได้เลยครับ',
+        ],
+        services: [
+          'นี่คือบริการทั้ง 4 ของเรา — โซลาร์ IoT เครือข่าย และคลาวด์ ทำงานร่วมกันเป็นระบบเดียว',
+          'Solar Rooftop: เราออกแบบ ติดตั้ง และดูแลระบบเองทั้งหมด ไม่ส่งต่อผู้รับเหมา',
+          'IoT & R&D: เซ็นเซอร์และเฟิร์มแวร์ที่ออกแบบให้ทำงานได้เป็นปี ๆ โดยไม่ต้องคอยดูแล',
+          'Network: เครือข่ายที่แยกโซนและปลอดภัย ตั้งแต่ไฟเบอร์ถึง WiFi และ LoRaWAN',
+          'Cloud & Hosting: คลาวด์ส่วนตัวและ VPS บนโครงสร้างที่เราดูแลเอง',
+        ],
+        about: [
+          'ความปลอดภัยและความน่าเชื่อถือคือเกณฑ์พื้นฐานของเรา ไม่ใช่ตัวเลือกเสริม',
+          'ทีมเดียวดูแลครบทุกชั้น ตั้งแต่ฮาร์ดแวร์ถึงคลาวด์ ไม่ต้องประสานหลายผู้รับเหมา',
+          'ทุกระบบออกแบบตามโจทย์จริงของคุณ ไม่ใช่โซลูชันสำเร็จรูป',
+        ],
+        projects: [
+          'นี่คือผลงานที่เราทำจริง กดเลือกดูตามบริการได้เลยครับ',
+          'ทุกโปรเจกต์ที่เห็น เราดูแลตั้งแต่ออกแบบจนส่งมอบและซัพพอร์ตต่อ',
+          'อยากได้แบบคล้าย ๆ นี้ เลื่อนลงไปคุยกับเราได้เลย',
+        ],
+        contact: [
+          'มาถึงตรงนี้แล้ว เล่าโจทย์ให้เราฟังหน่อยครับ',
+          'กรอกฟอร์มสั้น ๆ ทีมจะติดต่อกลับเพื่อนัดประเมินหน้างาน',
+          'หรือจะอีเมลหาเราตรง ๆ ก็ได้ครับ',
+        ],
+      },
     },
     panel: {
       title: 'OUR SERVICES',
@@ -102,14 +126,38 @@ export const strings = {
     },
     bee: {
       name: 'Bee',
-      lines: [
-        "Hi! I'm Bee, your guide from Be Connected. Welcome!",
-        'Drag the model on the right — I can show you every angle.',
-        'Those rooftop solar panels are clean energy we design and install ourselves.',
-        'The IoT sensors in the house come straight from our own R&D lab.',
-        "Pick a service on the right and I'll take you to it in the model.",
-        'Want to talk to the team? Just hit "Contact Us".',
-      ],
+      lines: {
+        home: [
+          "Hi! I'm Bee, your guide from Be Connected. Welcome!",
+          'Drag the model on the right — I can show you every angle.',
+          'Those rooftop solar panels are clean energy we design and install ourselves.',
+          'The IoT sensors in the house come straight from our own R&D lab.',
+          "Pick a service on the right and I'll take you to it in the model.",
+          'Want to talk to the team? Just hit "Contact Us".',
+        ],
+        services: [
+          'These are our four services — solar, IoT, network and cloud — built to work as one system.',
+          'Solar Rooftop: we design, install and maintain the whole system ourselves, no subcontracting.',
+          'IoT & R&D: sensors and firmware built to run for years without babysitting.',
+          'Network: segmented, secure networks — from fiber backbone to WiFi and LoRaWAN.',
+          'Cloud & Hosting: private cloud and VPS on infrastructure we run ourselves.',
+        ],
+        about: [
+          'Safety and reliability are our baseline, not optional extras.',
+          'One team covers every layer, hardware to cloud — no juggling contractors.',
+          'Every system is designed around your real requirements, not a boxed solution.',
+        ],
+        projects: [
+          'These are real projects we delivered — filter them by service.',
+          'Every one of them we handled from design to handover, and we still support them.',
+          'Want something similar? Scroll down and talk to us.',
+        ],
+        contact: [
+          "You made it here — tell us about your project.",
+          "Fill in the short form and the team will get back to you to book a site survey.",
+          'Or just email us directly.',
+        ],
+      },
     },
     panel: {
       title: 'OUR SERVICES',

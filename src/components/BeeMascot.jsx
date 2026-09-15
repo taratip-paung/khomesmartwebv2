@@ -6,6 +6,7 @@ import { useApp } from '../AppContext'
 const BeeStage = lazy(() => import('../three/BeeStage'))
 
 const LINE_MS = 6000
+const SECTIONS = ['home', 'services', 'about', 'projects', 'contact']
 const DOCK = { x: 20, y: 18 } // px from the viewport's bottom-left when docked
 const SIZE = { w: 210, h: 200 }
 
@@ -19,6 +20,8 @@ export default function BeeMascot() {
   const { ui, lang } = useLang()
   const { isMobile, reducedMotion } = useApp()
   const bee = ui.bee
+  const [section, setSection] = useState('home')
+  const lines = bee.lines[section] ?? bee.lines.home
   const [i, setI] = useState(0)
   const [visible, setVisible] = useState(true)
   const [docked, setDocked] = useState(false)
@@ -29,18 +32,44 @@ export default function BeeMascot() {
   const next = useCallback(() => {
     setVisible(false)
     window.setTimeout(() => {
-      setI((n) => (n + 1) % bee.lines.length)
+      setI((n) => (n + 1) % lines.length)
       setVisible(true)
       excite.current = 1
     }, 200)
-  }, [bee.lines.length])
+  }, [lines.length])
+
+  // which section is on screen → Bee only talks about that section (same spy rule as the header)
+  useEffect(() => {
+    const els = SECTIONS.map((id) => document.getElementById(id)).filter(Boolean)
+    if (!els.length) return undefined
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)
+        if (visible[0]) setSection(visible[0].target.id)
+      },
+      { rootMargin: '-40% 0px -50% 0px', threshold: [0, 0.2, 0.5] },
+    )
+    els.forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+
+  // section changed → start that section's first line right away
+  useEffect(() => {
+    setVisible(false)
+    const t = window.setTimeout(() => {
+      setI(0)
+      setVisible(true)
+      excite.current = 1
+    }, 200)
+    return () => window.clearTimeout(t)
+  }, [section])
 
   // auto-advance; the clock restarts on manual advance / language change
   useEffect(() => {
     if (reducedMotion) return undefined
     const id = window.setInterval(next, LINE_MS)
     return () => window.clearInterval(id)
-  }, [next, reducedMotion, i, lang])
+  }, [next, reducedMotion, i, lang, section])
 
   // follow the hero slot, or dock bottom-left when the hero has scrolled away
   useEffect(() => {
@@ -100,7 +129,7 @@ export default function BeeMascot() {
         <svg className="bee__tail" viewBox="0 0 28 26" aria-hidden="true">
           <path d="M22 2 C20 12 12 20 1 25 C10 20 14 16 15 6 Z" />
         </svg>
-        <p key={`${lang}-${i}`}>{bee.lines[i]}</p>
+        <p key={`${lang}-${section}-${i}`}>{lines[i] ?? lines[0]}</p>
       </div>
     </div>
   )

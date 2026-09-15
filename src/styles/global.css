@@ -744,18 +744,9 @@ html[data-ready='true'] .bee {
   fill: var(--bg-2);
 }
 /* docked (hero scrolled away): the bubble sits to the right so it never leaves the viewport */
-.bee.is-docked .bee__stage {
-  transform: scale(0.85);
-  transform-origin: 0 100%;
-  transition: transform 0.95s var(--ease);
-}
-.bee__stage {
-  transition: transform 0.95s var(--ease);
-  transform-origin: 0 100%;
-}
 .bee.is-docked .bee__say {
-  left: 140px;
-  bottom: 84px;
+  left: 150px;
+  bottom: 96px;
 }
 
 /* ---------- Service panel ---------- */
