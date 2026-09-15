@@ -73,7 +73,7 @@ function validate(body) {
 
 function formatMessage(d, ip, lang) {
   return [
-    '\u{1F514} <b>New enquiry — beconnected website</b>',
+    '\u{1F514} <b>New enquiry — beconnectedcm.com</b>',
     '',
     `<b>Type:</b> ${esc(SERVICE_LABEL[d.service])}`,
     `<b>Project:</b> ${esc(d.project)}`,

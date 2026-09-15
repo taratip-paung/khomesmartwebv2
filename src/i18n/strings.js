@@ -50,7 +50,7 @@ export const strings = {
         kicker: '06 — CONTACT',
         title: 'พร้อมเริ่มโปรเจกต์ของคุณแล้วหรือยัง?',
         body: 'คุยกับทีมของเราเพื่อประเมินหน้างานและออกแบบระบบที่เหมาะกับคุณ',
-        email: 'contact@beconnected.co.th',
+        email: 'taratip@khomesmart.com',
         emailLabel: 'หรืออีเมลหาเราโดยตรง',
         form: {
           type: 'ประเภทงาน',
@@ -126,7 +126,7 @@ export const strings = {
         kicker: '06 — CONTACT',
         title: 'Ready to start your project?',
         body: 'Talk to our team for a site assessment and a system designed for you.',
-        email: 'contact@beconnected.co.th',
+        email: 'taratip@khomesmart.com',
         emailLabel: 'Or email us directly',
         form: {
           type: 'Type of work',
