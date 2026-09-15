@@ -13,9 +13,9 @@ import { useTheme } from '../ThemeContext'
  */
 /** Section 03 pillars — icon + accent per item (text lives in strings.js). */
 const PILLARS = [
-  { icon: 'shield', accent: '#35d6ff', accentLight: '#0a8fc4' },
-  { icon: 'layers', accent: '#a78bfa', accentLight: '#7250ea' },
-  { icon: 'target', accent: '#7cf5c2', accentLight: '#149c66' },
+  { icon: 'shield', accent: '#35d6ff', accentLight: '#0a8fc4', photo: '/why/safety.webp' },
+  { icon: 'layers', accent: '#a78bfa', accentLight: '#7250ea', photo: '/why/stack.webp' },
+  { icon: 'target', accent: '#7cf5c2', accentLight: '#149c66', photo: '/why/fit.webp' },
 ]
 
 /** Overlapping thumbnails of this service's projects (max 4, "+N" for the rest). */
@@ -115,6 +115,11 @@ export default function Sections() {
                 <h3>{it.title}</h3>
                 <p>{it.body}</p>
                 <span className="pillar__line" aria-hidden="true" />
+                {pv.photo && (
+                  <span className="pillar__photo" aria-hidden="true">
+                    <img src={pv.photo} alt="" loading="lazy" decoding="async" />
+                  </span>
+                )}
               </article>
             )
           })}
