@@ -14,13 +14,14 @@ export function ServiceCard({ service, active, onSelect, compact = false }) {
       onClick={() => onSelect(service.id)}
       style={{ '--accent': accent(service) }}
     >
+      {!compact && <span className="card__ghost" aria-hidden="true">{icons[service.icon]}</span>}
       <span className="card__icon">{icons[service.icon]}</span>
-      <span>
-        <span className="card__num">[{service.number}]</span>
+      <span className="card__text">
+        <span className="card__num">{service.number}</span>
         <div className="card__title">{t(service.title)}</div>
         {!compact && <div className="card__sub">{t(service.subtitle)}</div>}
       </span>
-      {!compact && <span className="arrow" aria-hidden="true" style={{ color: 'var(--ink-3)' }}>›</span>}
+      {!compact && <span className="card__arrow arrow" aria-hidden="true">›</span>}
     </button>
   )
 }
@@ -28,6 +29,7 @@ export function ServiceCard({ service, active, onSelect, compact = false }) {
 export function ServiceDetail({ service }) {
   const { t, ui } = useLang()
   const { accent } = useTheme()
+  const { setProjectFilter } = useApp()
   if (!service) {
     return (
       <div className="detail" key="intro">
@@ -37,17 +39,28 @@ export function ServiceDetail({ service }) {
       </div>
     )
   }
+  // Same destination as the section-02 cards: projects, pre-filtered to this service.
+  const seeProjects = () => {
+    setProjectFilter(service.id)
+    document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })
+  }
   return (
     <div className="detail" key={service.id} style={{ '--accent': accent(service) }}>
+      <span className="detail__ghost" aria-hidden="true">{service.number}</span>
       <div className="detail__bar" />
       <span className="kicker" style={{ color: 'var(--accent)' }}>
         {service.number} — {t(service.subtitle)}
       </span>
       <h3>{t(service.title)}</h3>
       <p>{t(service.description)}</p>
-      <a className="btn btn--ghost btn--sm" href={service.href}>
-        {ui.cta.learnMore} <span className="arrow">→</span>
-      </a>
+      <ul className="chips chips--sm" aria-hidden="true">
+        {service.tags.map((tag) => (
+          <li key={tag} className="chip">{tag}</li>
+        ))}
+      </ul>
+      <button type="button" className="tile__link" onClick={seeProjects}>
+        {ui.cta.seeProjects} <span className="arrow">→</span>
+      </button>
     </div>
   )
 }

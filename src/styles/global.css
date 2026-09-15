@@ -657,13 +657,18 @@ button {
   font-size: 16px;
 }
 .card {
+  position: relative;
+  overflow: hidden;
   display: grid;
-  grid-template-columns: 34px 1fr auto;
+  grid-template-columns: 38px 1fr auto;
   gap: 12px;
   align-items: center;
-  padding: 12px 12px;
+  padding: 12px 14px 12px 12px;
   border-radius: 20px;
-  border: 1px solid transparent;
+  border: 1px solid var(--glass-border);
+  background:
+    radial-gradient(120% 120% at 0% 50%, color-mix(in srgb, var(--accent, var(--cyan)) 10%, transparent), transparent 60%),
+    var(--surface-hover);
   text-align: left;
   transition:
     background 0.3s var(--ease),
@@ -671,26 +676,71 @@ button {
     transform 0.3s var(--ease),
     box-shadow 0.3s var(--ease);
   width: 100%;
+  isolation: isolate;
+}
+.card::before {
+  /* accent rail on the left — grows when selected */
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  translate: 0 -50%;
+  width: 3px;
+  height: 0;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent, var(--cyan));
+  box-shadow: 0 0 12px var(--accent, var(--cyan));
+  transition: height 0.35s var(--ease);
 }
 .card:hover {
-  background: var(--surface-hover);
-  border-color: var(--glass-border);
-}
-.card[aria-pressed='true'] {
-  background: var(--lg-lens);
-  border-color: var(--glass-border-hi);
-  box-shadow: inset 0 1px 0 var(--lg-lens-edge), 0 10px 30px rgba(10, 168, 220, 0.12);
-  box-shadow: 0 0 0 1px rgba(10, 168, 220, 0.15) inset, 0 10px 30px rgba(10, 168, 220, 0.12);
+  border-color: color-mix(in srgb, var(--accent, var(--cyan)) 45%, transparent);
   transform: translateX(2px);
 }
-.card__num {
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  color: var(--ink-3);
-  font-weight: 600;
+.card[aria-pressed='true'] {
+  border-color: color-mix(in srgb, var(--accent, var(--cyan)) 60%, transparent);
+  background:
+    radial-gradient(120% 120% at 0% 50%, color-mix(in srgb, var(--accent, var(--cyan)) 22%, transparent), transparent 65%),
+    var(--lg-lens);
+  box-shadow:
+    inset 0 1px 0 var(--lg-lens-edge),
+    0 12px 30px -12px color-mix(in srgb, var(--accent, var(--cyan)) 60%, transparent);
+  transform: translateX(3px);
 }
-.card[aria-pressed='true'] .card__num {
-  color: var(--accent-text);
+.card[aria-pressed='true']::before {
+  height: 60%;
+}
+.card__ghost {
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  translate: 0 -50%;
+  width: 78px;
+  height: 78px;
+  color: var(--accent, var(--cyan));
+  opacity: 0.09;
+  transform: rotate(-8deg);
+  pointer-events: none;
+  z-index: -1;
+  transition: opacity 0.3s, transform 0.5s var(--ease);
+}
+.card__ghost svg {
+  width: 100%;
+  height: 100%;
+}
+.card:hover .card__ghost,
+.card[aria-pressed='true'] .card__ghost {
+  opacity: 0.16;
+  transform: rotate(-2deg) scale(1.06);
+}
+.card__text {
+  min-width: 0;
+}
+.card__num {
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  color: var(--accent, var(--ink-3));
+  font-weight: 700;
+  opacity: 0.85;
 }
 .card__title {
   font-weight: 600;
@@ -702,15 +752,26 @@ button {
   color: var(--ink-2);
   margin-top: 2px;
 }
+.card__arrow {
+  color: var(--ink-3);
+  font-size: 18px;
+  transition: color 0.3s, transform 0.3s var(--ease);
+}
+.card:hover .card__arrow,
+.card[aria-pressed='true'] .card__arrow {
+  color: var(--accent, var(--cyan));
+  transform: translateX(2px);
+}
 .card__icon {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   border-radius: 12px;
   display: grid;
   place-items: center;
-  border: 1px solid var(--glass-border);
+  border: 1px solid color-mix(in srgb, var(--accent, var(--cyan)) 35%, transparent);
   color: var(--accent, var(--cyan));
-  background: var(--surface-hover);
+  background: var(--panel-solid, var(--bg));
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent, var(--cyan)) 18%, transparent);
   transition: box-shadow 0.3s, border-color 0.3s;
 }
 .card[aria-pressed='true'] .card__icon {
@@ -722,29 +783,60 @@ button {
   height: 18px;
 }
 .detail {
+  position: relative;
+  overflow: hidden;
   margin-top: 8px;
-  padding: 18px;
+  padding: 18px 18px 18px;
   border-radius: 22px;
-  border: 1px solid var(--glass-border);
-  background: var(--panel-solid);
+  border: 1px solid color-mix(in srgb, var(--accent, var(--cyan)) 30%, var(--glass-border));
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--accent, var(--cyan)) 16%, transparent), transparent 60%),
+    var(--panel-solid);
   animation: fadeUp 0.45s var(--ease);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.detail__ghost {
+  position: absolute;
+  right: 14px;
+  top: 2px;
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--accent, var(--cyan));
+  opacity: 0.1;
+  pointer-events: none;
+  user-select: none;
 }
 .detail h3 {
   margin: 6px 0 6px;
   font-size: 18px;
 }
 .detail p {
-  margin: 0 0 14px;
+  margin: 0 0 12px;
   font-size: 13.5px;
   line-height: 1.6;
   color: var(--ink-2);
 }
+.detail .chips--sm {
+  margin: 0 0 4px;
+}
+.detail .chips--sm .chip {
+  font-size: 11px;
+  padding: 4px 9px;
+}
+.detail .tile__link {
+  margin-top: 6px;
+  padding-top: 8px;
+}
 .detail__bar {
-  height: 2px;
+  height: 3px;
   width: 44px;
   border-radius: 2px;
-  background: var(--accent, var(--cyan));
-  box-shadow: 0 0 12px var(--accent, var(--cyan));
+  background: linear-gradient(90deg, var(--accent, var(--cyan)), transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent, var(--cyan)) 50%, transparent);
   margin-bottom: 10px;
 }
 @keyframes fadeUp {
@@ -1730,7 +1822,7 @@ html[data-ready='true'] .header {
     flex: 0 0 auto;
     width: 210px;
     scroll-snap-align: start;
-    grid-template-columns: 34px 1fr;
+    grid-template-columns: 38px 1fr;
   }
   .mobile-services .detail {
     margin: 6px 16px 0;
