@@ -644,6 +644,91 @@ button {
   flex-wrap: wrap;
 }
 
+/* ---------- น้องบี mascot (hero, under the copy) ---------- */
+.bee {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  margin-top: 26px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.bee:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 6px;
+  border-radius: 12px;
+}
+.bee__stage {
+  flex: 0 0 176px;
+  width: 176px;
+  height: 176px;
+  margin-left: -18px; /* the bee is turned toward the model; tuck it into the column edge */
+}
+.bee__stage canvas {
+  display: block;
+  pointer-events: none;
+}
+.bee__bubble {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 150px;
+  max-width: 230px;
+  margin-bottom: 44px;
+  padding: 10px 14px 10px;
+  border-radius: 18px 18px 18px 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+  opacity: 0;
+  transform: translateY(4px) scale(0.98);
+  transition: opacity 0.22s var(--ease), transform 0.22s var(--ease);
+}
+.bee__bubble.is-in {
+  opacity: 1;
+  transform: none;
+}
+.bee__tail {
+  /* tail pointing at the bee (.liquid already uses ::before/::after) */
+  position: absolute;
+  left: -6px;
+  bottom: 14px;
+  width: 12px;
+  height: 12px;
+  background: var(--lg-fill);
+  border-left: 1px solid var(--lg-rim);
+  border-bottom: 1px solid var(--lg-rim);
+  transform: rotate(45deg);
+  border-radius: 2px;
+  z-index: 1;
+}
+.bee__bubble p {
+  margin: 4px 0 6px;
+}
+.bee__name {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+  font-weight: 600;
+}
+.bee__dots {
+  display: flex;
+  gap: 4px;
+}
+.bee__dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  opacity: 0.35;
+  transition: opacity 0.3s, background 0.3s;
+}
+.bee__dots i.on {
+  background: var(--accent-text);
+  opacity: 1;
+}
+
 /* ---------- Service panel ---------- */
 .panel {
   padding: 16px;
@@ -2100,6 +2185,9 @@ html[data-ready='true'] .header {
     display: none;
   }
   .hero__ui .panel {
+    display: none;
+  }
+  .bee {
     display: none;
   }
   .help {

@@ -13,6 +13,17 @@ export const strings = {
       statement: 'เทคโนโลยีที่เชื่อมต่อทุกความต้องการ\nเพื่อบ้านและธุรกิจของคุณ',
       categories: ['SMART HOME', 'SMART BUSINESS', 'SMART INFRASTRUCTURE'],
     },
+    bee: {
+      name: 'น้องบี',
+      lines: [
+        'สวัสดีครับ ผมน้องบี ผู้ช่วยของ Be Connected ยินดีต้อนรับครับ',
+        'ลากหมุนโมเดลด้านขวาได้เลย ผมพาชมได้ทุกมุม',
+        'แผงโซลาร์บนหลังคาคือพลังงานสะอาดที่เราออกแบบและติดตั้งเอง',
+        'เซ็นเซอร์ IoT ในบ้านมาจากห้อง R&D ของเรา ออกแบบเพื่องานจริง',
+        'คลิกบริการทางขวา ผมจะพาไปดูจุดนั้นในโมเดลครับ',
+        'อยากคุยกับทีม? กด "ติดต่อเรา" ได้เลยครับ',
+      ],
+    },
     panel: {
       title: 'OUR SERVICES',
       hint: 'เลือกบริการเพื่อสำรวจในโมเดล 3D',
@@ -88,6 +99,17 @@ export const strings = {
       brand: 'Be Connected Network & Solution Co.,Ltd.',
       statement: 'Technology that connects every need\nfor your home and your business.',
       categories: ['SMART HOME', 'SMART BUSINESS', 'SMART INFRASTRUCTURE'],
+    },
+    bee: {
+      name: 'Bee',
+      lines: [
+        "Hi! I'm Bee, your guide from Be Connected. Welcome!",
+        'Drag the model on the right — I can show you every angle.',
+        'Those rooftop solar panels are clean energy we design and install ourselves.',
+        'The IoT sensors in the house come straight from our own R&D lab.',
+        "Pick a service on the right and I'll take you to it in the model.",
+        'Want to talk to the team? Just hit "Contact Us".',
+      ],
     },
     panel: {
       title: 'OUR SERVICES',

@@ -1,5 +1,6 @@
 import { useLang } from '../i18n/LangContext'
 import { icons } from './Icons'
+import BeeMascot from './BeeMascot'
 
 export default function HeroContent() {
   const { ui } = useLang()
@@ -26,6 +27,7 @@ export default function HeroContent() {
           {ui.cta.contact}
         </a>
       </div>
+      <BeeMascot />
     </div>
   )
 }
