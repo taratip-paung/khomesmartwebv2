@@ -9,6 +9,13 @@ import { useTheme } from '../ThemeContext'
  * Placeholder sections below the hero (plan §26). Content is temporary —
  * the structure is what matters: real HTML for SEO and future expansion.
  */
+/** Section 03 pillars — icon + accent per item (text lives in strings.js). */
+const PILLARS = [
+  { icon: 'shield', accent: '#35d6ff', accentLight: '#0a8fc4' },
+  { icon: 'layers', accent: '#a78bfa', accentLight: '#7250ea' },
+  { icon: 'target', accent: '#7cf5c2', accentLight: '#149c66' },
+]
+
 export default function Sections() {
   const { ui, t } = useLang()
   const { projectFilter, setProjectFilter } = useApp()
@@ -62,14 +69,19 @@ export default function Sections() {
           <span className="kicker">{s.why.kicker}</span>
           <h2>{s.why.title}</h2>
         </div>
-        <div className="grid-3">
-          {s.why.items.map((it, i) => (
-            <article key={i} className="tile liquid">
-              <span className="kicker">0{i + 1}</span>
-              <h3>{it.title}</h3>
-              <p>{it.body}</p>
-            </article>
-          ))}
+        <div className="pillars">
+          {s.why.items.map((it, i) => {
+            const pv = PILLARS[i]
+            return (
+              <article key={i} className="pillar liquid" style={{ '--accent': accent(pv) }}>
+                <span className="pillar__ghost" aria-hidden="true">0{i + 1}</span>
+                <span className="pillar__icon">{icons[pv.icon]}</span>
+                <h3>{it.title}</h3>
+                <p>{it.body}</p>
+                <span className="pillar__line" aria-hidden="true" />
+              </article>
+            )
+          })}
         </div>
       </section>
 
