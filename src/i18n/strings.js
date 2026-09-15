@@ -47,7 +47,7 @@ export const strings = {
       },
       projects: { kicker: '04 — FEATURED PROJECTS', title: 'ผลงานที่ผ่านมา', body: 'เลือกดูตามบริการ', all: 'ทั้งหมด', empty: 'ยังไม่มีผลงานในหมวดนี้' },
       contact: {
-        kicker: '06 — CONTACT',
+        kicker: '05 — CONTACT',
         title: 'พร้อมเริ่มโปรเจกต์ของคุณแล้วหรือยัง?',
         body: 'คุยกับทีมของเราเพื่อประเมินหน้างานและออกแบบระบบที่เหมาะกับคุณ',
         email: 'taratip@khomesmart.com',
@@ -123,7 +123,7 @@ export const strings = {
       },
       projects: { kicker: '04 — FEATURED PROJECTS', title: 'Featured Projects', body: 'Browse by service.', all: 'All', empty: 'No projects in this category yet.' },
       contact: {
-        kicker: '06 — CONTACT',
+        kicker: '05 — CONTACT',
         title: 'Ready to start your project?',
         body: 'Talk to our team for a site assessment and a system designed for you.',
         email: 'taratip@khomesmart.com',
