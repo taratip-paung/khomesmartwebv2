@@ -81,7 +81,6 @@ export default function Sections() {
                 <span className="tile__watermark">{icons[sv.icon]}</span>
                 <span className="tile__num">{sv.number}</span>
                 <span className="card__icon">{icons[sv.icon]}</span>
-                <ProjectStack serviceId={sv.id} onClick={() => seeProjects(sv.id)} label={ui.cta.seeProjects} />
               </div>
               <div className="tile__body">
                 <h3>{t(sv.title)}</h3>
@@ -91,6 +90,7 @@ export default function Sections() {
                     <li key={tag} className="chip">{tag}</li>
                   ))}
                 </ul>
+                <ProjectStack serviceId={sv.id} onClick={() => seeProjects(sv.id)} label={ui.cta.seeProjects} />
                 <button className="tile__link" onClick={() => seeProjects(sv.id)}>
                   {ui.cta.seeProjects} <span className="arrow">→</span>
                 </button>

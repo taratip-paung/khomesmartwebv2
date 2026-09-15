@@ -1417,34 +1417,34 @@ html[data-ready='true'] .header {
   width: 20px;
   height: 20px;
 }
-/* Overlapping project thumbnails inside the service-card header */
+/* Overlapping project thumbnails — sits above "See Projects" in the card body */
 .pstack {
-  position: absolute;
-  right: 16px;
-  bottom: 14px;
   display: flex;
   align-items: center;
-  padding: 0;
+  margin-top: auto;
+  padding: 14px 0 0;
   border: 0;
   background: none;
   cursor: pointer;
-  z-index: 2;
+  align-self: flex-start;
 }
 .pstack__item {
-  width: 44px;
-  height: 44px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid var(--panel-solid, var(--bg));
-  background: var(--panel-solid, var(--bg));
-  box-shadow: 0 4px 12px rgba(10, 30, 70, 0.25);
-  margin-left: -12px;
-  transition: transform 0.35s var(--ease), box-shadow 0.35s;
-  transform: translateX(0);
   position: relative;
+  margin-left: -26px;
   z-index: calc(10 - var(--i, 0));
   display: grid;
   place-items: center;
+  background: var(--bg-2, var(--bg));
+  /* accent-tinted ring instead of plain white, so it never melts into a light card */
+  border: 3px solid color-mix(in srgb, var(--accent, var(--ink)) 55%, var(--bg));
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent, var(--ink)) 18%, transparent),
+    0 8px 20px -6px color-mix(in srgb, var(--accent, var(--ink)) 45%, rgba(10, 30, 70, 0.3));
+  transition: transform 0.4s var(--ease), box-shadow 0.35s;
 }
 .pstack__item:first-child {
   margin-left: 0;
@@ -1461,14 +1461,13 @@ html[data-ready='true'] .header {
   transform-origin: 12% 8%;
 }
 .pstack__more {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--accent, var(--ink));
   background: color-mix(in srgb, var(--accent, var(--ink)) 14%, var(--panel-solid));
 }
 .tile--service:hover .pstack__item {
-  transform: translateX(calc(var(--i, 0) * 6px));
-  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent, var(--ink)) 35%, transparent);
+  transform: translateX(calc(var(--i, 0) * 10px));
 }
 .pstack:focus-visible {
   outline: 2px solid var(--accent, var(--ink));
@@ -1476,13 +1475,9 @@ html[data-ready='true'] .header {
   border-radius: 999px;
 }
 :root[data-theme='dark'] .pstack__item {
-  border-color: #0f1a33;
+  border-color: color-mix(in srgb, var(--accent, var(--ink)) 60%, #0f1a33);
   background: #0f1a33;
 }
-.tile__media.has-image .pstack {
-  bottom: 12px;
-}
-
 .tile__body {
   display: flex;
   flex-direction: column;
@@ -1527,6 +1522,9 @@ html[data-ready='true'] .header {
   display: inline-flex;
   gap: 6px;
   align-items: center;
+}
+.pstack + .tile__link {
+  margin-top: 0;
 }
 .tile__link:hover .arrow {
   transform: translateX(3px);
