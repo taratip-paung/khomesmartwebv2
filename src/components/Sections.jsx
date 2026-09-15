@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useApp } from '../AppContext'
 import { services, serviceById } from '../data/services'
 import { projects } from '../data/projects'
@@ -29,6 +30,20 @@ export default function Sections() {
   }
 
   const visibleProjects = projectFilter === 'all' ? projects : projects.filter((p) => p.service === projectFilter)
+
+  // Section 04 lightbox — photo only, Esc / backdrop closes.
+  const [lightbox, setLightbox] = useState(null)
+  useEffect(() => {
+    if (!lightbox) return undefined
+    const onKey = (e) => e.key === 'Escape' && setLightbox(null)
+    window.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prev
+    }
+  }, [lightbox])
 
   return (
     <>
@@ -113,20 +128,52 @@ export default function Sections() {
             </button>
           ))}
         </div>
-        <div className="grid-3" key={projectFilter}>
-          {visibleProjects.map((p) => {
+        <div className="gallery" key={projectFilter}>
+          {visibleProjects.map((p, i) => {
             const sv = serviceById[p.service]
             return (
-              <article key={p.id} className="tile tile--project liquid" style={{ '--accent': accent(sv) }}>
-                <span className="tile__tag">{t(sv.title)}</span>
-                <h3>{t(p.title)}</h3>
-                <p>{t(p.meta)}</p>
-              </article>
+              <button
+                key={p.id}
+                type="button"
+                className="shot"
+                style={{ '--accent': accent(sv), '--i': i }}
+                onClick={() => setLightbox(p)}
+                aria-label={`${t(p.title)} — ${t(p.meta)}`}
+              >
+                <img
+                  src={p.imageSm || p.image}
+                  srcSet={p.imageSm ? `${p.imageSm} 700w, ${p.image} 1080w` : undefined}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 33vw"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span className="shot__tag">{t(sv.title)}</span>
+                <span className="shot__cap">
+                  <b>{t(p.title)}</b>
+                  <small>{t(p.meta)}</small>
+                </span>
+              </button>
             )
           })}
           {visibleProjects.length === 0 && <p className="filter__empty">{s.projects.empty}</p>}
         </div>
       </section>
+
+      {lightbox && (
+        <div className="lightbox" role="dialog" aria-modal="true" aria-label={t(lightbox.title)} onClick={() => setLightbox(null)}>
+          <figure onClick={(e) => e.stopPropagation()}>
+            <img src={lightbox.image} alt={t(lightbox.title)} />
+            <figcaption>
+              <b>{t(lightbox.title)}</b>
+              <span>{t(lightbox.meta)}</span>
+            </figcaption>
+          </figure>
+          <button type="button" className="lightbox__close" onClick={() => setLightbox(null)} aria-label="Close">
+            ×
+          </button>
+        </div>
+      )}
 
       <section id="contact" className="section">
         <div className="cta-band liquid">
