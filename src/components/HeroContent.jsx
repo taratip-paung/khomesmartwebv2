@@ -1,6 +1,5 @@
 import { useLang } from '../i18n/LangContext'
 import { icons } from './Icons'
-import BeeMascot from './BeeMascot'
 
 export default function HeroContent() {
   const { ui } = useLang()
@@ -29,7 +28,8 @@ export default function HeroContent() {
         </a>
       </div>
     </div>
-    <BeeMascot />
+    {/* น้องบี parks here while the hero is on screen (see BeeMascot) */}
+    <div id="bee-slot" className="bee-slot" aria-hidden="true" />
     </div>
   )
 }

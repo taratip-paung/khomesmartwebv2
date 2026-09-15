@@ -644,20 +644,37 @@ button {
   flex-wrap: wrap;
 }
 
-/* ---------- น้องบี mascot (hero, under the copy) ---------- */
+/* ---------- น้องบี mascot ---------- */
 .hero-left {
   display: flex;
   flex-direction: column;
   max-width: 400px;
 }
+.bee-slot {
+  /* reserved space under the hero copy; the fixed .bee layer aligns to it */
+  width: 210px;
+  height: 200px;
+  margin: 18px 0 0 -10px;
+}
 .bee {
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  margin-top: 18px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 210px;
+  height: 200px;
+  z-index: 30; /* above sections, below header (40) / menus */
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease) 0.4s;
+}
+html[data-ready='true'] .bee {
+  opacity: 1;
+}
+.bee.is-flying {
+  transition: opacity 0.8s var(--ease), transform 0.95s cubic-bezier(0.22, 0.9, 0.25, 1.05);
 }
 .bee:focus-visible {
   outline: 2px solid var(--accent-text);
@@ -665,10 +682,8 @@ button {
   border-radius: 12px;
 }
 .bee__stage {
-  flex: 0 0 210px;
-  width: 210px;
-  height: 200px;
-  margin-left: -10px;
+  position: absolute;
+  inset: 0;
   background: transparent;
 }
 .bee__stage canvas {
@@ -676,64 +691,71 @@ button {
   pointer-events: none;
   background: transparent !important;
 }
-.bee__bubble {
-  position: relative;
-  flex: 1 1 auto;
-  min-width: 150px;
+/* speech bubble: floats up-right of the bee's head, tail curls down to the mouth */
+.bee__say {
+  position: absolute;
+  left: 150px;
+  bottom: 96px;
+  width: max-content;
   max-width: 230px;
-  margin-bottom: 58px;
-  padding: 10px 14px 10px;
-  border-radius: 18px 18px 18px 6px;
-  font-size: 13px;
-  line-height: 1.5;
+  min-width: 140px;
+  padding: 10px 14px 11px;
+  border-radius: 18px;
+  background: var(--bg);
   color: var(--ink);
+  border: 1px solid var(--lg-rim);
+  box-shadow: 0 10px 30px -12px rgba(10, 30, 70, 0.35), 0 2px 6px rgba(10, 30, 70, 0.08);
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  transform-origin: 0 100%;
+  isolation: isolate;
   opacity: 0;
-  transform: translateY(4px) scale(0.98);
-  transition: opacity 0.22s var(--ease), transform 0.22s var(--ease);
+  transform: scale(0.6) translateY(6px);
+  transition: opacity 0.18s var(--ease), transform 0.32s cubic-bezier(0.34, 1.5, 0.64, 1);
 }
-.bee__bubble.is-in {
+:root[data-theme='dark'] .bee__say {
+  background: var(--bg-2);
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(120, 190, 255, 0.06);
+}
+.bee__say.is-in {
   opacity: 1;
   transform: none;
 }
+.bee__say p {
+  margin: 0;
+}
 .bee__tail {
-  /* tail pointing at the bee (.liquid already uses ::before/::after) */
   position: absolute;
-  left: -6px;
-  bottom: 14px;
-  width: 12px;
-  height: 12px;
-  background: var(--lg-fill);
-  border-left: 1px solid var(--lg-rim);
-  border-bottom: 1px solid var(--lg-rim);
-  transform: rotate(45deg);
-  border-radius: 2px;
-  z-index: 1;
+  left: -14px;
+  bottom: -9px;
+  width: 28px;
+  height: 26px;
+  overflow: visible;
+  z-index: -1;
 }
-.bee__bubble p {
-  margin: 4px 0 6px;
+.bee__tail path {
+  fill: var(--bg);
+  stroke: var(--lg-rim);
+  stroke-width: 1;
+  stroke-linejoin: round;
 }
-.bee__name {
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--accent-text);
-  font-weight: 600;
+:root[data-theme='dark'] .bee__tail path {
+  fill: var(--bg-2);
 }
-.bee__dots {
-  display: flex;
-  gap: 4px;
+/* docked (hero scrolled away): the bubble sits to the right so it never leaves the viewport */
+.bee.is-docked .bee__stage {
+  transform: scale(0.85);
+  transform-origin: 0 100%;
+  transition: transform 0.95s var(--ease);
 }
-.bee__dots i {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--ink-3);
-  opacity: 0.35;
-  transition: opacity 0.3s, background 0.3s;
+.bee__stage {
+  transition: transform 0.95s var(--ease);
+  transform-origin: 0 100%;
 }
-.bee__dots i.on {
-  background: var(--accent-text);
-  opacity: 1;
+.bee.is-docked .bee__say {
+  left: 140px;
+  bottom: 84px;
 }
 
 /* ---------- Service panel ---------- */
@@ -2194,7 +2216,8 @@ html[data-ready='true'] .header {
   .hero__ui .panel {
     display: none;
   }
-  .bee {
+  .bee,
+  .bee-slot {
     display: none;
   }
   .help {

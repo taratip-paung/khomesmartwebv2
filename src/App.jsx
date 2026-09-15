@@ -4,6 +4,7 @@ import { LangProvider } from './i18n/LangContext'
 import { ThemeProvider } from './ThemeContext'
 import Header from './components/Header'
 import HeroContent from './components/HeroContent'
+import BeeMascot from './components/BeeMascot'
 import ServicePanel, { MobileServices } from './components/ServicePanel'
 import InteractionHelp, { ScrollCue } from './components/InteractionHelp'
 import LoadingScreen from './components/LoadingScreen'
@@ -77,6 +78,7 @@ export default function App() {
           <Hero />
           <Sections />
         </main>
+        <BeeMascot />
       </AppProvider>
     </LangProvider>
     </ThemeProvider>
