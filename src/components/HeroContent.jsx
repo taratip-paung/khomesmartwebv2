@@ -6,6 +6,7 @@ export default function HeroContent() {
   const { ui } = useLang()
   const h = ui.hero
   return (
+    <div className="hero-left">
     <div className="hero-content">
       <span className="kicker">{h.kicker}</span>
       <h1>
@@ -27,7 +28,8 @@ export default function HeroContent() {
           {ui.cta.contact}
         </a>
       </div>
-      <BeeMascot />
+    </div>
+    <BeeMascot />
     </div>
   )
 }

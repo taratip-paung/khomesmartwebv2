@@ -11,7 +11,7 @@ function ContactShadow() {
     c.width = c.height = 128
     const g = c.getContext('2d')
     const grad = g.createRadialGradient(64, 64, 4, 64, 64, 64)
-    grad.addColorStop(0, 'rgba(10,16,30,0.42)')
+    grad.addColorStop(0, 'rgba(10,16,30,0.28)')
     grad.addColorStop(1, 'rgba(10,16,30,0)')
     g.fillStyle = grad
     g.fillRect(0, 0, 128, 128)
@@ -48,15 +48,20 @@ export default function BeeStage({ excite }) {
     <Canvas
       dpr={[1, 2]}
       frameloop={reducedMotion ? 'demand' : 'always'}
-      camera={{ fov: 30, near: 0.1, far: 30, position: [2.2, 1.3, 6.2] }}
+      camera={{ fov: 30, near: 0.1, far: 30, position: [0, 1.4, 7.4] }}
       gl={{ antialias: true, alpha: true, toneMapping: THREE.NoToneMapping, powerPreference: 'low-power' }}
-      onCreated={({ camera }) => camera.lookAt(0, -0.25, -0.4)}
+      onCreated={({ camera, gl, scene }) => {
+        gl.setClearColor(0x000000, 0) // fully transparent — the hero scene shows through
+        scene.background = null
+        camera.lookAt(0, -0.1, -0.4)
+      }}
       style={{ background: 'transparent' }}
     >
-      <hemisphereLight args={['#ffffff', '#8a94a6', 0.55]} />
-      <directionalLight position={[4, 7, 5]} intensity={1.0} />
-      <directionalLight position={[-5, 3, -4]} intensity={0.45} color="#bfe9f5" />
-      <Bee yaw={0.6} pointer={pointer} excite={excite} reducedMotion={reducedMotion} />
+      <hemisphereLight args={['#ffffff', '#9aa6b8', 1.3]} />
+      <directionalLight position={[4, 7, 5]} intensity={2.4} />
+      <directionalLight position={[-5, 3, -4]} intensity={0.9} color="#bfe9f5" />
+      <directionalLight position={[0, 2, 8]} intensity={0.6} />
+      <Bee yaw={0.45} hover={0.32} pointer={pointer} excite={excite} reducedMotion={reducedMotion} />
       <ContactShadow />
     </Canvas>
   )

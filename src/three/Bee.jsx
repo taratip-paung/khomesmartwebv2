@@ -15,7 +15,7 @@ import * as THREE from 'three'
  */
 
 const FLAT = Math.PI / 6 // rotate hex so the top edge is flat
-const YEL = '#F5B800'
+const YEL = '#FFC21A'
 const BLK = '#1F2228'
 const CYAN = '#4FE3F5'
 
@@ -90,9 +90,11 @@ export const BEE_GROUND_Y = -1.0 * 0.82 - LEG_H + 0.08
  * @param {React.MutableRefObject} props.pointer  {x,y} in -1..1, optional — bee glances toward it
  * @param {React.MutableRefObject} props.excite   set .current = 1 to trigger a hop + wing burst (decays by itself)
  */
-export default function Bee({ yaw = 0.55, pointer, excite, reducedMotion = false }) {
+export default function Bee({ yaw = 0.45, hover = 0.32, pointer, excite, reducedMotion = false }) {
   const mats = useMaterials()
+  const root = useRef()
   const body = useRef()
+  const legs = useRef()
   const seam = useRef()
   const eyes = useRef([])
   const ants = useRef([])
@@ -120,17 +122,22 @@ export default function Bee({ yaw = 0.55, pointer, excite, reducedMotion = false
     const h = hop.current
     const hopY = Math.sin(Math.min(1, (1 - h) * 1.0) * Math.PI) * 0.18 * (h > 0 ? 1 : 0)
 
-    // breathing squash (body only; legs stay planted)
-    const br = Math.sin(tt * 1.8)
-    b.scale.set(1 + br * 0.012, 1 + br * 0.02, 1 - br * 0.01)
-    b.position.y = br * 0.015 + hopY
-
-    // curious look: base yaw + slow sway + glance toward pointer
+    // hovering flight: gentle bob, whole bee (legs included) turns toward the pointer
     const px = pointer?.current?.x ?? 0
     const py = pointer?.current?.y ?? 0
-    b.rotation.y = Math.sin(tt * 0.45) * 0.12 + px * 0.28 // relative to the root yaw
-    b.rotation.x = -py * 0.08
-    b.rotation.z = Math.sin(tt * 0.7) * 0.03
+    const r = root.current
+    if (r) {
+      const targetYaw = yaw + px * 1.15 // mouse far right ≈ 90°, far left ≈ -20°
+      r.rotation.y += (targetYaw - r.rotation.y) * Math.min(1, d * 6)
+      r.rotation.x += (-0.1 - py * 0.16 - r.rotation.x) * Math.min(1, d * 6)
+      r.rotation.z = Math.sin(tt * 0.9) * 0.05 + px * 0.06
+      r.position.y = hover + Math.sin(tt * 1.7) * 0.06 + hopY
+    }
+    // breathing squash (body only)
+    const br = Math.sin(tt * 1.8)
+    b.scale.set(1 + br * 0.012, 1 + br * 0.02, 1 - br * 0.01)
+    // legs dangle a little while flying
+    if (legs.current) legs.current.rotation.x = 0.3 + Math.sin(tt * 1.7 + 0.8) * 0.06
 
     // blink
     const blink = tt % 3.4 > 3.25 ? 0.12 : 1
@@ -143,9 +150,7 @@ export default function Bee({ yaw = 0.55, pointer, excite, reducedMotion = false
     ants.current.forEach((a, k) => a && (a.rotation.x = -0.25 + Math.sin(tt * 2 + k * 1.5) * 0.12))
 
     // wings flutter in bursts every ~4s (and during a hop)
-    const phase = tt % 4.2
-    const burst = Math.max(phase < 0.9 ? Math.sin((phase / 0.9) * Math.PI) : 0, h)
-    const flap = Math.sin(tt * 55) * burst
+    const flap = Math.sin(tt * 52) * (0.7 + h * 0.5)
     wings.current.forEach((w, i) => w && (w.rotation.z = WINGS[i].sx * (0.25 + flap * 0.45)))
   })
 
@@ -165,11 +170,12 @@ export default function Bee({ yaw = 0.55, pointer, excite, reducedMotion = false
   }, [])
 
   return (
-    <group rotation={[0, yaw, 0]}>
-      {/* legs stay in root space so the body can breathe/hop without lifting them */}
-      {LEGS.map(([x, z], i) => (
-        <HexY key={i} r={0.16} h={LEG_H} material={mats.black} position={[x, -0.82 - LEG_H / 2 + 0.08, z]} />
-      ))}
+    <group ref={root} rotation={[0, yaw, 0]} position={[0, hover, 0]}>
+      <group ref={legs} position={[0, -0.6, 0]}>
+        {LEGS.map(([x, z], i) => (
+          <HexY key={i} r={0.16} h={LEG_H} material={mats.black} position={[x, 0.6 - 0.82 - LEG_H / 2 + 0.08, z]} />
+        ))}
+      </group>
       <group ref={body}>
         <group>
           {SEGS.map((s, i) => (
