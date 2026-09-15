@@ -10,6 +10,9 @@
  * `accent` / `accentLight` are the UI accent colours for dark / light theme (3D uses `accent`)
  * `objectGroup`  is the 3D highlight group id (matches Blender group naming, e.g. SOLAR_*)
  * `markerPosition` is the world-space anchor for the floating 3D marker
+ * `image` (optional) — photo for the section-02 card header, path under public/ (e.g. '/services/solar.jpg').
+ *   Omit → accent-tinted gradient header with icon watermark. Aim for ~1200×600, subject on the right/centre,
+ *   because a gradient fades the bottom-left into the card body where the icon sits.
  */
 export const services = [
   {
@@ -30,6 +33,7 @@ export const services = [
       th: 'สำรวจ ออกแบบ ติดตั้ง และส่งมอบระบบโซลาร์บนหลังคาแบบครบวงจร ขนาดระบบคำนวณจากโหลดไฟจริงของคุณ พร้อมระบบมอนิเตอร์และดูแลหลังการติดตั้ง',
       en: 'Survey, design, installation and commissioning of rooftop solar, sized from your actual consumption — with monitoring and after-install care.',
     },
+    image: null,
     cameraTarget: 'solar',
     objectGroup: 'solar',
     markerPosition: [0.2, 5.3, -0.4],
@@ -53,6 +57,7 @@ export const services = [
       th: 'พัฒนาอุปกรณ์ เซ็นเซอร์ และระบบ IoT เฉพาะโจทย์ของแต่ละธุรกิจ ตั้งแต่ฮาร์ดแวร์ เฟิร์มแวร์ ไปจนถึงแดชบอร์ดบนคลาวด์',
       en: 'Custom devices, sensor systems and IoT built around each business’s specific problem — from hardware and firmware to the cloud dashboard.',
     },
+    image: null,
     cameraTarget: 'rnd',
     objectGroup: 'rnd',
     markerPosition: [-6, 4.3, 3],
@@ -76,6 +81,7 @@ export const services = [
       th: 'ออกแบบและติดตั้งเครือข่ายทั้งระบบ ไฟเบอร์ LAN WiFi ไฟร์วอลล์ และ LPWAN ให้เหมาะกับพื้นที่และการใช้งานจริง',
       en: 'Design and installation of the whole network layer — fiber, LAN, WiFi, firewall and LPWAN — matched to the site and how it is used.',
     },
+    image: null,
     cameraTarget: 'network',
     objectGroup: 'network',
     markerPosition: [5.5, 8.0, -4],
@@ -99,6 +105,7 @@ export const services = [
       th: 'โครงสร้างพื้นฐานคลาวด์ส่วนตัวและ VPS สำหรับระบบที่ต้องการความปลอดภัย ความยืดหยุ่น และขยายได้ พร้อมสำรองข้อมูลและมอนิเตอร์',
       en: 'Private cloud and VPS infrastructure for systems that need to stay secure, flexible and ready to scale — with backup and monitoring built in.',
     },
+    image: null,
     cameraTarget: 'cloud',
     objectGroup: 'cloud',
     markerPosition: [6, 3.0, 3.5],

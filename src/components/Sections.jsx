@@ -34,17 +34,24 @@ export default function Sections() {
         <div className="grid-4">
           {services.map((sv) => (
             <article key={sv.id} className="tile tile--service liquid" style={{ '--accent': accent(sv) }}>
-              <span className="card__icon">{icons[sv.icon]}</span>
-              <h3>{t(sv.title)}</h3>
-              <p>{t(sv.outcome)}</p>
-              <ul className="chips" aria-label={t(sv.title)}>
-                {sv.tags.map((tag) => (
-                  <li key={tag} className="chip">{tag}</li>
-                ))}
-              </ul>
-              <button className="tile__link" onClick={() => seeProjects(sv.id)}>
-                {ui.cta.seeProjects} <span className="arrow">→</span>
-              </button>
+              <div className={`tile__media${sv.image ? ' has-image' : ''}`} aria-hidden="true">
+                {sv.image && <img src={sv.image} alt="" loading="lazy" />}
+                <span className="tile__watermark">{icons[sv.icon]}</span>
+                <span className="tile__num">{sv.number}</span>
+                <span className="card__icon">{icons[sv.icon]}</span>
+              </div>
+              <div className="tile__body">
+                <h3>{t(sv.title)}</h3>
+                <p>{t(sv.outcome)}</p>
+                <ul className="chips" aria-label={t(sv.title)}>
+                  {sv.tags.map((tag) => (
+                    <li key={tag} className="chip">{tag}</li>
+                  ))}
+                </ul>
+                <button className="tile__link" onClick={() => seeProjects(sv.id)}>
+                  {ui.cta.seeProjects} <span className="arrow">→</span>
+                </button>
+              </div>
             </article>
           ))}
         </div>
