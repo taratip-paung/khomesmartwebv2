@@ -11,7 +11,8 @@ import { useTheme } from '../ThemeContext'
  * Placeholder sections below the hero (plan §26). Content is temporary —
  * the structure is what matters: real HTML for SEO and future expansion.
  */
-/** Section 03 pillars — icon + accent per item (text lives in strings.js). */
+/** Section 03 pillars — icon + accent + photo per item (text lives in strings.js).
+ *  Photos: Unsplash (free licence, commercial use OK) cropped to 900×370 in public/why/. */
 const PILLARS = [
   { icon: 'shield', accent: '#35d6ff', accentLight: '#0a8fc4', photo: '/why/safety.webp' },
   { icon: 'layers', accent: '#a78bfa', accentLight: '#7250ea', photo: '/why/stack.webp' },
