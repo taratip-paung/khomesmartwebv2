@@ -135,11 +135,17 @@ export default function Sections() {
               <button
                 key={p.id}
                 type="button"
-                className="shot"
+                className={`shot${p.kind === 'software' ? ' shot--app' : ''}`}
                 style={{ '--accent': accent(sv), '--i': i }}
                 onClick={() => setLightbox(p)}
                 aria-label={`${t(p.title)} — ${t(p.meta)}`}
               >
+                {p.kind === 'software' && (
+                  <span className="shot__bar" aria-hidden="true">
+                    <i /><i /><i />
+                    <em>{t(p.title)}</em>
+                  </span>
+                )}
                 <img
                   src={p.imageSm || p.image}
                   srcSet={p.imageSm ? `${p.imageSm} 700w, ${p.image} 1080w` : undefined}
@@ -162,7 +168,13 @@ export default function Sections() {
 
       {lightbox && (
         <div className="lightbox" role="dialog" aria-modal="true" aria-label={t(lightbox.title)} onClick={() => setLightbox(null)}>
-          <figure onClick={(e) => e.stopPropagation()}>
+          <figure className={lightbox.kind === 'software' ? 'is-app' : undefined} onClick={(e) => e.stopPropagation()}>
+            {lightbox.kind === 'software' && (
+              <span className="shot__bar" aria-hidden="true">
+                <i /><i /><i />
+                <em>{t(lightbox.title)}</em>
+              </span>
+            )}
             <img src={lightbox.image} alt={t(lightbox.title)} />
             <figcaption>
               <b>{t(lightbox.title)}</b>

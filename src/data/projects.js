@@ -3,6 +3,9 @@
  * the photo does the talking.
  *
  * `service` links to a service id (src/data/services.js) → filter + accent colour.
+ * `kind: 'software'` renders the card inside a browser frame (screenshots of platforms we build/host);
+ *   those screenshots are demo-data versions (plates, vehicle photos and satellite imagery replaced) — never
+ *   put a raw customer screenshot here.
  * `image` / `imageSm` live in public/projects/ (webp, 1080w and 700w) — generated from
  *   the originals in "Featured Projects/" (see project status doc for the resize script).
  */
@@ -54,5 +57,23 @@ export const projects = [
     meta: { th: 'สถานีตรวจวัดดินถล่ม RTK-GNSS ชุดผลิตจำนวนมาก', en: 'RTK-GNSS landslide monitoring — production batch' },
     image: '/projects/landmos-type-d.webp',
     imageSm: '/projects/landmos-type-d-sm.webp',
+  },,
+  {
+    id: 'grand-village-anpr-platform',
+    service: 'cloud',
+    kind: 'software',
+    title: { th: 'The Grand Village — Secure Access', en: 'The Grand Village — Secure Access' },
+    meta: { th: 'แพลตฟอร์ม ANPR + ระบบรักษาความปลอดภัย · โฮสต์บน private cloud', en: 'ANPR & security platform · hosted on our private cloud' },
+    image: '/projects/grand-village-anpr-platform.webp',
+    imageSm: '/projects/grand-village-anpr-platform-sm.webp',
+  },
+  {
+    id: 'landmos-dashboard',
+    service: 'cloud',
+    kind: 'software',
+    title: { th: 'RTK-LANDMOS Dashboard', en: 'RTK-LANDMOS Dashboard' },
+    meta: { th: 'แดชบอร์ดเฝ้าระวังดินถล่ม RTK-GNSS · 3 ไซต์ · อัปเดตอัตโนมัติ', en: 'RTK-GNSS landslide monitoring dashboard · 3 sites · auto-updating' },
+    image: '/projects/landmos-dashboard.webp',
+    imageSm: '/projects/landmos-dashboard-sm.webp',
   },
 ]

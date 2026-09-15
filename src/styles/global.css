@@ -1454,6 +1454,81 @@ html[data-ready='true'] .header {
   color: rgba(255, 255, 255, 0.78);
   line-height: 1.4;
 }
+/* Software projects: browser-frame treatment */
+.shot--app {
+  background: #0b1222;
+}
+.shot--app img {
+  top: 34px;
+  height: calc(100% - 34px);
+  object-position: left top;
+  border-top-left-radius: 8px;
+  transform-origin: left top;
+}
+.shot--app:hover img {
+  transform: scale(1.04);
+}
+.shot__bar {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 34px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  background: linear-gradient(180deg, #1b2438, #121a2c);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.shot__bar i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #3a4560;
+}
+.shot__bar i:nth-child(1) { background: #ff5f57; }
+.shot__bar i:nth-child(2) { background: #febc2e; }
+.shot__bar i:nth-child(3) { background: #28c840; }
+.shot__bar em {
+  margin-left: 10px;
+  flex: 1;
+  height: 20px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.55);
+  font: 500 11px/20px var(--font, inherit);
+  font-style: normal;
+  padding: 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.shot--app::after {
+  background: linear-gradient(180deg, rgba(4, 10, 24, 0) 42%, rgba(4, 10, 24, 0.9) 100%);
+}
+.shot--app .shot__tag {
+  top: 46px;
+}
+.lightbox figure.is-app {
+  position: relative;
+  background: #0b1222;
+  border-radius: 18px;
+  overflow: hidden;
+  gap: 0;
+}
+.lightbox figure.is-app .shot__bar {
+  position: relative;
+  height: 38px;
+}
+.lightbox figure.is-app img {
+  border-radius: 0;
+  box-shadow: none;
+  max-height: calc(100vh - 200px);
+}
+.lightbox figure.is-app figcaption {
+  padding: 12px 16px 14px;
+}
+
 /* Lightbox */
 .lightbox {
   position: fixed;
