@@ -3,6 +3,24 @@ import { useLang } from '../i18n/LangContext'
 import { LogoMark, icons } from './Icons'
 import { useTheme } from '../ThemeContext'
 
+/**
+ * Scroll so every section lands at the same spot below the fixed header, independent of
+ * the browser's native anchor behaviour (which can drift while smooth-scrolling past
+ * lazy-loaded images / the 3D hero). Home = top of page.
+ */
+export function scrollToSection(id) {
+  const el = document.getElementById(id)
+  if (!el) return false
+  const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 72
+  // sections carry 120px of their own top padding, so let ~60px of it slide under the header:
+  // the kicker then sits a consistent ~60px below the header on every section
+  const overlap = 60
+  const top = id === 'home' ? 0 : Math.max(0, el.getBoundingClientRect().top + window.scrollY - headerH + overlap)
+  window.scrollTo({ top, behavior: 'smooth' })
+  history.replaceState(null, '', '#' + id)
+  return true
+}
+
 const links = [
   { key: 'home', href: '#home' },
   { key: 'services', href: '#services' },
@@ -92,7 +110,8 @@ function GlassNav() {
           onMouseEnter={() => setHover(i)}
           onFocus={() => setHover(i)}
           onBlur={() => setHover(null)}
-          onClick={() => {
+          onClick={(e) => {
+            if (scrollToSection(l.href.slice(1))) e.preventDefault()
             setActive(i)
             lockUntil.current = performance.now() + 1200 // smooth-scroll duration
           }}
@@ -155,7 +174,14 @@ export default function Header() {
         <div id="mobile-drawer" className="drawer" role="dialog" aria-label="Menu">
           <div className="drawer__sheet liquid">
             {links.map((l) => (
-              <a key={l.key} href={l.href} onClick={() => setOpen(false)}>
+              <a
+                key={l.key}
+                href={l.href}
+                onClick={(e) => {
+                  if (scrollToSection(l.href.slice(1))) e.preventDefault()
+                  setOpen(false)
+                }}
+              >
                 {ui.nav[l.key]}
               </a>
             ))}
