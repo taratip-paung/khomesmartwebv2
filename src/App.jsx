@@ -5,7 +5,7 @@ import { ThemeProvider } from './ThemeContext'
 import Header from './components/Header'
 import HeroContent from './components/HeroContent'
 import BeeMascot from './components/BeeMascot'
-import ServicePanel, { MobileServices } from './components/ServicePanel'
+import ServicePanel, { MobileServices, MobileServiceChips } from './components/ServicePanel'
 import InteractionHelp, { ScrollCue } from './components/InteractionHelp'
 import LoadingScreen from './components/LoadingScreen'
 import Sections from './components/Sections'
@@ -52,6 +52,8 @@ function Hero() {
           <StaticFallback />
         )}
         {webgl && <InteractionHelp />}
+        <MobileServiceChips />
+        <ScrollCue />
       </div>
 
       <div className="hero__ui">
@@ -61,7 +63,6 @@ function Hero() {
       </div>
 
       <MobileServices />
-      <ScrollCue />
     </section>
   )
 }

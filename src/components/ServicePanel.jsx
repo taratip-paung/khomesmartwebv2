@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { useApp } from '../AppContext'
 import { services } from '../data/services'
 import { useLang } from '../i18n/LangContext'
@@ -84,15 +85,27 @@ export default function ServicePanel() {
 }
 
 /** Mobile: horizontal card selector + detail below the 3D canvas */
-export function MobileServices() {
-  const { selectedId, select, selected } = useApp()
+/** Mobile: the 01–04 chooser overlaid on the bottom of the 3D scene (first screen, no scrolling) */
+export function MobileServiceChips() {
+  const { selectedId, select } = useApp()
   return (
-    <div className="mobile-services">
-      <div className="mobile-services__row">
-        {services.map((s) => (
-          <ServiceCard key={s.id} service={s} active={selectedId === s.id} onSelect={select} compact />
-        ))}
-      </div>
+    <div className="mobile-chips" role="tablist">
+      {services.map((s) => (
+        <ServiceCard key={s.id} service={s} active={selectedId === s.id} onSelect={select} compact />
+      ))}
+    </div>
+  )
+}
+
+/** Mobile: detail card under the scene; scrolls itself into view when a service is picked */
+export function MobileServices() {
+  const { selected } = useApp()
+  const ref = useRef()
+  useEffect(() => {
+    if (selected && ref.current) ref.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [selected])
+  return (
+    <div className="mobile-services" ref={ref}>
       <ServiceDetail service={selected} />
     </div>
   )

@@ -2207,7 +2207,8 @@ html[data-ready='true'] .header {
 }
 
 /* ---------- Mobile ---------- */
-.mobile-services {
+.mobile-services,
+.mobile-chips {
   display: none;
 }
 @media (max-width: 900px) {
@@ -2216,9 +2217,22 @@ html[data-ready='true'] .header {
   }
   .nav,
   .header .btn,
-  .help .desktop-only,
-  .scroll-cue {
+  .help .desktop-only {
     display: none;
+  }
+  /* scroll cue stays on the first screen: small, under the service chips */
+  .scroll-cue {
+    bottom: 10px;
+    gap: 4px;
+    font-size: 9.5px;
+  }
+  .scroll-cue__ring {
+    width: 36px;
+    height: 36px;
+  }
+  .scroll-cue svg {
+    width: 18px;
+    height: 18px;
   }
   .burger {
     display: flex;
@@ -2271,10 +2285,52 @@ html[data-ready='true'] .header {
   .help {
     position: absolute;
     left: 12px;
-    bottom: 12px;
+    top: 12px;
+    bottom: auto;
     font-size: 11px;
     padding: 8px 12px;
     gap: 10px;
+  }
+  /* 01–04 chooser overlaid on the bottom of the scene */
+  .mobile-chips {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 76px;
+    z-index: 12;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 6px 16px 8px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mobile-chips::-webkit-scrollbar {
+    display: none;
+  }
+  .mobile-chips .card {
+    flex: 0 0 auto;
+    width: 150px;
+    scroll-snap-align: start;
+    grid-template-columns: 30px 1fr;
+    gap: 8px;
+    padding: 8px 12px 8px 8px;
+    border-radius: 16px;
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
+  .mobile-chips .card__title {
+    font-size: 12.5px;
+  }
+  .mobile-chips .card__icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+  .mobile-chips .card__icon svg {
+    width: 16px;
+    height: 16px;
   }
   .marker small {
     display: none;
@@ -2285,24 +2341,8 @@ html[data-ready='true'] .header {
   .mobile-services {
     display: block;
     order: 3;
-    padding: 12px 0 20px;
-  }
-  .mobile-services__row {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding: 6px 16px 10px;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
-  .mobile-services__row::-webkit-scrollbar {
-    display: none;
-  }
-  .mobile-services .card {
-    flex: 0 0 auto;
-    width: 210px;
-    scroll-snap-align: start;
-    grid-template-columns: 38px 1fr;
+    padding: 8px 0 20px;
+    scroll-margin-top: calc(var(--header-h) + 8px);
   }
   .mobile-services .detail {
     margin: 6px 16px 0;
