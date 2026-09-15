@@ -18,6 +18,25 @@ const PILLARS = [
   { icon: 'target', accent: '#7cf5c2', accentLight: '#149c66' },
 ]
 
+/** Overlapping thumbnails of this service's projects (max 4, "+N" for the rest). */
+function ProjectStack({ serviceId, onClick, label }) {
+  const { t } = useLang()
+  const list = projects.filter((p) => p.service === serviceId && p.image)
+  if (list.length === 0) return null
+  const shown = list.slice(0, 4)
+  const rest = list.length - shown.length
+  return (
+    <button type="button" className="pstack" onClick={onClick} aria-label={`${label}: ${list.length}`} title={label}>
+      {shown.map((p, i) => (
+        <span key={p.id} className={`pstack__item${p.kind === 'software' ? ' pstack__item--app' : ''}`} style={{ '--i': i }}>
+          <img src={p.imageSm || p.image} alt="" loading="lazy" decoding="async" />
+        </span>
+      ))}
+      {rest > 0 && <span className="pstack__item pstack__more" style={{ '--i': shown.length }}>+{rest}</span>}
+    </button>
+  )
+}
+
 export default function Sections() {
   const { ui, t } = useLang()
   const { projectFilter, setProjectFilter } = useApp()
@@ -62,6 +81,7 @@ export default function Sections() {
                 <span className="tile__watermark">{icons[sv.icon]}</span>
                 <span className="tile__num">{sv.number}</span>
                 <span className="card__icon">{icons[sv.icon]}</span>
+                <ProjectStack serviceId={sv.id} onClick={() => seeProjects(sv.id)} label={ui.cta.seeProjects} />
               </div>
               <div className="tile__body">
                 <h3>{t(sv.title)}</h3>

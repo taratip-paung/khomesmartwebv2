@@ -1417,6 +1417,72 @@ html[data-ready='true'] .header {
   width: 20px;
   height: 20px;
 }
+/* Overlapping project thumbnails inside the service-card header */
+.pstack {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  z-index: 2;
+}
+.pstack__item {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--panel-solid, var(--bg));
+  background: var(--panel-solid, var(--bg));
+  box-shadow: 0 4px 12px rgba(10, 30, 70, 0.25);
+  margin-left: -12px;
+  transition: transform 0.35s var(--ease), box-shadow 0.35s;
+  transform: translateX(0);
+  position: relative;
+  z-index: calc(10 - var(--i, 0));
+  display: grid;
+  place-items: center;
+}
+.pstack__item:first-child {
+  margin-left: 0;
+}
+.pstack__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.pstack__item--app img {
+  object-position: 12% 8%;
+  transform: scale(1.6);
+  transform-origin: 12% 8%;
+}
+.pstack__more {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent, var(--ink));
+  background: color-mix(in srgb, var(--accent, var(--ink)) 14%, var(--panel-solid));
+}
+.tile--service:hover .pstack__item {
+  transform: translateX(calc(var(--i, 0) * 6px));
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent, var(--ink)) 35%, transparent);
+}
+.pstack:focus-visible {
+  outline: 2px solid var(--accent, var(--ink));
+  outline-offset: 4px;
+  border-radius: 999px;
+}
+:root[data-theme='dark'] .pstack__item {
+  border-color: #0f1a33;
+  background: #0f1a33;
+}
+.tile__media.has-image .pstack {
+  bottom: 12px;
+}
+
 .tile__body {
   display: flex;
   flex-direction: column;
