@@ -1,4 +1,5 @@
 import { useLang } from '../i18n/LangContext'
+import { icons } from './Icons'
 
 export default function HeroContent() {
   const { ui } = useLang()
@@ -20,7 +21,8 @@ export default function HeroContent() {
         <a className="btn btn--primary" href="#services">
           {ui.cta.explore} <span className="arrow">→</span>
         </a>
-        <a className="btn btn--ghost" href="#contact">
+        <a className="btn btn--glass" href="#contact">
+          <span className="btn__ico" aria-hidden="true">{icons.chat}</span>
           {ui.cta.contact}
         </a>
       </div>

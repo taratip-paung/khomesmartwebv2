@@ -242,6 +242,45 @@ button {
 :root[data-theme='dark'] .btn--primary {
   color: #04101f;
 }
+/* Solid glass button — readable on top of the 3D scene (hero "Contact Us") */
+.btn--glass {
+  position: relative;
+  color: var(--ink);
+  background: var(--panel-solid);
+  border-color: var(--glass-border-hi);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  box-shadow:
+    inset 0 1px 0 var(--lg-edge),
+    0 8px 24px rgba(20, 50, 100, 0.18),
+    0 0 0 1px color-mix(in srgb, var(--cyan) 25%, transparent);
+}
+.btn--glass:hover {
+  border-color: var(--cyan);
+  box-shadow:
+    inset 0 1px 0 var(--lg-edge),
+    0 10px 30px rgba(10, 168, 220, 0.28),
+    0 0 0 1px color-mix(in srgb, var(--cyan) 45%, transparent);
+  transform: translateY(-1px);
+}
+:root[data-theme='dark'] .btn--glass {
+  background: rgba(10, 18, 48, 0.8);
+  box-shadow:
+    inset 0 1px 0 var(--lg-edge),
+    0 8px 24px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(53, 214, 255, 0.35);
+}
+.btn__ico {
+  width: 18px;
+  height: 18px;
+  color: var(--cyan);
+  display: inline-grid;
+  place-items: center;
+}
+.btn__ico svg {
+  width: 18px;
+  height: 18px;
+}
 .btn--ghost {
   border-color: var(--glass-border);
   background: var(--surface-hover);
@@ -1701,6 +1740,180 @@ html[data-ready='true'] .header {
   .shot:hover img { transform: none; }
 }
 
+/* ---------- Section 06: contact + form ---------- */
+.contact {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(0, 1.35fr);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
+}
+.contact__intro h2 {
+  font-size: clamp(28px, 3.2vw, 42px);
+  margin: 10px 0 12px;
+  letter-spacing: -0.01em;
+}
+.contact__intro > p {
+  color: var(--ink-2);
+  line-height: 1.6;
+  margin: 0 0 28px;
+  max-width: 44ch;
+}
+.contact__alt {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+.contact__alt a {
+  color: var(--accent-text);
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+}
+.contact__alt a:hover {
+  text-decoration: underline;
+}
+.cform {
+  padding: clamp(20px, 3vw, 32px);
+  border-radius: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-image: radial-gradient(120% 80% at 100% 0%, color-mix(in srgb, var(--cyan) 12%, transparent), transparent 60%);
+}
+.cform fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.cform__label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-bottom: 8px;
+}
+.cform__label em {
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+.cform__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cform__field {
+  display: block;
+  min-width: 0;
+}
+.cform__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.cform input,
+.cform textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--glass-border);
+  background: var(--panel-solid);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14.5px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.cform input::placeholder,
+.cform textarea::placeholder {
+  color: var(--ink-3);
+  opacity: 0.8;
+}
+.cform input:focus,
+.cform textarea:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cyan) 22%, transparent);
+}
+.cform textarea {
+  resize: vertical;
+  min-height: 84px;
+}
+.cform__hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.cform__error {
+  margin: -4px 0 0;
+  font-size: 13.5px;
+  color: #d0433f;
+}
+:root[data-theme='dark'] .cform__error {
+  color: #ff7b76;
+}
+.cform__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.cform .btn--primary:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.cform__note {
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+.cform--done {
+  align-items: flex-start;
+  min-height: 260px;
+  justify-content: center;
+}
+.cform__check {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: #149c66;
+  background: color-mix(in srgb, #7cf5c2 22%, var(--panel-solid));
+  border: 1px solid color-mix(in srgb, #7cf5c2 55%, transparent);
+  box-shadow: 0 8px 22px color-mix(in srgb, #7cf5c2 30%, transparent);
+}
+.cform__check svg {
+  width: 26px;
+  height: 26px;
+}
+.cform--done h3 {
+  margin: 6px 0 0;
+  font-size: 22px;
+}
+.cform--done p {
+  margin: 0;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+@media (max-width: 900px) {
+  .contact {
+    grid-template-columns: 1fr;
+  }
+  .cform__row {
+    grid-template-columns: 1fr;
+  }
+}
+
 .cta-band {
   padding: clamp(36px, 5vw, 64px);
   text-align: center;
@@ -1782,7 +1995,7 @@ html[data-ready='true'] .header {
   .hero-content .cats {
     display: none;
   }
-  .hero-content .ctas .btn--ghost {
+  .hero-content .ctas .btn--glass {
     display: none;
   }
   .hero__ui .panel {

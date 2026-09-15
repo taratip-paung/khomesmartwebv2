@@ -3,6 +3,10 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    // contact form → server/contact-server.mjs during development
+    proxy: { '/api': 'http://127.0.0.1:8787' },
+  },
   build: {
     target: 'es2020',
     rollupOptions: {

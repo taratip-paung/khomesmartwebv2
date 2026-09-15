@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useApp } from '../AppContext'
 import { services, serviceById } from '../data/services'
 import { projects } from '../data/projects'
+import ContactForm from './ContactForm'
 import { useLang } from '../i18n/LangContext'
 import { icons, LogoMark } from './Icons'
 import { useTheme } from '../ThemeContext'
@@ -188,13 +189,17 @@ export default function Sections() {
       )}
 
       <section id="contact" className="section">
-        <div className="cta-band liquid">
-          <span className="kicker">{s.contact.kicker}</span>
-          <h2>{s.contact.title}</h2>
-          <p>{s.contact.body}</p>
-          <a className="btn btn--primary" href={`mailto:${s.contact.email}`}>
-            {ui.cta.getInTouch} <span className="arrow">→</span>
-          </a>
+        <div className="contact">
+          <div className="contact__intro">
+            <span className="kicker">{s.contact.kicker}</span>
+            <h2>{s.contact.title}</h2>
+            <p>{s.contact.body}</p>
+            <div className="contact__alt">
+              <span>{s.contact.emailLabel}</span>
+              <a href={`mailto:${s.contact.email}`}>{s.contact.email}</a>
+            </div>
+          </div>
+          <ContactForm />
         </div>
       </section>
 

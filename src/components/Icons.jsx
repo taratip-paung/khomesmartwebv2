@@ -54,6 +54,16 @@ export const icons = {
       <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
     </svg>
   ),
+  check: (
+    <svg {...common}>
+      <path d="M5 12.5l4.5 4.5L19 7.5" />
+    </svg>
+  ),
+  chat: (
+    <svg {...common}>
+      <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4A2.5 2.5 0 0 1 4 13.5v-7z" />
+    </svg>
+  ),
   moon: (
     <svg {...common}>
       <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />

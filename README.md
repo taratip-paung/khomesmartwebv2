@@ -17,6 +17,21 @@ npm run preview
 Node 20+ required. `react` is pinned to 19.2.x because `@react-three/fiber@9`
 does not yet accept 19.3.
 
+## Contact form → Telegram
+
+`src/components/ContactForm.jsx` POSTs to `/api/contact`, served by `server/contact-server.mjs`
+(zero-dependency Node service, binds 127.0.0.1:8787). It validates, rate-limits (5/IP/hour),
+drops bots (honeypot + 3 s minimum fill time) and forwards the enquiry to a Telegram chat.
+
+```bash
+cp server/.env.example server/.env   # fill TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID
+npm run contact                       # or: npm run contact:dry  (logs instead of sending)
+npm run dev                           # Vite proxies /api → :8787
+```
+
+Production: `server/khome-contact.service` (systemd) + `server/nginx-snippet.conf`
+(`location /api/` → 127.0.0.1:8787) on the same LXC that serves `dist/`.
+
 ## Where things live
 
 | What | File |
