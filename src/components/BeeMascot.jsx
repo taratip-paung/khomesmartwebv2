@@ -27,6 +27,7 @@ export default function BeeMascot() {
   const [docked, setDocked] = useState(false)
   const excite = useRef(0)
   const el = useRef()
+  const innerRef = useRef()
   const dockedRef = useRef(false)
 
   const next = useCallback(() => {
@@ -71,30 +72,61 @@ export default function BeeMascot() {
     return () => window.clearInterval(id)
   }, [next, reducedMotion, i, lang, section])
 
-  // follow the hero slot, or dock bottom-left when the hero has scrolled away
+  // follow the hero slot while the hero is on screen; otherwise dock bottom-left.
+  // A mode change is a "warp": vanish in place → reappear at the new spot (never a
+  // long flight that would pass behind the header or off-screen).
   useEffect(() => {
     if (isMobile) return undefined
     const slot = document.getElementById('bee-slot')
     const node = el.current
-    if (!slot || !node) return undefined
-    let flyTimer
-    const place = () => {
+    const inner = innerRef.current
+    if (!slot || !node || !inner) return undefined
+    let t1
+    let t2
+    let warping = false
+    const target = () => {
       const r = slot.getBoundingClientRect()
       const inHero = r.bottom > 120 && r.top < window.innerHeight - 80
-      const x = inHero ? r.left : DOCK.x
-      const y = inHero ? r.top : window.innerHeight - SIZE.h - DOCK.y
-      node.style.transform = `translate3d(${x}px, ${y}px, 0)`
-      if (inHero === dockedRef.current) {
-        // mode changed → animate the flight, then snap-follow again
-        dockedRef.current = !inHero
-        setDocked(!inHero)
-        node.classList.add('is-flying')
-        excite.current = 1
-        window.clearTimeout(flyTimer)
-        flyTimer = window.setTimeout(() => node.classList.remove('is-flying'), 1000)
-      }
+      return { inHero, x: inHero ? r.left : DOCK.x, y: inHero ? r.top : window.innerHeight - SIZE.h - DOCK.y }
     }
-    place()
+    const moveTo = (x, y) => {
+      node.style.transform = `translate3d(${x}px, ${y}px, 0)`
+    }
+    const place = () => {
+      const { inHero, x, y } = target()
+      if (warping) return // vanished — the landing step re-reads the target
+      if (inHero !== !dockedRef.current) {
+        // mode change → warp
+        warping = true
+        setVisible(false)
+        inner.classList.remove('warp-in')
+        inner.classList.add('warp-out')
+        window.clearTimeout(t1)
+        t1 = window.setTimeout(() => {
+          const t = target()
+          dockedRef.current = !t.inHero
+          setDocked(!t.inHero)
+          moveTo(t.x, t.y)
+          inner.classList.remove('warp-out')
+          inner.classList.add('warp-in')
+          excite.current = 1
+          setVisible(true)
+          window.clearTimeout(t2)
+          t2 = window.setTimeout(() => {
+            inner.classList.remove('warp-in')
+            warping = false
+            place() // in case the mode flipped again mid-warp
+          }, 520)
+        }, 330)
+        return
+      }
+      moveTo(x, y)
+    }
+    // first paint: no warp, just sit on the right spot
+    const first = target()
+    dockedRef.current = !first.inHero
+    setDocked(!first.inHero)
+    moveTo(first.x, first.y)
     window.addEventListener('scroll', place, { passive: true })
     window.addEventListener('resize', place)
     const ro = new ResizeObserver(place)
@@ -104,7 +136,8 @@ export default function BeeMascot() {
       window.removeEventListener('scroll', place)
       window.removeEventListener('resize', place)
       ro.disconnect()
-      window.clearTimeout(flyTimer)
+      window.clearTimeout(t1)
+      window.clearTimeout(t2)
     }
   }, [isMobile])
 
@@ -120,6 +153,8 @@ export default function BeeMascot() {
       onKeyDown={(e) => e.key === 'Enter' && next()}
       aria-label={bee.name}
     >
+      <div className="bee__inner" ref={innerRef}>
+      <span className="bee__ring" aria-hidden="true" />
       <div className="bee__stage" aria-hidden="true">
         <Suspense fallback={null}>
           <BeeStage excite={excite} />
@@ -130,6 +165,7 @@ export default function BeeMascot() {
           <path d="M22 2 C20 12 12 20 1 25 C10 20 14 16 15 6 Z" />
         </svg>
         <p key={`${lang}-${section}-${i}`}>{lines[i] ?? lines[0]}</p>
+      </div>
       </div>
     </div>
   )
