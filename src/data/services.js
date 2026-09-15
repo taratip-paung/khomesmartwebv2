@@ -3,6 +3,9 @@
  * UI (panel, cards, markers, sections) and the 3D scene all read from here.
  * Text is bilingual: pick with t(service.title) / service.title[lang].
  *
+ * Card anatomy (section 02): title → outcome (one line, customer's view) → tags (scannable chips).
+ * `subtitle` is the short label used by the 3D panel/markers; `description` is the panel body.
+ *
  * `cameraTarget` maps to src/data/cameraTargets.js
  * `accent` / `accentLight` are the UI accent colours for dark / light theme (3D uses `accent`)
  * `objectGroup`  is the 3D highlight group id (matches Blender group naming, e.g. SOLAR_*)
@@ -15,12 +18,17 @@ export const services = [
     icon: 'sun',
     accent: '#ffc857',
     accentLight: '#c98f00',
-    title: { th: 'Solar Cell', en: 'Solar Cell' },
-    subtitle: { th: 'Solar Energy Solution', en: 'Solar Energy Solution' },
+    title: { th: 'Solar Rooftop', en: 'Solar Rooftop' },
+    subtitle: { th: 'Solar EPC', en: 'Solar EPC' },
     tagline: { th: 'Rooftop Solar', en: 'Rooftop Solar' },
+    outcome: {
+      th: 'โซลาร์รูฟท็อปที่ออกแบบจากโหลดไฟจริง พร้อมระบบมอนิเตอร์ดูได้จากมือถือ',
+      en: 'Rooftop solar engineered for your real load, with monitoring you can check from your phone.',
+    },
+    tags: ['Survey & Design', 'EPC', 'Monitoring', 'O&M'],
     description: {
-      th: 'ติดตั้งระบบ Solar Cell บนหลังคาแบบครบวงจร เพื่อช่วยลดค่าไฟและเพิ่มประสิทธิภาพด้านพลังงาน',
-      en: 'Complete rooftop solar installation — designed, installed and commissioned to cut energy costs and improve efficiency.',
+      th: 'สำรวจ ออกแบบ ติดตั้ง และส่งมอบระบบโซลาร์บนหลังคาแบบครบวงจร ขนาดระบบคำนวณจากโหลดไฟจริงของคุณ พร้อมระบบมอนิเตอร์และดูแลหลังการติดตั้ง',
+      en: 'Survey, design, installation and commissioning of rooftop solar, sized from your actual consumption — with monitoring and after-install care.',
     },
     cameraTarget: 'solar',
     objectGroup: 'solar',
@@ -33,12 +41,17 @@ export const services = [
     icon: 'sensor',
     accent: '#7cf5c2',
     accentLight: '#149c66',
-    title: { th: 'R&D & Sensor', en: 'R&D & Sensor' },
-    subtitle: { th: 'Custom IoT Solutions', en: 'Custom IoT Solutions' },
+    title: { th: 'IoT & R&D', en: 'IoT & R&D' },
+    subtitle: { th: 'Custom IoT', en: 'Custom IoT' },
     tagline: { th: 'Custom IoT', en: 'Custom IoT' },
+    outcome: {
+      th: 'เซ็นเซอร์และเฟิร์มแวร์ที่ออกแบบให้ทำงานได้เป็นปีโดยไม่ต้องดูแล ไม่ใช่แค่ผ่านเดโม',
+      en: 'Custom sensors and firmware built to run for years unattended — not just for the demo.',
+    },
+    tags: ['ESP32', 'LoRa / RFID', 'Custom PCB', 'Cloud Dashboard'],
     description: {
-      th: 'พัฒนาอุปกรณ์ ระบบเซ็นเซอร์ และ IoT ให้เหมาะกับโจทย์เฉพาะของแต่ละธุรกิจ',
-      en: 'Custom devices, sensor systems and IoT built around the specific problem each business needs solved.',
+      th: 'พัฒนาอุปกรณ์ เซ็นเซอร์ และระบบ IoT เฉพาะโจทย์ของแต่ละธุรกิจ ตั้งแต่ฮาร์ดแวร์ เฟิร์มแวร์ ไปจนถึงแดชบอร์ดบนคลาวด์',
+      en: 'Custom devices, sensor systems and IoT built around each business’s specific problem — from hardware and firmware to the cloud dashboard.',
     },
     cameraTarget: 'rnd',
     objectGroup: 'rnd',
@@ -52,11 +65,16 @@ export const services = [
     accent: '#35d6ff',
     accentLight: '#0a8fc4',
     title: { th: 'Network', en: 'Network' },
-    subtitle: { th: 'WiFi / LAN / Fiber / LPWAN', en: 'WiFi / LAN / Fiber / LPWAN' },
-    tagline: { th: 'WiFi / LAN / Fiber / LPWAN', en: 'WiFi / LAN / Fiber / LPWAN' },
+    subtitle: { th: 'Infrastructure', en: 'Infrastructure' },
+    tagline: { th: 'Fiber / WiFi / LPWAN', en: 'Fiber / WiFi / LPWAN' },
+    outcome: {
+      th: 'เครือข่ายที่ปลอดภัย แบ่งโซนชัด และไม่ล่ม ตั้งแต่ไฟเบอร์ WiFi ถึง LPWAN',
+      en: 'Secure, segmented networks that stay up — from fiber backbone to WiFi to LPWAN.',
+    },
+    tags: ['Fiber', 'WiFi 6', 'Firewall / VLAN', 'LoRaWAN'],
     description: {
-      th: 'ออกแบบและติดตั้ง WiFi, LAN, Fiber Optic และ LPWAN ให้เหมาะกับพื้นที่และการใช้งาน',
-      en: 'Design and installation of WiFi, LAN, Fiber Optic and LPWAN networks matched to the site and how it is used.',
+      th: 'ออกแบบและติดตั้งเครือข่ายทั้งระบบ ไฟเบอร์ LAN WiFi ไฟร์วอลล์ และ LPWAN ให้เหมาะกับพื้นที่และการใช้งานจริง',
+      en: 'Design and installation of the whole network layer — fiber, LAN, WiFi, firewall and LPWAN — matched to the site and how it is used.',
     },
     cameraTarget: 'network',
     objectGroup: 'network',
@@ -69,12 +87,17 @@ export const services = [
     icon: 'cloud',
     accent: '#a78bfa',
     accentLight: '#7250ea',
-    title: { th: 'Cloud VPS', en: 'Cloud VPS' },
-    subtitle: { th: 'Secure & Scalable', en: 'Secure & Scalable' },
+    title: { th: 'Cloud & Hosting', en: 'Cloud & Hosting' },
+    subtitle: { th: 'Private Cloud / VPS', en: 'Private Cloud / VPS' },
     tagline: { th: 'Secure & Scalable', en: 'Secure & Scalable' },
+    outcome: {
+      th: 'คลาวด์ส่วนตัวและ VPS ที่ backup ถูกทดสอบจริง ไม่ใช่แค่ตั้งไว้',
+      en: 'Private cloud and VPS with backups that are tested, not assumed.',
+    },
+    tags: ['Proxmox', 'Backup & DR', 'Monitoring', 'VPN'],
     description: {
-      th: 'โครงสร้างพื้นฐาน Cloud VPS สำหรับระบบที่ต้องการความยืดหยุ่นและขยายได้',
-      en: 'Cloud VPS infrastructure for systems that need to stay secure, flexible and ready to scale.',
+      th: 'โครงสร้างพื้นฐานคลาวด์ส่วนตัวและ VPS สำหรับระบบที่ต้องการความปลอดภัย ความยืดหยุ่น และขยายได้ พร้อมสำรองข้อมูลและมอนิเตอร์',
+      en: 'Private cloud and VPS infrastructure for systems that need to stay secure, flexible and ready to scale — with backup and monitoring built in.',
     },
     cameraTarget: 'cloud',
     objectGroup: 'cloud',

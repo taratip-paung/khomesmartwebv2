@@ -1,5 +1,6 @@
 import { useApp } from '../AppContext'
-import { services } from '../data/services'
+import { services, serviceById } from '../data/services'
+import { projects } from '../data/projects'
 import { useLang } from '../i18n/LangContext'
 import { icons, LogoMark } from './Icons'
 import { useTheme } from '../ThemeContext'
@@ -10,14 +11,17 @@ import { useTheme } from '../ThemeContext'
  */
 export default function Sections() {
   const { ui, t } = useLang()
-  const { select } = useApp()
+  const { projectFilter, setProjectFilter } = useApp()
   const { accent } = useTheme()
   const s = ui.sections
 
-  const focusHero = (id) => {
-    select(id)
-    document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' })
+  // Service card → projects section, pre-filtered to that service.
+  const seeProjects = (id) => {
+    setProjectFilter(id)
+    document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })
   }
+
+  const visibleProjects = projectFilter === 'all' ? projects : projects.filter((p) => p.service === projectFilter)
 
   return (
     <>
@@ -29,13 +33,17 @@ export default function Sections() {
         </div>
         <div className="grid-4">
           {services.map((sv) => (
-            <article key={sv.id} className="tile liquid" style={{ '--accent': accent(sv) }}>
+            <article key={sv.id} className="tile tile--service liquid" style={{ '--accent': accent(sv) }}>
               <span className="card__icon">{icons[sv.icon]}</span>
-              <span className="card__num">[{sv.number}]</span>
               <h3>{t(sv.title)}</h3>
-              <p>{t(sv.description)}</p>
-              <button className="btn btn--ghost btn--sm" style={{ alignSelf: 'flex-start', marginTop: 'auto' }} onClick={() => focusHero(sv.id)}>
-                {ui.cta.learnMore} <span className="arrow">→</span>
+              <p>{t(sv.outcome)}</p>
+              <ul className="chips" aria-label={t(sv.title)}>
+                {sv.tags.map((tag) => (
+                  <li key={tag} className="chip">{tag}</li>
+                ))}
+              </ul>
+              <button className="tile__link" onClick={() => seeProjects(sv.id)}>
+                {ui.cta.seeProjects} <span className="arrow">→</span>
               </button>
             </article>
           ))}
@@ -64,12 +72,40 @@ export default function Sections() {
           <h2>{s.projects.title}</h2>
           <p>{s.projects.body}</p>
         </div>
-        <div className="grid-3">
-          {[1, 2, 3].map((n) => (
-            <div key={n} className="tile tile--ph liquid">
-              PROJECT 0{n} — COMING SOON
-            </div>
+        <div className="filter" role="tablist" aria-label={s.projects.title}>
+          <button
+            role="tab"
+            aria-selected={projectFilter === 'all'}
+            className={`chip chip--btn${projectFilter === 'all' ? ' is-active' : ''}`}
+            onClick={() => setProjectFilter('all')}
+          >
+            {s.projects.all}
+          </button>
+          {services.map((sv) => (
+            <button
+              key={sv.id}
+              role="tab"
+              aria-selected={projectFilter === sv.id}
+              className={`chip chip--btn${projectFilter === sv.id ? ' is-active' : ''}`}
+              style={{ '--accent': accent(sv) }}
+              onClick={() => setProjectFilter(sv.id)}
+            >
+              {t(sv.title)}
+            </button>
           ))}
+        </div>
+        <div className="grid-3" key={projectFilter}>
+          {visibleProjects.map((p) => {
+            const sv = serviceById[p.service]
+            return (
+              <article key={p.id} className="tile tile--project liquid" style={{ '--accent': accent(sv) }}>
+                <span className="tile__tag">{t(sv.title)}</span>
+                <h3>{t(p.title)}</h3>
+                <p>{t(p.meta)}</p>
+              </article>
+            )
+          })}
+          {visibleProjects.length === 0 && <p className="filter__empty">{s.projects.empty}</p>}
         </div>
       </section>
 

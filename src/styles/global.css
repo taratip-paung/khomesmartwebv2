@@ -1099,6 +1099,129 @@ html[data-ready='true'] .header {
   font-size: 12px;
   letter-spacing: 0.14em;
 }
+
+/* ---------- Section 02/04: chips, service cards, project filter ---------- */
+.tile--service {
+  gap: 12px;
+}
+.tile--service h3 {
+  font-size: 19px;
+}
+.tile--service > p {
+  font-size: 14.5px;
+  color: var(--ink);
+  opacity: 0.85;
+}
+.chips {
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--surface-hover);
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.tile__link {
+  margin-top: auto;
+  padding: 10px 0 0;
+  border: 0;
+  background: none;
+  color: var(--accent, var(--ink));
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  align-self: flex-start;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.tile__link:hover .arrow {
+  transform: translateX(3px);
+}
+.tile__link:focus-visible {
+  outline: 2px solid var(--accent, var(--ink));
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -16px 0 24px;
+}
+.chip--btn {
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  padding: 8px 14px;
+  color: var(--ink);
+  transition: background 0.25s, border-color 0.25s, color 0.25s;
+}
+.chip--btn:hover {
+  border-color: var(--glass-border-hi);
+}
+.chip--btn.is-active {
+  background: var(--accent, var(--ink));
+  border-color: transparent;
+  color: #fff;
+}
+:root[data-theme='dark'] .chip--btn.is-active {
+  color: #04101f;
+}
+.chip--btn:focus-visible {
+  outline: 2px solid var(--accent, var(--ink));
+  outline-offset: 3px;
+}
+.tile--project {
+  min-height: 220px;
+  justify-content: flex-end;
+  background-image: linear-gradient(135deg, color-mix(in srgb, var(--accent, var(--ink)) 14%, transparent), transparent 60%);
+  animation: tile-in 0.35s var(--ease) both;
+}
+.tile--project h3 {
+  font-size: 17px;
+}
+.tile--project p {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+.tile__tag {
+  align-self: flex-start;
+  margin-bottom: auto;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent, var(--ink-2));
+}
+.filter__empty {
+  grid-column: 1 / -1;
+  color: var(--ink-3);
+  margin: 8px 0;
+}
+@keyframes tile-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tile--project { animation: none; }
+}
+
 .cta-band {
   padding: clamp(36px, 5vw, 64px);
   text-align: center;

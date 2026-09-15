@@ -5,7 +5,7 @@
 export const strings = {
   th: {
     nav: { home: 'หน้าแรก', services: 'บริการ', about: 'เกี่ยวกับเรา', projects: 'ผลงาน', contact: 'ติดต่อ' },
-    cta: { getInTouch: 'ติดต่อเรา', explore: 'สำรวจโซลูชันของเรา', contact: 'ติดต่อเรา', learnMore: 'ดูรายละเอียด' },
+    cta: { getInTouch: 'ติดต่อเรา', explore: 'สำรวจโซลูชันของเรา', contact: 'ติดต่อเรา', learnMore: 'ดูรายละเอียด', seeProjects: 'ดูผลงาน' },
     hero: {
       kicker: 'SMART SOLUTION',
       kicker2: 'FOR A BETTER TOMORROW',
@@ -35,7 +35,7 @@ export const strings = {
       body: 'คุณยังสามารถเลือกดูบริการทั้งหมดได้ด้านล่าง',
     },
     sections: {
-      services: { kicker: '02 — OUR SERVICES', title: 'บริการของเรา', body: 'ครบวงจรตั้งแต่พลังงาน อุปกรณ์ เครือข่าย ไปจนถึงคลาวด์' },
+      services: { kicker: '02 — OUR SERVICES', title: 'บริการของเรา', body: 'พลังงาน อุปกรณ์ เครือข่าย และคลาวด์ — ทีมเดียว ดูแลครบทุกชั้น' },
       why: {
         kicker: '03 — WHY BE CONNECTED',
         title: 'ทำไมต้อง Be Connected',
@@ -45,7 +45,7 @@ export const strings = {
           { title: 'ออกแบบตามโจทย์จริง', body: 'ไม่ใช่โซลูชันสำเร็จรูป แต่ปรับให้เข้ากับพื้นที่ งบประมาณ และการใช้งานของคุณ' },
         ],
       },
-      projects: { kicker: '04 — FEATURED PROJECTS', title: 'ผลงานที่ผ่านมา', body: 'พื้นที่สำหรับผลงานเด่น (เนื้อหาชั่วคราว)' },
+      projects: { kicker: '04 — FEATURED PROJECTS', title: 'ผลงานที่ผ่านมา', body: 'เลือกดูตามบริการ', all: 'ทั้งหมด', empty: 'ยังไม่มีผลงานในหมวดนี้' },
       contact: {
         kicker: '06 — CONTACT',
         title: 'พร้อมเริ่มโปรเจกต์ของคุณแล้วหรือยัง?',
@@ -58,7 +58,7 @@ export const strings = {
   },
   en: {
     nav: { home: 'Home', services: 'Services', about: 'About Us', projects: 'Projects', contact: 'Contact' },
-    cta: { getInTouch: 'Get in Touch', explore: 'Explore Our Solutions', contact: 'Contact Us', learnMore: 'Learn More' },
+    cta: { getInTouch: 'Get in Touch', explore: 'Explore Our Solutions', contact: 'Contact Us', learnMore: 'Learn More', seeProjects: 'See Projects' },
     hero: {
       kicker: 'SMART SOLUTION',
       kicker2: 'FOR A BETTER TOMORROW',
@@ -88,7 +88,7 @@ export const strings = {
       body: 'You can still browse all services below.',
     },
     sections: {
-      services: { kicker: '02 — OUR SERVICES', title: 'Our Services', body: 'End-to-end: energy, devices, network and cloud.' },
+      services: { kicker: '02 — OUR SERVICES', title: 'Our Services', body: 'Energy, devices, network and cloud — one team across the whole stack.' },
       why: {
         kicker: '03 — WHY BE CONNECTED',
         title: 'Why Be Connected',
@@ -98,7 +98,7 @@ export const strings = {
           { title: 'Built around the real problem', body: 'Not an off-the-shelf package — sized to your site, your budget and how you actually operate.' },
         ],
       },
-      projects: { kicker: '04 — FEATURED PROJECTS', title: 'Featured Projects', body: 'Reserved for project highlights (placeholder).' },
+      projects: { kicker: '04 — FEATURED PROJECTS', title: 'Featured Projects', body: 'Browse by service.', all: 'All', empty: 'No projects in this category yet.' },
       contact: {
         kicker: '06 — CONTACT',
         title: 'Ready to start your project?',

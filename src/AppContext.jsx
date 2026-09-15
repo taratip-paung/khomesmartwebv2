@@ -20,6 +20,8 @@ export function AppProvider({ children }) {
   const [selectedId, setSelectedId] = useState(null)
   const [sceneReady, setSceneReady] = useState(false)
   const [resetNonce, setResetNonce] = useState(0)
+  // Section 04 filter: 'all' | service id. Set by service cards ("See projects").
+  const [projectFilter, setProjectFilter] = useState('all')
   const isMobile = useMediaQuery('(max-width: 900px)')
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
 
@@ -42,8 +44,10 @@ export function AppProvider({ children }) {
       setSceneReady,
       isMobile,
       reducedMotion,
+      projectFilter,
+      setProjectFilter,
     }),
-    [selectedId, select, clear, resetCamera, resetNonce, sceneReady, isMobile, reducedMotion],
+    [selectedId, select, clear, resetCamera, resetNonce, sceneReady, isMobile, reducedMotion, projectFilter],
   )
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>
