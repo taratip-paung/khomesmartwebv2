@@ -20,7 +20,7 @@ function ContactShadow() {
     return t
   }, [])
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, BEE_GROUND_Y + 0.005, -0.5]} scale={[2.6, 1.9, 1]}>
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, BEE_GROUND_Y + 0.005, -0.5]} scale={[2.08, 1.52, 1]}>
       <circleGeometry args={[1, 32]} />
       <meshBasicMaterial map={tex} transparent depthWrite={false} />
     </mesh>
