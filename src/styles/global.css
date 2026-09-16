@@ -908,12 +908,13 @@ html[data-ready='true'] .bee {
   position: absolute;
   right: -10px;
   top: 50%;
-  translate: 0 -50%;
   width: 78px;
   height: 78px;
   color: var(--accent, var(--cyan));
   opacity: 0.09;
-  transform: rotate(-8deg);
+  /* keep the centring inside `transform` — lightningcss drops a separate `translate:`
+     when the rule also has `transform:` (icon fell out of the card on production) */
+  transform: translateY(-50%) rotate(-8deg);
   pointer-events: none;
   z-index: -1;
   transition: opacity 0.3s, transform 0.5s var(--ease);
@@ -925,7 +926,7 @@ html[data-ready='true'] .bee {
 .card:hover .card__ghost,
 .card[aria-pressed='true'] .card__ghost {
   opacity: 0.16;
-  transform: rotate(-2deg) scale(1.06);
+  transform: translateY(-50%) rotate(-2deg) scale(1.06);
 }
 .card__text {
   min-width: 0;
