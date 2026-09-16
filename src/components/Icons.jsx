@@ -108,17 +108,4 @@ export function Icon({ name, ...props }) {
   )
 }
 
-export function LogoMark({ className = 'logo__mark' }) {
-  return (
-    <svg className={className} viewBox="0 0 64 64" aria-hidden="true">
-      <defs>
-        <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#35d6ff" />
-          <stop offset="1" stopColor="#4f8cff" />
-        </linearGradient>
-      </defs>
-      <path d="M32 6 L56 20 L56 44 L32 58 L8 44 L8 20 Z" fill="none" stroke="url(#lg)" strokeWidth="3" />
-      <path d="M32 22 L42 28 L42 40 L32 46 L22 40 L22 28 Z" fill="url(#lg)" opacity="0.9" />
-    </svg>
-  )
-}
+export { LogoMark } from './LogoMark'

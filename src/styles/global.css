@@ -324,8 +324,8 @@ button {
   font-size: 15px;
 }
 .logo__mark {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   flex: 0 0 auto;
 }
 .logo__text {
@@ -1249,10 +1249,15 @@ html[data-ready='true'] .bee {
   animation: fadeUp 0.8s var(--ease);
 }
 .loader__mark {
-  width: 56px;
-  height: 56px;
+  width: 72px;
+  height: 72px;
   margin: 0 auto 18px;
-  animation: spinSlow 6s linear infinite;
+  /* company logo: breathe, don't spin */
+  animation: logoBreathe 2.4s ease-in-out infinite;
+}
+@keyframes logoBreathe {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.06); opacity: 1; }
 }
 .loader h2 {
   margin: 0;
