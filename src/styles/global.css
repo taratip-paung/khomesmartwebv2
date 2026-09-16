@@ -94,10 +94,21 @@ html[lang='th'] body {
 }
 body {
   overflow-x: hidden;
+}
+/* Ambient page glow, pinned to the viewport. It used to be a body background positioned at
+   70% 20% of the WHOLE page height, so on desktop the 1200px cyan blob landed right behind
+   service cards 03/04 (and the glass cards' backdrop-filter amplified it). A fixed layer keeps
+   it a soft, even ambience behind every section instead. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background:
-    radial-gradient(1200px 700px at 70% 20%, var(--bg-glow-1), transparent 60%),
-    radial-gradient(900px 600px at 15% 90%, var(--bg-glow-2), transparent 60%),
-    var(--bg);
+    radial-gradient(1200px 700px at 70% 15%, var(--bg-glow-1), transparent 60%),
+    radial-gradient(900px 600px at 15% 95%, var(--bg-glow-2), transparent 60%);
+  transition: opacity 0.4s var(--ease);
 }
 a {
   color: inherit;
