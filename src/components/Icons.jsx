@@ -75,6 +75,29 @@ export const icons = {
       <path d="M3 4v5h5" />
     </svg>
   ),
+  mail: (
+    <svg {...common}>
+      <rect x="3" y="5" width="18" height="14" rx="2.5" />
+      <path d="M3.5 7l8.5 6 8.5-6" />
+    </svg>
+  ),
+  facebook: (
+    <svg {...common}>
+      <path d="M14 8.5V7a1.5 1.5 0 0 1 1.5-1.5H17V3h-2.5A4 4 0 0 0 10.5 7v1.5H8V12h2.5v9h3.5v-9h2.6l.4-3.5H14z" />
+    </svg>
+  ),
+  line: (
+    <svg {...common}>
+      <path d="M12 3.5c-4.97 0-9 3.27-9 7.3 0 3.6 3.2 6.6 7.5 7.2.3.06.7.2.8.45.1.23.06.6.03.83l-.13.8c-.04.24-.19.93.82.5 1-.42 5.4-3.2 7.4-5.5C20.6 13.7 21 12.3 21 10.8c0-4.03-4.03-7.3-9-7.3z" />
+      <path d="M8 9v4M11 9v4l2.5 0M15.5 9v4M18 9h-2.5v4H18M15.5 11h2" />
+    </svg>
+  ),
+  pin: (
+    <svg {...common}>
+      <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  ),
 }
 
 export function Icon({ name, ...props }) {

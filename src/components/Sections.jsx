@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useApp } from '../AppContext'
 import { services, serviceById } from '../data/services'
 import { projects } from '../data/projects'
+import { company } from '../data/company'
 import ContactForm from './ContactForm'
 import { useLang } from '../i18n/LangContext'
 import { icons, LogoMark } from './Icons'
@@ -39,7 +40,7 @@ function ProjectStack({ serviceId, onClick, label }) {
 }
 
 export default function Sections() {
-  const { ui, t } = useLang()
+  const { ui, t, lang } = useLang()
   const { projectFilter, setProjectFilter } = useApp()
   const { accent } = useTheme()
   const s = ui.sections
@@ -221,8 +222,37 @@ export default function Sections() {
             <h2>{s.contact.title}</h2>
             <p>{s.contact.body}</p>
             <div className="contact__alt">
-              <span>{s.contact.emailLabel}</span>
-              <a href={`mailto:${s.contact.email}`}>{s.contact.email}</a>
+              <span>{s.contact.channelsLabel}</span>
+              <ul className="channels">
+                <li>
+                  <span className="channels__icon">{icons.mail}</span>
+                  <span className="channels__body">
+                    <small>{s.contact.channels.email}</small>
+                    <a href={`mailto:${company.email}`}>{company.email}</a>
+                  </span>
+                </li>
+                <li>
+                  <span className="channels__icon">{icons.line}</span>
+                  <span className="channels__body">
+                    <small>{s.contact.channels.line}</small>
+                    <a href={company.line} target="_blank" rel="noopener noreferrer">{company.lineLabel}</a>
+                  </span>
+                </li>
+                <li>
+                  <span className="channels__icon">{icons.facebook}</span>
+                  <span className="channels__body">
+                    <small>{s.contact.channels.facebook}</small>
+                    <a href={company.facebook} target="_blank" rel="noopener noreferrer">{company.facebookLabel}</a>
+                  </span>
+                </li>
+                <li>
+                  <span className="channels__icon">{icons.pin}</span>
+                  <span className="channels__body">
+                    <small>{s.contact.channels.address}</small>
+                    <address>{company.address[lang] || company.address.en}</address>
+                  </span>
+                </li>
+              </ul>
             </div>
           </div>
           <ContactForm />

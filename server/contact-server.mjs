@@ -13,6 +13,7 @@ import http from 'node:http'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { validateContact } from '../src/lib/contactRules.js' // same rules as the browser form
 
 // --- tiny .env loader (no dotenv dependency) ---
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -34,7 +35,6 @@ if (!DRY_RUN && (!TOKEN || !CHAT_ID)) {
   process.exit(1)
 }
 
-const SERVICES = new Set(['solar', 'rnd', 'network', 'cloud', 'other'])
 const SERVICE_LABEL = { solar: 'Solar Rooftop', rnd: 'IoT & R&D', network: 'Network', cloud: 'Cloud & Hosting', other: 'Other' }
 
 // --- rate limit: per IP, sliding hour ---
@@ -56,19 +56,16 @@ const clean = (v, max) => String(v ?? '').replace(/[\x00-\x08\x0b-\x1f\x7f]/g, '
 const esc = (s) => s.replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]))
 
 function validate(body) {
-  const service = clean(body.service, 20)
-  const project = clean(body.project, 120)
-  const name = clean(body.name, 80)
-  const contact = clean(body.contact, 80)
-  const email = clean(body.email, 120)
-  const message = clean(body.message, 1000)
-  const errors = []
-  if (!SERVICES.has(service)) errors.push('service')
-  if (project.length < 2) errors.push('project')
-  if (name.length < 2) errors.push('name')
-  if (contact.length < 6) errors.push('contact')
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push('email')
-  return { ok: errors.length === 0, errors, data: { service, project, name, contact, email, message } }
+  const data = {
+    service: clean(body.service, 20),
+    project: clean(body.project, 200),
+    name: clean(body.name, 200),
+    contact: clean(body.contact, 80),
+    email: clean(body.email, 200),
+    message: clean(body.message, 2000),
+  }
+  const fields = validateContact(data) // { field: errorKey } — same keys the form shows
+  return { ok: Object.keys(fields).length === 0, fields, data }
 }
 
 function formatMessage(d, ip, lang) {
@@ -130,7 +127,7 @@ const server = http.createServer((req, res) => {
 
     if (limited(ip)) return json(res, 429, { ok: false, error: 'rate_limited' })
     const v = validate(body)
-    if (!v.ok) return json(res, 400, { ok: false, error: 'invalid', fields: v.errors })
+    if (!v.ok) return json(res, 400, { ok: false, error: 'invalid', fields: v.fields })
     try {
       await notify(v.data, ip, clean(body.lang, 5) || 'en')
       console.log(new Date().toISOString(), 'enquiry', ip, v.data.service, JSON.stringify(v.data.project))
