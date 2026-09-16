@@ -9,6 +9,11 @@ export default defineConfig({
   },
   build: {
     target: 'es2020',
+    // Browser targets for the CSS minifier (lightningcss). Without this it strips the unprefixed
+    // `backdrop-filter` when a `-webkit-` copy follows it → no glass blur in Chrome on production
+    // (dev was fine because dev CSS isn't minified). With targets set it auto-adds -webkit- for Safari,
+    // so global.css must contain ONLY the unprefixed properties.
+    cssTarget: ['chrome90', 'safari15', 'ios15', 'firefox90', 'edge90'],
     rollupOptions: {
       output: {
         manualChunks(id) {
