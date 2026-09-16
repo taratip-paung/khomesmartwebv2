@@ -1625,7 +1625,8 @@ html[data-ready='true'] .header {
   border: 0;
   background: none;
   cursor: pointer;
-  align-self: flex-start;
+  /* centred in the card; the hover fan-out below is symmetric around this centre */
+  align-self: center;
 }
 .pstack__item {
   width: 88px;
@@ -1653,20 +1654,45 @@ html[data-ready='true'] .header {
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: filter 0.3s;
 }
 .pstack__item--app img {
   object-position: 12% 8%;
   transform: scale(1.6);
   transform-origin: 12% 8%;
 }
-.pstack__more {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--accent, var(--ink));
-  background: color-mix(in srgb, var(--accent, var(--ink)) 14%, var(--panel-solid));
-}
+/* Hover language = "lift & peek" + glow ring (same family as the 3D hover aura):
+   - card hover: the whole stack lifts a touch, nothing slides sideways
+   - the thumbnail under the cursor grows, jumps to the front and gets a glowing accent ring;
+     its neighbours dim slightly so the picked one reads as the focus */
 .tile--service:hover .pstack__item {
-  transform: translateX(calc(var(--i, 0) * 10px));
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent, var(--ink)) 26%, transparent),
+    0 14px 26px -8px color-mix(in srgb, var(--accent, var(--ink)) 55%, rgba(10, 30, 70, 0.35));
+}
+.pstack:hover .pstack__item {
+  opacity: 0.78;
+  transition: transform 0.4s var(--ease), box-shadow 0.35s, opacity 0.3s, filter 0.3s;
+}
+.pstack .pstack__item:hover {
+  opacity: 1;
+  z-index: 20;
+  transform: translateY(-8px) scale(1.14);
+  border-color: color-mix(in srgb, var(--accent, var(--ink)) 90%, #fff);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent, var(--ink)) 35%, transparent),
+    0 0 22px 2px color-mix(in srgb, var(--accent, var(--ink)) 55%, transparent),
+    0 18px 30px -8px color-mix(in srgb, var(--accent, var(--ink)) 60%, rgba(10, 30, 70, 0.4));
+}
+.pstack .pstack__item:hover img {
+  filter: saturate(1.1) brightness(1.04);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tile--service:hover .pstack__item,
+  .pstack .pstack__item:hover {
+    transform: none;
+  }
 }
 .pstack:focus-visible {
   outline: 2px solid var(--accent, var(--ink));

@@ -20,13 +20,12 @@ const PILLARS = [
   { icon: 'target', accent: '#7cf5c2', accentLight: '#149c66', photo: '/why/fit.webp' },
 ]
 
-/** Overlapping thumbnails of this service's projects (max 4, "+N" for the rest). */
+/** Overlapping thumbnails of this service's projects — exactly 3, centred in the card; hover fans them out symmetrically. */
 function ProjectStack({ serviceId, onClick, label }) {
   const { t } = useLang()
   const list = projects.filter((p) => p.service === serviceId && p.image)
   if (list.length === 0) return null
-  const shown = list.slice(0, 4)
-  const rest = list.length - shown.length
+  const shown = list.slice(0, 3)
   return (
     <button type="button" className="pstack" onClick={onClick} aria-label={`${label}: ${list.length}`} title={label}>
       {shown.map((p, i) => (
@@ -34,7 +33,6 @@ function ProjectStack({ serviceId, onClick, label }) {
           <img src={p.imageSm || p.image} alt="" loading="lazy" decoding="async" />
         </span>
       ))}
-      {rest > 0 && <span className="pstack__item pstack__more" style={{ '--i': shown.length }}>+{rest}</span>}
     </button>
   )
 }
