@@ -20,8 +20,11 @@ export const cameraTargets = {
     duration: 1000,
   },
   default: {
-    position: [6, 14.5, 27],
-    target: [1.6, 1.0, -0.5],
+    // same viewing angle as the original [6, 14.5, 27] → [1.6, 1, -0.5] framing, but
+    // ~20% closer and the whole view slid left by 1.3 so the island reads centred.
+    // Horizontal centring between the two UI columns is done in CameraController (setViewOffset).
+    position: [3.81, 11.77, 21.45],
+    target: [0.3, 1.0, -0.5],
     duration: 1200,
   },
   solar: {

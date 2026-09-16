@@ -44,7 +44,7 @@ export default function Scene() {
     <Canvas
       shadows
       dpr={isMobile ? [1, 1.5] : [1, 2]}
-      camera={{ fov: 36, near: 0.1, far: 120, position: [6, 14.5, 27] }}
+      camera={{ fov: 36, near: 0.1, far: 120, position: [3.81, 11.77, 21.45] }}
       gl={{
         antialias: true,
         powerPreference: 'high-performance',

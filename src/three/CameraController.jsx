@@ -23,7 +23,7 @@ const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2
  */
 export default function CameraController() {
   const controls = useRef()
-  const { camera, size } = useThree()
+  const { camera, size, gl } = useThree()
   const { selectedId, resetNonce, reducedMotion, isMobile } = useApp()
   const tween = useRef(null)
   const idle = useRef(true)
@@ -58,6 +58,28 @@ export default function CameraController() {
     flyTo(key)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId, resetNonce])
+
+  // Horizontal framing: the scene's centre of projection is moved from the canvas centre to the
+  // middle of the free column between the hero text (left) and the service panel (right), so the
+  // island sits centred between "Contact us" and "OUR SERVICES" on any desktop width.
+  // Implemented with camera.setViewOffset — a pure screen shift, the viewing angle never changes.
+  useEffect(() => {
+    const { width: w, height: h } = size
+    let shift = 0
+    try {
+      const gap = document.querySelector('.hero__gap')
+      const cv = gl.domElement.getBoundingClientRect()
+      if (gap && w >= h) {
+        const r = gap.getBoundingClientRect()
+        if (r.width > 40) shift = r.left + r.width / 2 - (cv.left + cv.width / 2)
+      }
+    } catch {
+      /* ignore */
+    }
+    if (Math.abs(shift) > 0.5) camera.setViewOffset(w, h, -shift, 0, w, h)
+    else camera.clearViewOffset()
+    camera.updateProjectionMatrix()
+  }, [camera, gl, size])
 
   // initial placement (?cam=<key> overrides for previews)
   useEffect(() => {

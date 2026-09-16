@@ -58,7 +58,7 @@ function Hero() {
 
       <div className="hero__ui">
         <HeroContent />
-        <div aria-hidden="true" />
+        <div className="hero__gap" aria-hidden="true" />
         <ServicePanel />
       </div>
 
