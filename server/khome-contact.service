@@ -1,4 +1,4 @@
-# /etc/systemd/system/khome-contact.service  (on the web LXC)
+# /etc/systemd/system/khome-contact.service  (CT 1320 beconnected-web)
 [Unit]
 Description=Be Connected website contact form -> Telegram
 After=network-online.target
@@ -7,8 +7,8 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=www-data
-WorkingDirectory=/var/www/khome-smart-web
-ExecStart=/usr/bin/node /var/www/khome-smart-web/server/contact-server.mjs
+WorkingDirectory=/var/www/beconnected-web
+ExecStart=/usr/bin/node /var/www/beconnected-web/server/contact-server.mjs
 Restart=on-failure
 RestartSec=5
 NoNewPrivileges=true
