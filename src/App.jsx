@@ -6,9 +6,10 @@ import Header from './components/Header'
 import HeroContent from './components/HeroContent'
 import BeeMascot from './components/BeeMascot'
 import ServicePanel, { MobileServices, MobileServiceChips } from './components/ServicePanel'
-import InteractionHelp, { ScrollCue } from './components/InteractionHelp'
+import InteractionHelp, { ScrollCue, ZoomHint } from './components/InteractionHelp'
 import LoadingScreen from './components/LoadingScreen'
 import Sections from './components/Sections'
+import useSectionSnap from './useSectionSnap'
 import { SceneErrorBoundary, StaticFallback, supportsWebGL } from './three/Fallback'
 
 // three.js + R3F are code-split so the shell paints before the 3D bundle arrives
@@ -16,7 +17,8 @@ const Scene = lazy(() => import('./three/Scene'))
 
 /** Mirrors sceneReady onto <html data-ready> so header/UI fade-in CSS can key off it */
 function ReadyFlag() {
-  const { sceneReady } = useApp()
+  const { sceneReady, reducedMotion } = useApp()
+  useSectionSnap(reducedMotion)
   useEffect(() => {
     document.documentElement.dataset.ready = sceneReady
   }, [sceneReady])
@@ -52,6 +54,7 @@ function Hero() {
           <StaticFallback />
         )}
         {webgl && <InteractionHelp />}
+        {webgl && <ZoomHint />}
         <MobileServiceChips />
         <ScrollCue />
       </div>

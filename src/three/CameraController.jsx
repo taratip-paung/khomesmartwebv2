@@ -24,6 +24,7 @@ const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2
 export default function CameraController() {
   const controls = useRef()
   const { camera, size, gl } = useThree()
+  const ctl = useThree((s) => s.controls) // set by makeDefault once OrbitControls exists
   const { selectedId, resetNonce, reducedMotion, isMobile } = useApp()
   const tween = useRef(null)
   const idle = useRef(true)
@@ -81,6 +82,39 @@ export default function CameraController() {
     camera.updateProjectionMatrix()
   }, [camera, gl, size])
 
+  // Wheel & touch policy — the hero must never trap page scrolling:
+  // - plain wheel / two-finger trackpad scroll → scrolls the PAGE (OrbitControls zoom is off for that event)
+  // - Ctrl/⌘ + wheel, or trackpad pinch (browsers send it as ctrlKey wheel) → zooms the model
+  // - touch: one finger scrolls the page (touch-action: pan-y), two fingers rotate + pinch-zoom
+  useEffect(() => {
+    const c = ctl
+    if (!c?.domElement) return
+    const el = c.domElement
+    const host = el.parentElement || el
+    el.style.touchAction = 'pan-y' // OrbitControls.connect() sets 'none'
+    gl.domElement.style.touchAction = 'pan-y'
+    const before = (e) => {
+      const zoom = e.ctrlKey || e.metaKey
+      c.enableZoom = zoom
+      if (!zoom) window.dispatchEvent(new Event('khome:zoomhint'))
+    }
+    const after = () => {
+      c.enableZoom = true // keep pinch-dolly on touch working
+    }
+    const twoFingers = (e) => {
+      // stop the browser from panning the page while two fingers drive the model
+      if (e.touches.length > 1 && e.cancelable) e.preventDefault()
+    }
+    host.addEventListener('wheel', before, { capture: true, passive: true })
+    host.addEventListener('wheel', after, { passive: true })
+    el.addEventListener('touchmove', twoFingers, { passive: false })
+    return () => {
+      host.removeEventListener('wheel', before, { capture: true })
+      host.removeEventListener('wheel', after)
+      el.removeEventListener('touchmove', twoFingers)
+    }
+  }, [ctl, gl])
+
   // initial placement (?cam=<key> overrides for previews)
   useEffect(() => {
     let key = 'default'
@@ -97,6 +131,10 @@ export default function CameraController() {
   useFrame(() => {
     const c = controls.current
     if (!c) return
+    if (c.domElement && c.domElement.style.touchAction !== 'pan-y') {
+      c.domElement.style.touchAction = 'pan-y'
+      gl.domElement.style.touchAction = 'pan-y'
+    }
     const tw = tween.current
     if (tw) {
       const k = easeInOutCubic(Math.min(1, (performance.now() - tw.start) / tw.duration))
@@ -141,6 +179,7 @@ export default function CameraController() {
       enablePan={false}
       rotateSpeed={isMobile ? 0.6 : 0.8}
       zoomSpeed={0.8}
+      touches={{ ONE: null, TWO: THREE.TOUCH.DOLLY_ROTATE }}
       minDistance={cameraLimits.minDistance}
       maxDistance={cameraLimits.maxDistance}
       minPolarAngle={cameraLimits.minPolarAngle}
