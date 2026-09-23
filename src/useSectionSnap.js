@@ -1,16 +1,19 @@
 import { useEffect } from 'react'
 
-const IDS = ['services', 'about', 'projects', 'contact'] // 02 – 05
-const RANGE = 0.4 // snap when the heading ahead is within 40 % of the viewport
+const IDS = ['home', 'services', 'about', 'projects', 'contact'] // hero, 02 – 05
+const TALL = 1.15 // a section taller than 115 % of the viewport scrolls freely inside
 const INTENT_MS = 1500
 
 /**
- * Direction-aware section snap. When a user scroll comes to rest and the NEXT heading in the
- * direction of travel is close (≤ 40 % of the viewport away), glide onto it — landing exactly
- * where the header nav's scrollToSection() lands. Unlike CSS `scroll-snap-type: proximity`
- * it never pulls you BACK to the heading you just left, so long sections (Projects, Contact)
- * scroll freely. The full-height hero always hands off to 02 (down) or the top (up).
- * Skipped while typing in the contact form and for programmatic scrolls (nav clicks).
+ * Section paging (owner's spec, 2026-09-24):
+ * - Sections that fit the screen (hero, 02, 03, 05) page with the smallest scroll: a nudge down
+ *   goes to the next heading, a nudge up goes to the previous one.
+ * - A tall section (04 Projects — ~3 screens) scrolls freely inside. Going DOWN, once its end
+ *   passes the bottom of the screen it hands off to the next heading (05). Going UP, near its top
+ *   it settles on its own heading; from that heading a nudge up goes to 03. Coming up from 05
+ *   lands on the END of 04 (last row of projects), not its heading.
+ * Landing spot = the header nav's scrollToSection() (top − header + 60). Only user scrolls
+ * (wheel / touch / keys) trigger it; nav clicks and the contact form are left alone.
  */
 export default function useSectionSnap(reducedMotion) {
   useEffect(() => {
@@ -23,11 +26,6 @@ export default function useSectionSnap(reducedMotion) {
 
     const headerH = () =>
       parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 72
-    const landing = (id) => {
-      const el = document.getElementById(id)
-      return el ? Math.max(0, el.getBoundingClientRect().top + window.scrollY - headerH() + 60) : null
-    }
-
     const decide = () => {
       const from = restY
       const y = window.scrollY
@@ -42,17 +40,33 @@ export default function useSectionSnap(reducedMotion) {
       const dir = Math.sign(y - from)
       if (!dir) return
       const vh = window.innerHeight
-      const pts = IDS.map(landing).filter((v) => v !== null)
-      if (!pts.length) return
+      const H = headerH()
+      const secs = IDS.map((id) => {
+        const el = document.getElementById(id)
+        if (!el) return null
+        const top = el.getBoundingClientRect().top + window.scrollY
+        const land = id === 'home' ? 0 : Math.max(0, top - H + 60)
+        const bottom = top + el.offsetHeight
+        return { id, land, end: Math.max(land, bottom - vh), tall: el.offsetHeight > vh * TALL }
+      }).filter(Boolean)
+      if (secs.length < 2) return
+      // section the gesture started in
+      let k = 0
+      for (let n = 0; n < secs.length; n++) if (secs[n].land <= from + 2) k = n
+      const cur = secs[k]
+      const prev = secs[k - 1]
+      const next = secs[k + 1]
+      // where a section is entered from below: tall → its end, otherwise its heading
+      const arriveUp = (sec) => (sec.tall ? sec.end : sec.land)
       let target = null
-      const hero = document.getElementById('home')
-      const heroFits = hero && hero.offsetHeight <= vh + 2
-      if (heroFits && y > 1 && y < pts[0] - 1) {
-        target = dir > 0 ? pts[0] : 0 // hero ↔ 02
+      if (dir > 0) {
+        if (!cur.tall) target = next ? next.land : null
+        else if (y > cur.end + 8) target = next ? next.land : null // scrolled past the end of 04
       } else {
-        const ahead = [0, ...pts].filter((p) => (dir > 0 ? p > y + 1 : p < y - 1))
-        const next = dir > 0 ? Math.min(...ahead) : Math.max(...ahead)
-        if (ahead.length && Math.abs(next - y) <= vh * RANGE) target = next
+        const atHead = Math.abs(from - cur.land) < 6
+        if (atHead) target = prev ? arriveUp(prev) : 0
+        else if (y < cur.land - 6) target = prev ? arriveUp(prev) : 0 // scrolled above the heading
+        else if (!cur.tall || y < cur.land + vh * 0.35) target = cur.land
       }
       if (target === null || Math.abs(target - y) < 2) return
       snapping = true
