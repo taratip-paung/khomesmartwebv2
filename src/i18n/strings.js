@@ -51,6 +51,8 @@ export const strings = {
     panel: {
       title: 'OUR SERVICES',
       hint: 'เลือกบริการเพื่อสำรวจในโมเดล 3D',
+      explore: 'ดู 3D',
+      coach: 'แตะที่บริการ เพื่อดูในโมเดล 3D',
       introTitle: 'ระบบนิเวศเทคโนโลยีเดียว',
       introBody: 'สี่บริการที่ทำงานร่วมกันเป็นระบบเดียว — พลังงาน อุปกรณ์ เครือข่าย และคลาวด์ คลิกที่บริการหรือจุดในโมเดลเพื่อดูรายละเอียด',
     },
@@ -183,6 +185,8 @@ export const strings = {
     panel: {
       title: 'OUR SERVICES',
       hint: 'Select a service to explore it in 3D',
+      explore: 'Explore',
+      coach: 'Tap a service to see it in the 3D model',
       introTitle: 'One technology ecosystem',
       introBody: 'Four services that work as one system — energy, devices, network and cloud. Click a service or a marker in the model to explore.',
     },
