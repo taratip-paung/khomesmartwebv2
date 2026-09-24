@@ -4,3 +4,9 @@ dist
 *.log
 .vite
 server/.env
+
+# local secrets (API keys) — never commit
+.env
+.env.local
+.env.*.local
+*.local

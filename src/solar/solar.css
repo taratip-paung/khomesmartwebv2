@@ -628,3 +628,162 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* map (Google Maps) */
+.sb-stage.has-map {
+  align-items: stretch;
+  padding-bottom: 0;
+}
+.sb-map {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sb-map__search {
+  min-height: 44px;
+}
+.sb-pac {
+  width: 100%;
+  color-scheme: light;
+}
+:root[data-theme='dark'] .sb-pac {
+  color-scheme: dark;
+}
+.sb-map__canvas {
+  width: 100%;
+  height: min(62vh, 620px);
+  min-height: 320px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  background: var(--bg-2);
+}
+.sb-map__hint {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--ink-3);
+  text-align: center;
+}
+.sb-stage__inset {
+  align-self: center;
+  width: min(100%, 300px);
+}
+.sb-stage__inset .ov {
+  min-width: 0;
+  width: 100%;
+}
+.sb-sat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sb-sat span {
+  color: var(--ink-2);
+}
+.sb-sat small,
+.sb-attr {
+  font-size: 11px;
+  color: var(--ink-3);
+}
+.sb-attr {
+  margin: 0;
+}
+/* desktop: keep the map clear of the docked bee (bottom-left) */
+@media (min-width: 901px) {
+  .sb-stage.has-map {
+    padding-left: 0;
+    padding-bottom: 150px;
+  }
+}
+@media (max-width: 900px) {
+  .sb-map__canvas {
+    height: 58vh;
+  }
+}
+
+/* roof-face chooser */
+.sb-faces {
+  list-style: none;
+  margin: 4px 0 2px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.sb-faces button {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-2);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+}
+.sb-faces button:disabled {
+  cursor: default;
+}
+.sb-faces button[aria-checked='true'] {
+  border-color: #c98f00;
+  background: rgba(255, 200, 87, 0.2);
+}
+.sb-faces span {
+  color: var(--ink-2);
+}
+.sb-faces em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 999px;
+  color: #1a1100;
+  background: #ffc857;
+}
+
+/* daily-limit pop-up */
+.sb-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(6, 11, 26, 0.45);
+  backdrop-filter: blur(4px);
+}
+.sb-modal__card {
+  width: min(100%, 440px);
+  padding: 26px 24px 22px;
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+  align-items: center;
+  background: var(--panel-solid);
+}
+.sb-modal__card h2 {
+  margin: 0;
+  font-size: 19px;
+}
+.sb-modal__card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.sb-modal__icon {
+  font-size: 34px;
+  line-height: 1;
+}
+.sb-modal__card .btn {
+  margin-top: 6px;
+}

@@ -3,7 +3,8 @@ import { useLang } from '../i18n/LangContext'
 import { useSolarBee } from './SolarBee'
 import { showDraft } from './config'
 import { DEFAULTS, withDefaults } from '../lib/solar/assumptions'
-import { annualYield, compass8, transpositionFactor } from '../lib/solar/production'
+import { annualYield, annualYieldFromSunshine, compass8, transpositionFactor } from '../lib/solar/production'
+import { mainSegment, roofFromPitch, selectedSegment } from '../lib/solar/insights'
 import { fromKwp, recommendFromBill } from '../lib/solar/sizing'
 import { modulesFor } from '../lib/solar/battery'
 import { validateSystem } from '../lib/solar/rules'
@@ -37,8 +38,52 @@ function Field({ label, value, children }) {
   )
 }
 
+/** one-line satellite status used by several steps */
+export function SatStatus({ ins, S, seg, onSeg }) {
+  if (!ins || ins.status === 'idle') return null
+  const tpl = (t, p) => t.replace(/\{(\w+)\}/g, (_, k) => p[k] ?? '')
+  if (ins.status === 'loading') return <p className="sb-msg sb-msg--info">{S.sat.loading}</p>
+  if (ins.status === 'found') {
+    const cur = selectedSegment(ins.data, seg)
+    const best = mainSegment(ins.data)
+    return (
+      <div className="sb-msg sb-msg--ok sb-sat">
+        <b>{tpl(S.sat.found, { n: ins.data.segments.length })}</b>
+        {onSeg && ins.data.segments.length > 1 && <span>{S.sat.pick}</span>}
+        <ul className="sb-faces" role="radiogroup" aria-label={S.sat.pick}>
+          {ins.data.segments.map((s) => (
+            <li key={s.i}>
+              <button type="button" role="radio" aria-checked={cur?.i === s.i} disabled={!onSeg} onClick={() => onSeg?.(s.i)}>
+                <b>{S.compass[compass8(s.azimuth)]} {Math.round(s.azimuth)}°</b>
+                <span>{tpl(S.sat.face, { pitch: Math.round(s.pitch), area: Math.round(s.areaM2), sun: Math.round(s.sunshineMedian) })}</span>
+                {best?.i === s.i && <em>{S.sat.best}</em>}
+              </button>
+            </li>
+          ))}
+        </ul>
+        <small>{tpl(S.sat.quality, { q: ins.data.imageryQuality, d: ins.data.imageryDate ?? '–' })} · {S.sat.attribution}</small>
+      </div>
+    )
+  }
+  return <p className="sb-msg sb-msg--warning">{ins.status === 'not_found' ? S.sat.notFound : ins.status === 'limit' ? S.limit.short : S.sat.unavailable}</p>
+}
+
+/** satellite-derived orientation for a roof face (chosen index, or the suggested one) */
+export function satOrientation(ins, seg) {
+  const m = ins?.status === 'found' ? selectedSegment(ins.data, seg) : null
+  if (!m) return null
+  const roof = roofFromPitch(m.pitch)
+  return { seg: m.i, azimuth: (Math.round(m.azimuth / 5) * 5) % 360, tilt: roof === 'flat' ? 10 : Math.min(40, Math.round(m.pitch)), roof }
+}
+
+/** choose a roof face → apply its orientation */
+export const pickFace = (ins, set) => (i) => {
+  const o = satOrientation(ins, i)
+  if (o) set(o)
+}
+
 /* ---------------------------------------------------------------- 1 locate */
-export function LocateStep({ state, set, S }) {
+export function LocateStep({ state, set, S, ins }) {
   const [err, setErr] = useState(null)
   const gps = () => {
     setErr(null)
@@ -66,6 +111,7 @@ export function LocateStep({ state, set, S }) {
         </Field>
       </div>
       {err && <p className="sb-msg sb-msg--warning">{err}</p>}
+      <SatStatus ins={ins} S={S} seg={state.seg} onSeg={pickFace(ins, set)} />
     </>
   )
 }
@@ -85,13 +131,18 @@ export function useOrientation(state) {
   return { lat, factor, best }
 }
 
-export function OrientStep({ state, set, S }) {
+export function OrientStep({ state, set, S, ins }) {
   const { factor, best } = useOrientation(state)
   const dir = (az) => S.compass[compass8(az)]
+  const sat = satOrientation(ins, state.seg)
   return (
     <>
       <h2>{S.orient.h}</h2>
       <p className="sb-p">{S.orient.p}</p>
+      <SatStatus ins={ins} S={S} seg={state.seg} onSeg={pickFace(ins, set)} />
+      {sat && (sat.azimuth !== state.azimuth || sat.tilt !== state.tilt) && (
+        <button type="button" className="btn btn--glass btn--sm" onClick={() => set(sat)}>{S.sat.apply}</button>
+      )}
       <Field label={S.orient.roof}>
         <Seg
           label={S.orient.roof}
@@ -116,13 +167,23 @@ export function OrientStep({ state, set, S }) {
 }
 
 /* ---------------------------------------------------------------- 3 preview */
-export function PreviewStep({ state, S }) {
+export function PreviewStep({ state, S, ins }) {
   const { lat } = useOrientation(state)
-  const y = useMemo(() => annualYield({ kwp: 1, tilt: state.tilt, azimuth: state.azimuth, latitude: lat }), [lat, state.tilt, state.azimuth])
-  const kwp = 5
+  const main = ins?.status === 'found' ? selectedSegment(ins.data, state.seg) : null
+  const y = useMemo(
+    () => (main ? annualYieldFromSunshine({ kwp: 1, sunshineHoursPerYear: main.sunshineMedian }) : annualYield({ kwp: 1, tilt: state.tilt, azimuth: state.azimuth, latitude: lat })),
+    [main, lat, state.tilt, state.azimuth],
+  )
+  const kwp = main ? Math.min(5, Math.max(1, Math.floor(ins.data.maxKwp))) : 5
   return (
     <>
       <h2>{S.previewStep.h}</h2>
+      {main && (
+        <div className="sb-stats">
+          <div><span>{S.sat.maxKwp}</span><b>{fmt(ins.data.maxKwp, 1)} kWp</b><small>{ins.data.maxPanels} × {ins.data.panelW} W</small></div>
+          <div><span>{S.sat.sunshine}</span><b>{fmt(main.sunshineMedian)}</b><small>{S.sat.hoursYr}</small></div>
+        </div>
+      )}
       <div className="sb-hero-num">
         <b>{fmt(y.kwhPerKwp)}</b> kWh <span>{S.previewStep.perKwp}</span>
       </div>
@@ -138,7 +199,8 @@ export function PreviewStep({ state, S }) {
           <li>tilt {state.tilt}°, azimuth {state.azimuth}°, factor {fmt(y.factor, 3)}</li>
         </ul>
       </details>
-      <p className="sb-note">{S.previewStep.note}</p>
+      <p className="sb-note">{main ? S.sat.basedOn : S.previewStep.note}</p>
+      {main && <p className="sb-attr">{S.sat.attribution}</p>}
     </>
   )
 }

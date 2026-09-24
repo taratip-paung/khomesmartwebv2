@@ -147,3 +147,50 @@ test('explain: every key the engine can emit has TH + EN text (basic + tech)', a
   }
   assert.match(explain('voc_over_max', 'tech', 'en', { t: 5, voc: 525.4, max: 500, mppt: 1, maxSeries: 8 }), /525\.4 V > Vdc max 500 V/)
 })
+
+test('insights: trim Google buildingInsights + pick the main roof face', async () => {
+  const { trimInsights, mainSegment, roofFromPitch } = await import('../insights.js')
+  const seg = (az, pitch, area, q) => ({ azimuthDegrees: az, pitchDegrees: pitch, stats: { areaMeters2: area, sunshineQuantiles: q }, center: { latitude: 18.788, longitude: 98.985 }, boundingBox: { sw: { latitude: 18.7879, longitude: 98.9849 }, ne: { latitude: 18.7881, longitude: 98.9851 } } })
+  const q = (m) => Array.from({ length: 11 }, (_, i) => m - 100 + i * 20)
+  const raw = {
+    center: { latitude: 18.788, longitude: 98.985 },
+    imageryQuality: 'BASE',
+    imageryDate: { year: 2025, month: 3, day: 7 },
+    solarPotential: {
+      maxArrayPanelsCount: 24, panelCapacityWatts: 400, maxArrayAreaMeters2: 47.1, maxSunshineHoursPerYear: 1890,
+      roofSegmentStats: [seg(12, 18, 40, q(1500)), seg(192, 18, 38, q(1800)), seg(100, 20, 4, q(1900))],
+      solarPanelConfigs: [{ panelsCount: 4, yearlyEnergyDcKwh: 2800 }, { panelsCount: 24, yearlyEnergyDcKwh: 15000 }],
+      solarPanels: [{ center: { latitude: 18.788, longitude: 98.985 }, orientation: 'LANDSCAPE', segmentIndex: 1, yearlyEnergyDcKwh: 700.4 }],
+    },
+  }
+  const t = trimInsights(raw)
+  assert.equal(t.found, true)
+  assert.equal(t.imageryDate, '2025-03-07')
+  assert.equal(t.maxKwp, 9.6)
+  assert.equal(t.maxYearlyDcKwh, 15000)
+  assert.equal(t.segments[1].sunshineMedian, 1800)
+  assert.equal(t.panels[0].o, 'L')
+  assert.equal(mainSegment(t).i, 1) // south face (192°) — the tiny 4 m² sliver with more sun is ignored
+  // real case 2026-09-24: bigger north face (109 m²) must NOT beat the sunnier south face
+  const gable = { found: true, segments: [{ i: 0, azimuth: 353, pitch: 16, areaM2: 109, sunshineMedian: 1450 }, { i: 1, azimuth: 185, pitch: 17, areaM2: 96, sunshineMedian: 1780 }] }
+  assert.equal(mainSegment(gable).i, 1)
+  const { selectedSegment } = await import('../insights.js')
+  assert.equal(selectedSegment(gable, 0).i, 0)
+  assert.equal(selectedSegment(gable, 9).i, 1) // bad index → suggested face
+  assert.equal(roofFromPitch(2), 'flat')
+  assert.equal(roofFromPitch(18), 'gable')
+})
+
+test('daily limit: 300/day, resets at Bangkok midnight', async () => {
+  const { createDailyLimiter, bangkokDay } = await import('../dailyLimit.js')
+  let t = Date.UTC(2026, 8, 24, 16, 30) // 23:30 Bangkok, 24 Sep
+  const lim = createDailyLimiter({ limit: 3, now: () => t })
+  assert.equal(bangkokDay(t), '2026-09-24')
+  assert.ok(lim.take().ok && lim.take().ok && lim.take().ok)
+  const full = lim.take()
+  assert.equal(full.ok, false)
+  assert.equal(new Date(full.resetsAt).toISOString(), '2026-09-24T17:00:00.000Z') // 00:00 Bangkok 25 Sep
+  t = Date.UTC(2026, 8, 24, 17, 1) // 00:01 Bangkok → new day
+  assert.equal(lim.take().ok, true)
+  assert.equal(lim.status().used, 1)
+})

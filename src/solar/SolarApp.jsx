@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { ThemeProvider } from '../ThemeContext'
 import { LangProvider, useLang } from '../i18n/LangContext'
 import { AppProvider } from '../AppContext'
@@ -7,6 +7,11 @@ import { LogoMark } from '../components/Icons'
 import useSolarFlow, { STEPS, canAdvance } from './useSolarFlow'
 import SolarBee, { SolarBeeProvider, useSolarBee } from './SolarBee'
 import OrientView from './OrientView'
+import SolarMap from './SolarMap'
+import { GMAPS_KEY } from './gmaps'
+import useInsights from './useInsights'
+import { satOrientation, pickFace } from './Steps'
+import LimitModal from './LimitModal'
 import { SOLAR_STRINGS } from './i18n'
 import { SOLAR_PUBLIC } from './config'
 import { beeLines } from '../data/solar/beeScript'
@@ -56,13 +61,34 @@ function Stepper({ flow, S }) {
   )
 }
 
-function Stage({ flow, S }) {
+const MAP_STEPS = ['locate', 'orient', 'preview']
+
+function Stage({ flow, S, ins, lang }) {
   const { state, set } = flow
-  // S3 replaces this with the 3D scene (OrientedHouse + SunPath); the top view already teaches orientation
+  const [mapFailed, setMapFailed] = useState(false) // Maps JS blocked / bad key → fall back to the compass view
+  const useMap = GMAPS_KEY && !mapFailed && MAP_STEPS.includes(state.step)
+  const compass = (
+    <OrientView lat={state.lat ?? 18.79} azimuth={state.azimuth} roof={state.roof} onAzimuth={(azimuth) => set({ azimuth })} labels={{ aria: S.stagePlaceholder }} />
+  )
   return (
-    <div className="sb-stage">
-      <OrientView lat={state.lat ?? 18.79} azimuth={state.azimuth} roof={state.roof} onAzimuth={(azimuth) => set({ azimuth })} labels={{ aria: S.stagePlaceholder }} />
-      <p className="sb-stage__cap">{S.stagePlaceholder}</p>
+    <div className={`sb-stage${useMap ? ' has-map' : ''}`}>
+      {useMap && (
+        <SolarMap
+          lat={state.lat}
+          lng={state.lng}
+          azimuth={state.step === 'locate' ? null : state.azimuth}
+          insights={ins.status === 'found' ? ins.data : null}
+          seg={state.seg}
+          onSegment={state.step === 'locate' || state.step === 'orient' ? pickFace(ins, set) : undefined}
+          onPick={(lat, lng) => set({ lat, lng })}
+          onError={() => setMapFailed(true)}
+          lang={lang}
+          S={S}
+          showSearch={state.step === 'locate'}
+        />
+      )}
+      {(!useMap || state.step === 'orient') && <div className={useMap ? 'sb-stage__inset' : ''}>{compass}</div>}
+      {!useMap && <p className="sb-stage__cap">{S.stagePlaceholder}</p>}
     </div>
   )
 }
@@ -74,6 +100,14 @@ function SolarPage() {
   const { state, next, back, index } = flow
   const { setLines } = useSolarBee()
   const View = STEP_VIEWS[state.step]
+  const ins = useInsights(state.lat, state.lng)
+
+  // satellite orientation → applied once per location (the user can still turn the house afterwards)
+  useEffect(() => {
+    if (ins.status !== 'found' || state.autoFor === ins.forKey) return
+    const sat = satOrientation(ins, null) // new location → start from the sunniest face
+    flow.set(sat ? { ...sat, autoFor: ins.forKey } : { autoFor: ins.forKey })
+  }, [ins, state.autoFor]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     document.documentElement.dataset.ready = 'true' // header/bee fade-in keys off this (see global.css)
@@ -91,10 +125,10 @@ function SolarPage() {
           <Stepper flow={flow} S={S} />
         </div>
         <div className="sb__body">
-          <Stage flow={flow} S={S} />
+          <Stage flow={flow} S={S} ins={ins} lang={lang} />
           <SolarBee placement="inline" />
           <section className="sb-panel liquid" aria-live="polite">
-            <View state={state} set={flow.set} next={next} S={S} />
+            <View state={state} set={flow.set} next={next} S={S} ins={ins} />
             <div className="sb-nav">
               <button type="button" className="btn btn--ghost btn--sm" onClick={back} disabled={index === 0}>← {S.back}</button>
               {index < STEPS.length - 1 && (
@@ -107,6 +141,7 @@ function SolarPage() {
         </div>
       </main>
       <SolarBee />
+      <LimitModal ins={ins} S={S} lang={lang} />
     </>
   )
 }

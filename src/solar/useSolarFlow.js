@@ -20,6 +20,8 @@ const FIELDS = {
   phase: ['ph', (v) => (v === '3' ? 3 : 1)],
   backup: ['bk', (v) => (['none', 'part', 'whole'].includes(v) ? v : 'part')],
   signedIn: ['in', (v) => v === '1'],
+  autoFor: ['af', (v) => v || null],
+  seg: ['seg', (v) => (/^\d+$/.test(v ?? '') ? +v : null)], // chosen roof face (Solar API segment index) // lat,lng key the satellite orientation was last applied for
 }
 function num(v) {
   const n = parseFloat(v)
