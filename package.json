@@ -9,7 +9,8 @@
     "build": "vite build",
     "preview": "vite preview --host",
     "contact": "node server/contact-server.mjs",
-    "contact:dry": "DRY_RUN=1 node server/contact-server.mjs"
+    "contact:dry": "DRY_RUN=1 node server/contact-server.mjs",
+    "test:solar": "node --test \"src/lib/solar/__tests__/*.test.js\""
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",

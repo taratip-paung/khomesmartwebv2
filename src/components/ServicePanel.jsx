@@ -4,6 +4,7 @@ import { services } from '../data/services'
 import { useLang } from '../i18n/LangContext'
 import { icons } from './Icons'
 import { useTheme } from '../ThemeContext'
+import { SOLAR_PUBLIC } from '../solar/config'
 
 export function ServiceCard({ service, active, onSelect, compact = false }) {
   const { t, ui } = useLang()
@@ -68,6 +69,11 @@ export function ServiceDetail({ service }) {
       <button type="button" className="tile__link" onClick={seeProjects}>
         {ui.cta.seeProjects} <span className="arrow">→</span>
       </button>
+      {service.id === 'solar' && SOLAR_PUBLIC && (
+        <a className="tile__link" href="/solar">
+          Solar Builder <span className="arrow">→</span>
+        </a>
+      )}
     </div>
   )
 }
