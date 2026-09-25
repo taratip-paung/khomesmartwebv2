@@ -1,8 +1,8 @@
 {
   "name": "beconnected-solar-server",
   "private": true,
-  "version": "0.2.0",
-  "description": "Solar Builder backend (CT 1330): Google Solar API proxy + daily cap; auth/projects come in S5",
+  "version": "0.3.0",
+  "description": "Solar Builder backend (CT 1330): Google Solar API proxy + daily cap, climate cache (NASA POWER + PVGIS); auth/projects come in S5",
   "type": "module",
   "engines": {
     "node": ">=22"

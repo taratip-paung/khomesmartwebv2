@@ -4,7 +4,7 @@
  */
 import { loadDotEnv, readConfig } from './config.mjs'
 import { buildApp } from './app.mjs'
-import { createPool, migrate, createDbDailyLimiter } from './db.mjs'
+import { createPool, migrate, createDbDailyLimiter, createClimateStore } from './db.mjs'
 import { createNotifier } from './notify.mjs'
 
 loadDotEnv()
@@ -16,6 +16,7 @@ const app = await buildApp({
   config,
   limiter: createDbDailyLimiter(pool, { limit: config.dailyLimit }),
   dbPing: () => pool.query('SELECT 1'),
+  climateStore: createClimateStore(pool),
   notify,
 })
 

@@ -53,6 +53,8 @@ export function trimInsights(j) {
     maxSunshine: round(sp.maxSunshineHoursPerYear ?? 0, 0),
     maxYearlyDcKwh: best ? round(best.yearlyEnergyDcKwh, 0) : null,
     segments,
+    // Google's layouts: [panelsCount, yearly DC kWh] — panels are added best-spot-first, so energy grows less than linearly
+    configs: thinConfigs(configs),
     // first panels of Google's best layout (for drawing on the map); capped to keep payload small
     panels: (sp.solarPanels ?? []).slice(0, 300).map((p) => ({
       lat: p.center.latitude,
@@ -62,6 +64,14 @@ export function trimInsights(j) {
       kwh: round(p.yearlyEnergyDcKwh, 0),
     })),
   }
+}
+
+/** keep every layout for small roofs; sample big ones (≤ 80 points is plenty for a chart/slider) */
+function thinConfigs(configs) {
+  const all = configs.map((c) => [c.panelsCount, round(c.yearlyEnergyDcKwh, 0)])
+  if (all.length <= 80) return all
+  const step = (all.length - 1) / 79
+  return Array.from({ length: 80 }, (_, i) => all[Math.round(i * step)])
 }
 
 /**

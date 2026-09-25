@@ -3,16 +3,21 @@ import { useLang } from '../i18n/LangContext'
 import { useSolarBee } from './SolarBee'
 import { showDraft } from './config'
 import { DEFAULTS, withDefaults } from '../lib/solar/assumptions'
-import { annualYield, annualYieldFromSunshine, compass8, transpositionFactor } from '../lib/solar/production'
+import { compass8, transpositionFactor } from '../lib/solar/production'
 import { mainSegment, roofFromPitch, selectedSegment } from '../lib/solar/insights'
 import { fromKwp, recommendFromBill } from '../lib/solar/sizing'
 import { modulesFor } from '../lib/solar/battery'
 import { validateSystem } from '../lib/solar/rules'
 import { catalog, byId, visibleItems } from '../data/solar/catalog'
 import { explain, explainTitle } from '../data/solar/explain'
+import { layoutCurve, kwhFor, defaultPanels, googleCountFor, oursFromGoogle } from '../lib/solar/layout'
+import { monthlyYield, effectivePR } from '../lib/solar/seasons'
+import LayoutPicker from './LayoutPicker'
+import { useClimateData } from './useClimate'
 
 const fmt = (n, d = 0) => (n == null ? '–' : Number(n).toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: d }))
 const ROOF_TILT = { flat: 10, gable: 20, hip: 20 }
+const turn = (az, by) => ((Math.round(az + by) % 360) + 360) % 360
 
 function Seg({ value, options, onChange, label }) {
   return (
@@ -140,6 +145,7 @@ export function OrientStep({ state, set, S, ins }) {
       <h2>{S.orient.h}</h2>
       <p className="sb-p">{S.orient.p}</p>
       <SatStatus ins={ins} S={S} seg={state.seg} onSeg={pickFace(ins, set)} />
+      <LayoutPicker state={state} set={set} S={S} ins={ins} />
       {sat && (sat.azimuth !== state.azimuth || sat.tilt !== state.tilt) && (
         <button type="button" className="btn btn--glass btn--sm" onClick={() => set(sat)}>{S.sat.apply}</button>
       )}
@@ -154,6 +160,24 @@ export function OrientStep({ state, set, S, ins }) {
       <Field label={S.orient.azimuth} value={`${dir(state.azimuth)} · ${state.azimuth}°`}>
         <input type="range" min="0" max="355" step="5" value={state.azimuth} onChange={(e) => set({ azimuth: +e.target.value })} />
       </Field>
+      <div className="sb-turn">
+        <button type="button" className="btn btn--glass btn--sm" onClick={() => set({ azimuth: turn(state.azimuth, -15) })} aria-label={S.orient.turnL}>
+          ⟲ 15°
+        </button>
+        <input
+          type="number"
+          inputMode="numeric"
+          min="0"
+          max="359"
+          value={state.azimuth}
+          aria-label={S.orient.degrees}
+          onChange={(e) => e.target.value !== '' && set({ azimuth: turn(+e.target.value, 0) })}
+        />
+        <span>°</span>
+        <button type="button" className="btn btn--glass btn--sm" onClick={() => set({ azimuth: turn(state.azimuth, 15) })} aria-label={S.orient.turnR}>
+          15° ⟳
+        </button>
+      </div>
       <Field label={S.orient.tilt} value={`${state.tilt}°`}>
         <input type="range" min="0" max="40" step="1" value={state.tilt} onChange={(e) => set({ tilt: +e.target.value })} />
       </Field>
@@ -167,39 +191,101 @@ export function OrientStep({ state, set, S, ins }) {
 }
 
 /* ---------------------------------------------------------------- 3 preview */
-export function PreviewStep({ state, S, ins }) {
-  const { lat } = useOrientation(state)
+/** numbers shared by the preview card and the 3D stage chart: chosen roof face, yield per kWp/yr, example system size */
+export function usePreviewNumbers(state, ins) {
+  const lat = state.lat ?? DEFAULTS.latitude
   const main = ins?.status === 'found' ? selectedSegment(ins.data, state.seg) : null
-  const y = useMemo(
-    () => (main ? annualYieldFromSunshine({ kwp: 1, sunshineHoursPerYear: main.sunshineMedian }) : annualYield({ kwp: 1, tilt: state.tilt, azimuth: state.azimuth, latitude: lat })),
-    [main, lat, state.tilt, state.azimuth],
-  )
-  const kwp = main ? Math.min(5, Math.max(1, Math.floor(ins.data.maxKwp))) : 5
+  // one model everywhere (lib/solar/seasons.js): real climate data → hour-by-hour → year
+  const climate = useClimateData()
+  const y = useMemo(() => {
+    const o = { tilt: state.tilt, azimuth: state.azimuth, latitude: lat, lng: state.lng ?? undefined, climate }
+    const factor = transpositionFactor({ latitude: lat, tilt: state.tilt, azimuth: state.azimuth })
+    if (main) {
+      const pr = effectivePR(o)
+      return { kwhPerKwp: main.sunshineMedian * pr, kwh: main.sunshineMedian * pr, factor, pr }
+    }
+    const kwhPerKwp = monthlyYield(o).reduce((s, v) => s + v, 0)
+    return { kwhPerKwp, kwh: kwhPerKwp, factor, pr: effectivePR(o) }
+  }, [main, lat, state.lng, state.tilt, state.azimuth, climate])
+  // Google's layouts converted to the company panel (DEFAULTS.panel) by roof area — see lib/solar/layout.js
+  const P = DEFAULTS.panel
+  const g = ins?.status === 'found' ? ins.data : null
+  const curve = useMemo(() => (main ? layoutCurve(g.configs ?? [], { gW: g.panelW, gSize: g.panelSizeM, panel: P }) : []), [main, g, P])
+  const maxM = g ? oursFromGoogle(g.maxPanels, g.panelSizeM, P) : 0
+  const max = { m: maxM, kwp: (maxM * P.wp) / 1000 }
+  const n = curve.length ? Math.min(state.pn ?? defaultPanels(curve, 5), curve[curve.length - 1].m) : null
+  if (n) {
+    const kwp = (n * P.wp) / 1000
+    const annualKwh = kwhFor(curve, n)
+    return { lat, main, y, kwp, curve, n, annualKwh, annualPerKwp: annualKwh / kwp, googleN: googleCountFor(curve, n), areaM2: n * P.sizeM[0] * P.sizeM[1], max, panel: P }
+  }
+  const kwp = main ? Math.min(5, Math.max(0.65, Math.floor(max.kwp))) : 5
+  return { lat, main, y, kwp, curve, n: null, annualKwh: y.kwhPerKwp * kwp, annualPerKwp: y.kwhPerKwp, googleN: 0, areaM2: 0, max, panel: P }
+}
+
+export function PreviewStep({ state, set, S, ins }) {
+  const { factor, best } = useOrientation(state)
+  const { main, y, kwp, n, annualKwh, max, panel } = usePreviewNumbers(state, ins)
+  const sun = main ? main.sunshineMedian : y.kwhPerKwp / y.pr // plane-of-array kWh/m²/yr ≈ "sun hours"/yr
+  const dir = (az) => S.compass[compass8(az)]
+  const P = S.previewStep
+  const lossVsBest = (factor / best.f - 1) * 100
   return (
     <>
-      <h2>{S.previewStep.h}</h2>
-      {main && (
-        <div className="sb-stats">
-          <div><span>{S.sat.maxKwp}</span><b>{fmt(ins.data.maxKwp, 1)} kWp</b><small>{ins.data.maxPanels} × {ins.data.panelW} W</small></div>
-          <div><span>{S.sat.sunshine}</span><b>{fmt(main.sunshineMedian)}</b><small>{S.sat.hoursYr}</small></div>
+      <h2>{P.h}</h2>
+      <div className="sb-result">
+        <div>
+          <span>{P.sun}</span>
+          <b>{fmt(sun)}</b>
+          <small>
+            {S.sat.hoursYr} · {main ? P.fromSat : P.fromAvg}
+          </small>
         </div>
-      )}
+        <div>
+          <span>{P.kwp}</span>
+          <b>{main ? `${fmt(max.kwp, 1)} kWp` : '—'}</b>
+          <small>{main ? `${max.m} × ${panel.wp} W` : P.kwpSurvey}</small>
+        </div>
+        <div>
+          <span>{P.bestDir}</span>
+          <b>{dir(best.az)}</b>
+          <small>{P.yourDir.replace('{dir}', dir(state.azimuth)).replace('{pct}', `${lossVsBest >= -0.05 ? '±0' : fmt(lossVsBest, 1)}%`)}</small>
+        </div>
+        <div>
+          <span>{P.quality}</span>
+          <b>{main ? `${S.sat.satellite} ${ins.data.imageryQuality ?? ''}` : P.avg}</b>
+          <small>{main ? P.imagery.replace('{d}', ins.data.imageryDate ?? '–') : P.avgWhy}</small>
+        </div>
+      </div>
       <div className="sb-hero-num">
-        <b>{fmt(y.kwhPerKwp)}</b> kWh <span>{S.previewStep.perKwp}</span>
+        <b>{fmt(y.kwhPerKwp)}</b> kWh <span>{P.perKwp}</span>
       </div>
       <div className="sb-stats">
-        <div><span>{S.previewStep.example.replace('{kwp}', kwp)}</span><b>{fmt(y.kwh * kwp)} kWh</b><small>{S.previewStep.perYear}</small></div>
-        <div><span>&nbsp;</span><b>{fmt((y.kwh * kwp) / 12)} kWh</b><small>{S.previewStep.perMonth}</small></div>
+        <div>
+          <span>{n ? S.layout.example.replace('{n}', n).replace('{kwp}', fmt(kwp, 1)) : P.example.replace('{kwp}', kwp)}</span>
+          <b>{fmt(annualKwh)} kWh</b>
+          <small>{P.perYear}</small>
+        </div>
+        <div>
+          <span>&nbsp;</span>
+          <b>{fmt(annualKwh / 12)} kWh</b>
+          <small>{P.perMonth}</small>
+        </div>
       </div>
+      <LayoutPicker state={state} set={set} S={S} ins={ins} chart />
+      <p className="sb-msg sb-msg--info sb-disclaimer">{P.disclaimer}</p>
       <details className="sb-assume">
-        <summary>{S.previewStep.assumptions}</summary>
+        <summary>{P.assumptions}</summary>
         <ul>
-          <li>GHI {fmt(DEFAULTS.ghiMonthly.reduce((a, b) => a + b) / 12, 2)} kWh/m²/day (draft)</li>
-          <li>PR {DEFAULTS.performanceRatio}</li>
-          <li>tilt {state.tilt}°, azimuth {state.azimuth}°, factor {fmt(y.factor, 3)}</li>
+          <li>{main ? S.sat.basedOn : P.note}</li>
+          <li>
+            GHI {fmt(DEFAULTS.ghiMonthly.reduce((a, b) => a + b) / 12, 2)} kWh/m²/day (NASA POWER) · PR {fmt(y.pr, 2)} · {DEFAULTS.panel.model} · {DEFAULTS.inverter.model}
+          </li>
+          <li>
+            tilt {state.tilt}°, azimuth {state.azimuth}°, factor {fmt(y.factor, 3)}
+          </li>
         </ul>
       </details>
-      <p className="sb-note">{main ? S.sat.basedOn : S.previewStep.note}</p>
       {main && <p className="sb-attr">{S.sat.attribution}</p>}
     </>
   )

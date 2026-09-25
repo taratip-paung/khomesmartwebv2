@@ -5,7 +5,7 @@
 import { test, before, after } from 'node:test'
 import assert from 'node:assert/strict'
 import { readConfig } from '../src/config.mjs'
-import { createPool, migrate, createDbDailyLimiter } from '../src/db.mjs'
+import { createPool, migrate, createDbDailyLimiter, createClimateStore } from '../src/db.mjs'
 
 const on = process.env.SOLAR_DB_TEST === '1'
 let pool
@@ -14,12 +14,12 @@ const quiet = { info() {} }
 before(async () => {
   if (!on) return
   pool = createPool(readConfig().pg)
-  await pool.query('DROP TABLE IF EXISTS api_daily_usage, schema_migrations')
+  await pool.query('DROP TABLE IF EXISTS api_daily_usage, climate_cells, schema_migrations')
 })
 after(async () => pool?.end())
 
 test('migrate is idempotent', { skip: !on }, async () => {
-  assert.deepEqual(await migrate(pool, quiet), ['001_api_daily_usage.sql'])
+  assert.deepEqual(await migrate(pool, quiet), ['001_api_daily_usage.sql', '002_climate_cells.sql'])
   assert.deepEqual(await migrate(pool, quiet), [])
 })
 
@@ -42,4 +42,13 @@ test('counter survives a new limiter instance (= server restart)', { skip: !on }
   const b = createDbDailyLimiter(pool, { limit: 3, api: 'restart', now: () => t })
   assert.equal((await b.take()).ok, true)
   assert.equal((await b.take()).ok, false)
+})
+
+test('climate store: upsert + read JSON per cell', { skip: !on }, async () => {
+  const s = createClimateStore(pool)
+  assert.equal(await s.get('18.75,99.00'), null)
+  await s.put('18.75,99.00', { tl: [4, 5], cell: '18.75,99.00' })
+  await s.put('18.75,99.00', { tl: [4.1, 5], cell: '18.75,99.00' })
+  assert.deepEqual((await s.get('18.75,99.00')).tl, [4.1, 5])
+  assert.equal(await s.count(), 1)
 })

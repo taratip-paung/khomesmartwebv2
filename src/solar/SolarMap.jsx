@@ -1,22 +1,28 @@
 import { useEffect, useRef, useState } from 'react'
 import { loadGoogleMaps, GMAPS_KEY } from './gmaps'
 import { selectedSegment } from '../lib/solar/insights'
+import { houseFootprint, houseSize } from '../lib/solar/geo'
 
 const CM = { lat: 18.7883, lng: 98.9853 } // Chiang Mai
 
 /**
  * Satellite map: search an address, tap / drag the pin on the roof.
- * Overlays (from Google Solar API): roof faces (main one highlighted) + an arrow showing the panel
- * facing the user chose. The 3D house on the map (WebGLOverlayView) comes in plan task S3.1b.
+ * Overlays: roof faces from Google Solar API (chosen one highlighted) and — once the user is orienting —
+ * a top-down house footprint turned to their azimuth (outline, panel area, ridge/hips, facing arrow).
+ * S3.1b: top-down on purpose — Google dropped tilt/45° on satellite + hybrid maps (Maps JS 3.65, May 2026),
+ * so a WebGLOverlayView house cannot be seen in perspective over satellite imagery. The 3D view lives in SolarScene.
  */
-export default function SolarMap({ lat, lng, azimuth, insights, seg, onSegment, onPick, onError, lang, S, showSearch = true }) {
+export default function SolarMap({ lat, lng, azimuth, roof = 'flat', insights, seg, onSegment, onPick, onError, lang, S, showSearch = true, mode = 'full', insetLabel, insetEdit, onInsetClick }) {
   const box = useRef()
   const searchBox = useRef()
   const g = useRef({})
   const [err, setErr] = useState(null)
+  const [ready, setReady] = useState(false)
   const onPickRef = useRef(onPick)
   onPickRef.current = onPick
   const onSegRef = useRef(onSegment)
+  const modeRef = useRef(mode)
+  modeRef.current = mode
   onSegRef.current = onSegment
 
   // init once
@@ -42,11 +48,12 @@ export default function SolarMap({ lat, lng, azimuth, insights, seg, onSegment, 
         })
         const marker = new maps.Marker({ map, position: has ? { lat, lng } : null, draggable: true })
         const pick = (p) => onPickRef.current(+p.lat().toFixed(6), +p.lng().toFixed(6))
-        map.addListener('click', (e) => pick(e.latLng))
+        map.addListener('click', (e) => modeRef.current !== 'inset' && pick(e.latLng))
         marker.addListener('dragend', (e) => pick(e.latLng))
         g.current = { maps, map, marker, overlays: [] }
+        setReady(true)
 
-        if (showSearch && searchBox.current && maps.places?.PlaceAutocompleteElement) {
+        if (searchBox.current && maps.places?.PlaceAutocompleteElement) {
           const pac = new maps.places.PlaceAutocompleteElement({ includedRegionCodes: ['th'] })
           pac.className = 'sb-pac'
           searchBox.current.replaceChildren(pac)
@@ -70,6 +77,26 @@ export default function SolarMap({ lat, lng, azimuth, insights, seg, onSegment, 
       dead = true
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // full ↔ inset (step 3 shows this same map, small, over the 3D view — same instance, so no extra map load)
+  useEffect(() => {
+    const { map, marker } = g.current
+    if (!map) return
+    const inset = mode === 'inset'
+    map.setOptions(
+      inset
+        ? { gestureHandling: 'none', disableDefaultUI: true, keyboardShortcuts: false, clickableIcons: false }
+        : { gestureHandling: 'cooperative', disableDefaultUI: false, keyboardShortcuts: true, mapTypeControl: false, streetViewControl: false, rotateControl: false, fullscreenControl: true },
+    )
+    marker.setVisible(!inset)
+    const main = selectedSegment(insights, seg)
+    const c = main?.center ?? (lat != null ? { lat, lng } : null)
+    const t = window.setTimeout(() => {
+      if (c) map.setCenter(c)
+      if (inset) map.setZoom(20)
+    }, 60) // after the container has resized
+    return () => window.clearTimeout(t)
+  }, [mode, ready]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // pin moved from outside (GPS / typed coordinates)
   useEffect(() => {
@@ -113,12 +140,17 @@ export default function SolarMap({ lat, lng, azimuth, insights, seg, onSegment, 
     }
     const origin = main?.center ?? (lat != null ? { lat, lng } : null)
     if (origin && azimuth != null) {
-      const from = new maps.LatLng(origin.lat, origin.lng)
-      const to = maps.geometry.spherical.computeOffset(from, 7, azimuth)
+      // top-down house turned to the user's facing, sized from the chosen roof face
+      const { w, d } = houseSize({ roof, pitch: main?.pitch, areaM2: main?.areaM2 })
+      const fp = houseFootprint({ center: origin, azimuth, roof, w, d })
+      const line = (path, o) => ov.push(new maps.Polyline({ map, path, clickable: false, ...o }))
+      ov.push(new maps.Polygon({ map, paths: fp.outline, strokeColor: '#ffffff', strokeOpacity: 0.95, strokeWeight: 2, fillColor: '#dfe6ef', fillOpacity: 0.04, clickable: false, zIndex: 3 }))
+      // no panel zone on the map (owner 2026-09-25: it hid the roof photo) — area + count are shown in the side panel
+      fp.ridges.forEach((p) => line(p, { strokeColor: '#ffffff', strokeOpacity: 0.9, strokeWeight: 1.5, zIndex: 5 }))
       ov.push(
         new maps.Polyline({
           map,
-          path: [from, to],
+          path: [fp.arrowFrom, fp.arrowTo],
           strokeColor: '#ffc857',
           strokeWeight: 4,
           clickable: false,
@@ -127,14 +159,24 @@ export default function SolarMap({ lat, lng, azimuth, insights, seg, onSegment, 
       )
     }
     g.current.overlays = ov
-  }, [insights, seg, azimuth, lat, lng, onSegment ? 1 : 0])
+  }, [insights, seg, azimuth, roof, lat, lng, ready, onSegment ? 1 : 0])
 
   if (!GMAPS_KEY || err) return null // caller falls back to the compass view / coordinate inputs
   return (
-    <div className="sb-map">
-      {showSearch && <div className="sb-map__search" ref={searchBox} aria-label={S.map.search} />}
+    <div className={`sb-map${mode === 'inset' ? ' is-inset' : ''}`}>
+      {/* always rendered (hidden when unused) so the search box survives going back to step 1 */}
+      <div className="sb-map__search" ref={searchBox} aria-label={S.map.search} hidden={!showSearch || mode === 'inset'} />
       <div className="sb-map__canvas" ref={box} />
-      <p className="sb-map__hint">{lat == null ? S.map.hintPick : S.map.hintDrag}</p>
+      {mode === 'inset' ? (
+        <div className="sb-map__inset-label">
+          <span>{insetLabel}</span>
+          <button type="button" className="btn btn--glass btn--sm" onClick={onInsetClick}>
+            {insetEdit}
+          </button>
+        </div>
+      ) : (
+        <p className="sb-map__hint">{lat == null ? S.map.hintPick : S.map.hintDrag}</p>
+      )}
     </div>
   )
 }

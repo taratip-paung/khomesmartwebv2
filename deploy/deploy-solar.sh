@@ -17,7 +17,7 @@ npm run --silent test:solar
 echo "▸ upload → $HOST:$DEST/app"
 export COPYFILE_DISABLE=1
 tar --no-xattrs --no-mac-metadata -C . -czf - \
-  package.json src/lib/solar/insights.js src/lib/solar/dailyLimit.js \
+  package.json src/lib/solar/insights.js src/lib/solar/dailyLimit.js src/lib/solar/climate.js src/lib/solar/production.js src/lib/solar/assumptions.js \
   solar-server/package.json solar-server/package-lock.json solar-server/src solar-server/migrations solar-server/deploy \
   | ssh "$HOST" "rm -rf $DEST/app.new && mkdir -p $DEST/app.new && tar -C $DEST/app.new -xzf -"
 

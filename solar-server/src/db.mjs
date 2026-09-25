@@ -68,3 +68,27 @@ export function createDbDailyLimiter(pool, { limit = 300, api = 'solar_building_
     },
   }
 }
+
+/** climate cache per grid cell (fresh for `maxAgeDays`) */
+export function createClimateStore(pool, { maxAgeDays = 365 } = {}) {
+  return {
+    async get(cell) {
+      const { rows } = await pool.query(
+        `SELECT data FROM climate_cells WHERE cell = $1 AND fetched_at > now() - make_interval(days => $2)`,
+        [cell, maxAgeDays],
+      )
+      return rows[0]?.data ?? null
+    },
+    async put(cell, data) {
+      await pool.query(
+        `INSERT INTO climate_cells (cell, data) VALUES ($1, $2)
+         ON CONFLICT (cell) DO UPDATE SET data = EXCLUDED.data, fetched_at = now()`,
+        [cell, data],
+      )
+    },
+    async count() {
+      const { rows } = await pool.query('SELECT count(*)::int AS n FROM climate_cells')
+      return rows[0].n
+    },
+  }
+}

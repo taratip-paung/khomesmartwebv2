@@ -13,10 +13,10 @@ const near = (a, b, tol, msg) => assert.ok(Math.abs(a - b) <= tol, `${msg ?? ''}
 const keys = (r) => r.issues.map((x) => x.key)
 const panel = byId['pv-620-topcon']
 
-test('sizing: 4,000 THB bill → ~4.5 kWp → 5 kW inverter', () => {
+test('sizing: 4,000 THB bill → ~4.7 kWp → 5 kW inverter (NASA POWER sunshine for Chiang Mai)', () => {
   const r = recommendFromBill({ billThb: 4000, dayShare: 0.6 })
   near(r.kwhMonth, 909.1, 0.5)
-  near(r.kwpNeeded, 4.5, 0.15)
+  near(r.kwpNeeded, 4.7, 0.15)
   assert.equal(r.inverterKw, 5)
   assert.equal(r.panels, 8)
   assert.equal(r.batteryKwhSuggested, 15) // night 12.1 kWh → round up to 5 kWh steps
@@ -46,9 +46,9 @@ test('orientation: flat = 1, south tilt gains a little, north tilt loses', () =>
   assert.ok(north > 0.85, `north ${north}`)
 })
 
-test('yield: ~1,450–1,550 kWh/kWp/yr flat; Solar API path uses sunshine hours directly', () => {
+test('yield: ~1,350–1,450 kWh/kWp/yr flat (simple PR model on NASA POWER); Solar API path uses sunshine hours directly', () => {
   const y = annualYield({ kwp: 1, tilt: 0 })
-  assert.ok(y.kwhPerKwp > 1400 && y.kwhPerKwp < 1550, `${y.kwhPerKwp}`)
+  assert.ok(y.kwhPerKwp > 1350 && y.kwhPerKwp < 1450, `${y.kwhPerKwp}`)
   assert.equal(annualYieldFromSunshine({ kwp: 5, sunshineHoursPerYear: 1800 }).kwh, 5 * 1800 * 0.8)
   assert.equal(compass8(175), 'S')
   assert.equal(compass8(350), 'N')
@@ -170,6 +170,7 @@ test('insights: trim Google buildingInsights + pick the main roof face', async (
   assert.equal(t.maxYearlyDcKwh, 15000)
   assert.equal(t.segments[1].sunshineMedian, 1800)
   assert.equal(t.panels[0].o, 'L')
+  assert.deepEqual(t.configs, [[4, 2800], [24, 15000]])
   assert.equal(mainSegment(t).i, 1) // south face (192°) — the tiny 4 m² sliver with more sun is ignored
   // real case 2026-09-24: bigger north face (109 m²) must NOT beat the sunnier south face
   const gable = { found: true, segments: [{ i: 0, azimuth: 353, pitch: 16, areaM2: 109, sunshineMedian: 1450 }, { i: 1, azimuth: 185, pitch: 17, areaM2: 96, sunshineMedian: 1780 }] }

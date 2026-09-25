@@ -21,6 +21,7 @@ const FIELDS = {
   backup: ['bk', (v) => (['none', 'part', 'whole'].includes(v) ? v : 'part')],
   signedIn: ['in', (v) => v === '1'],
   autoFor: ['af', (v) => v || null],
+  pn: ['pn', (v) => (/^\d+$/.test(v ?? '') ? +v : null)], // panel count on Google's layout (null = default ≈ 5 kWp)
   seg: ['seg', (v) => (/^\d+$/.test(v ?? '') ? +v : null)], // chosen roof face (Solar API segment index) // lat,lng key the satellite orientation was last applied for
 }
 function num(v) {

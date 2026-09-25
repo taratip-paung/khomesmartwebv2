@@ -787,3 +787,498 @@
 .sb-modal__card .btn {
   margin-top: 6px;
 }
+
+/* ---- S3.1b/S3.3: stage view, 3D scene, map inset ---- */
+.sb-stage__view {
+  position: relative;
+  width: 100%;
+}
+.sb-map.is-inset {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  width: min(240px, 42%);
+  gap: 0;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+.sb-map.is-inset .sb-map__canvas {
+  height: 150px;
+  min-height: 0;
+  border-radius: 10px;
+}
+.sb-map__inset-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 6px;
+  margin-top: 4px;
+  padding: 2px 2px 0;
+  color: var(--ink-2);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.sb-map__inset-label .btn {
+  padding: 4px 12px;
+  font-size: 12px;
+}
+.sb-stage__mini {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  width: 170px;
+  padding: 6px;
+  border-radius: 14px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+}
+.sb-stage__mini .ov {
+  width: 100%;
+  min-width: 0;
+  pointer-events: none; /* picture only — change it with the edit button */
+}
+/* step 3 stage is taller than the viewport (chart + seasons) → not sticky */
+.sb-stage.has-3d {
+  position: static;
+}
+.sb-3d {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.sb-3d__canvas {
+  width: 100%;
+  height: min(60vh, 600px, calc(100vh - 360px));
+  min-height: 320px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  background: radial-gradient(120% 90% at 50% 10%, rgba(120, 190, 255, 0.22), transparent 70%), var(--bg-2);
+}
+.sb-3d__loading {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+.sb-3d__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 10px 12px;
+  border-radius: 16px;
+}
+.sb-3d__days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.sb-3d__days button {
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.sb-3d__days button[aria-checked='true'] {
+  border-color: #c98f00;
+  background: rgba(255, 200, 87, 0.22);
+  color: var(--ink);
+  font-weight: 700;
+}
+.sb-3d__time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 200px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+.sb-3d__time span {
+  white-space: nowrap;
+}
+.sb-3d__time input {
+  flex: 1;
+  min-width: 100px;
+}
+.sb-3d__sun {
+  margin: 0;
+  flex-basis: 100%;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.sb-3d__hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ink-3);
+  text-align: center;
+}
+@media (max-width: 900px) {
+  .sb-3d__canvas {
+    height: 52vh;
+  }
+}
+
+/* ---- S3.4: turn buttons ---- */
+.sb-turn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sb-turn input {
+  width: 72px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  text-align: right;
+}
+.sb-turn span {
+  color: var(--ink-3);
+  margin-right: auto;
+}
+
+/* ---- S3.5: result card ---- */
+.sb-result {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.sb-result > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  min-width: 0;
+}
+.sb-result span,
+.sb-result small {
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+.sb-result b {
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+.sb-disclaimer {
+  font-size: 12.5px;
+}
+
+/* ---- step 3: animated day, chart, seasons (owner feedback 2026-09-25) ---- */
+.sb-3d__canvas {
+  position: relative;
+}
+.sb-3d__hud {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  pointer-events: none;
+}
+.sb-3d__hud b {
+  font-size: 20px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.sb-3d__hud span {
+  font-size: 12px;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.sb-3d__days small {
+  color: var(--ink-3);
+  font-weight: 400;
+}
+.sb-3d__play {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid #c98f00;
+  background: rgba(255, 200, 87, 0.22);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+:root {
+  --sb-series: #b87800; /* validated (dataviz): light surface */
+}
+:root[data-theme='dark'] {
+  --sb-series: #c98500; /* validated (dataviz): dark surface */
+}
+.sb-chart {
+  margin: 0;
+  padding: 12px 12px 6px;
+  border-radius: 16px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+}
+.sb-chart figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+.sb-chart figcaption span {
+  color: var(--ink-2);
+}
+.sb-chart__box {
+  width: 100%;
+  touch-action: pan-y;
+  cursor: crosshair;
+  user-select: none;
+}
+.sb-chart__box svg {
+  display: block;
+}
+.sb-chart__grid {
+  stroke: var(--glass-border);
+  stroke-width: 1;
+}
+.sb-chart__tick {
+  fill: var(--ink-3);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.sb-chart__area {
+  fill: var(--sb-series);
+  fill-opacity: 0.12;
+}
+.sb-chart__line {
+  fill: none;
+  stroke: var(--sb-series);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.sb-chart__cursor {
+  stroke: var(--ink-2);
+  stroke-width: 1;
+}
+.sb-chart__hover {
+  stroke: var(--ink-3);
+  stroke-width: 1;
+}
+.sb-chart__dot {
+  fill: var(--sb-series);
+  stroke: var(--bg);
+  stroke-width: 2;
+}
+.sb-chart__tip rect {
+  fill: var(--bg);
+  stroke: var(--glass-border);
+}
+.sb-chart__tip text {
+  fill: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.sb-chart__table {
+  width: 100%;
+  max-width: 260px;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.sb-chart__table th,
+.sb-chart__table td {
+  padding: 2px 6px;
+  text-align: right;
+  border-bottom: 1px solid var(--glass-border);
+}
+.sb-seasons h3 {
+  margin: 4px 0 8px;
+  font-size: 15px;
+}
+.sb-seasons__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.sb-season {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  min-width: 0;
+}
+.sb-season[aria-pressed='true'] {
+  border-color: #c98f00;
+  background: rgba(255, 200, 87, 0.16);
+}
+.sb-season__name {
+  font-size: 13px;
+  font-weight: 700;
+}
+.sb-season__name small {
+  font-weight: 400;
+  color: var(--ink-3);
+}
+.sb-season b {
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.sb-season b small {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ink-2);
+}
+.sb-season__bar {
+  display: block;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--track);
+}
+.sb-season__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  width: 100%;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--ink-2);
+}
+.sb-season__row b {
+  font-size: 16px;
+  color: var(--ink);
+}
+.sb-season__bar i.is-avg {
+  background: var(--ink-3); /* same encoding as the dashed "season average" line in the chart */
+}
+.sb-season__bar i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--sb-series);
+}
+.sb-season__total,
+.sb-season__sun {
+  font-size: 11.5px;
+  color: var(--ink-2);
+  line-height: 1.45;
+}
+.sb-season__sun {
+  color: var(--ink-3);
+}
+@media (max-width: 700px) {
+  .sb-seasons__grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* desktop: the docked bee sits bottom-left over the stage at first view — keep the controls clear of it */
+@media (min-width: 901px) {
+  .sb-stage.has-3d .sb-3d__bar {
+    padding-left: 200px;
+  }
+}
+/* never let the chart's measured SVG widen the column (grid items default to min-width: auto) */
+.sb__body > *,
+.sb-stage__view,
+.sb-3d,
+.sb-chart,
+.sb-chart__box {
+  min-width: 0;
+}
+.sb-chart__box svg {
+  width: 100%;
+  height: auto;
+}
+
+/* ---- Google panel layout picker + "more panels ≠ linear" chart ---- */
+.sb-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sb-layout h3 {
+  margin: 4px 0 0;
+  font-size: 15px;
+}
+.sb-chart--layout {
+  padding: 10px 10px 6px;
+}
+.sb-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0 0 6px;
+  padding: 0;
+  list-style: none;
+  font-size: 11.5px;
+  color: var(--ink-2);
+}
+.sb-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sb-legend__line {
+  display: inline-block;
+  width: 18px;
+  height: 0;
+  border-top: 2px solid var(--sb-series);
+}
+.sb-legend__line--ref {
+  border-top: 2px dashed var(--ink-3);
+}
+.sb-chart__avg {
+  fill: none;
+  stroke: var(--ink-3);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+.sb-chart__ref {
+  stroke: var(--ink-3);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+.sb-layout__marg {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+/* step 3 inset map is a picture only — change it with "edit" (back to step 2) */
+.sb-map.is-inset .sb-map__canvas {
+  pointer-events: none;
+}
+.sb-map__area {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}

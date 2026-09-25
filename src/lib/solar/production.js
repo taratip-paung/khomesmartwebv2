@@ -9,11 +9,25 @@ import { withDefaults, ghiAnnualAvg } from './assumptions.js'
 const rad = (d) => (d * Math.PI) / 180
 const deg = (r) => (r * 180) / Math.PI
 
+/** solar declination (radians) — NOAA / Spencer (1971) Fourier series, ±0.03° (the old one-term formula was off by up to ~1°) */
+export function declination(dayOfYear, solarHour = 12) {
+  const g = ((2 * Math.PI) / 365) * (dayOfYear - 1 + (solarHour - 12) / 24)
+  return (
+    0.006918 -
+    0.399912 * Math.cos(g) +
+    0.070257 * Math.sin(g) -
+    0.006758 * Math.cos(2 * g) +
+    0.000907 * Math.sin(2 * g) -
+    0.002697 * Math.cos(3 * g) +
+    0.00148 * Math.sin(3 * g)
+  )
+}
+
 /** Sun position. dayOfYear 1–365, solarHour 0–24 (local solar time).
- *  Returns elevation (°) and azimuth (° from north, clockwise). */
+ *  Returns elevation (°, geometric — no refraction) and azimuth (° from north, clockwise). */
 export function sunPosition(latDeg, dayOfYear, solarHour) {
   const phi = rad(latDeg)
-  const decl = rad(23.44 * Math.sin(rad((360 / 365) * (284 + dayOfYear))))
+  const decl = declination(dayOfYear, solarHour)
   const omega = rad(15 * (solarHour - 12))
   const sinEl = Math.sin(phi) * Math.sin(decl) + Math.cos(phi) * Math.cos(decl) * Math.cos(omega)
   const el = Math.asin(Math.max(-1, Math.min(1, sinEl)))

@@ -4,6 +4,7 @@
  * Routes (HAProxy forwards the full path, so the prefix stays):
  *   GET /api/solar/health              → { ok, db, daily: {used, limit, day} }
  *   GET /api/solar/insights?lat&lng    → trimmed Google buildingInsights (same payload as the Vite dev middleware)
+ *   GET /api/solar/climate?lat&lng     → climate for the production chart (NASA POWER + PVGIS, cached per 0.25° cell)
  *
  * Safety/cost guards on /insights, in order: peer must be HAProxy → Thailand bbox → 20/IP/hour → 300/day (Postgres).
  * Privacy: user coordinates are never logged (house location = personal data); Solar API content is never stored.
@@ -13,8 +14,9 @@ import rateLimit from '@fastify/rate-limit'
 import { isIP } from 'node:net'
 import { fetchBuildingInsights } from '../../src/lib/solar/insights.js'
 import { noopNotifier } from './notify.mjs'
+import { buildClimate, climateCell, climateUrls } from '../../src/lib/solar/climate.js'
 
-export const VERSION = '0.2.0'
+export const VERSION = '0.3.0'
 const valid = (v, lo, hi) => Number.isFinite(v) && v >= lo && v <= hi
 const bare = (a = '') => a.replace(/^::ffff:/, '')
 
@@ -36,7 +38,7 @@ export function clientIp(req) {
  * @param {{alert(key:string, text:string, o?:object):Promise<boolean>}} [o.notify]  Telegram alerts (S2.5)
  * @param {boolean|object} [o.logger]
  */
-export async function buildApp({ config, limiter, dbPing, fetchImpl = fetch, notify = noopNotifier, logger = true }) {
+export async function buildApp({ config, limiter, dbPing, climateStore = null, fetchImpl = fetch, notify = noopNotifier, logger = true }) {
   const app = Fastify({
     logger: logger && {
       level: process.env.LOG_LEVEL || 'info',
@@ -124,6 +126,63 @@ export async function buildApp({ config, limiter, dbPing, fetchImpl = fetch, not
         req.log.error({ err: e.message }, 'solar api fetch failed')
         void notify.alert('google_unreachable', `ติดต่อ Google Solar API ไม่ได้: ${e.message}`)
         return reply.code(502).send({ found: false, reason: 'upstream_error' })
+      }
+    },
+  )
+
+  /**
+   * GET /api/solar/climate?lat&lng — climate for the production chart (free NASA POWER + PVGIS, no key).
+   * Cached per 0.25° cell in Postgres: the first visitor in a cell triggers the fetch, everyone after reads the cache.
+   */
+  const inflight = new Map() // one upstream fetch per cell at a time
+  app.get(
+    '/api/solar/climate',
+    {
+      config: {
+        rateLimit: {
+          max: config.climateHourly ?? 60,
+          timeWindow: '1 hour',
+          keyGenerator: clientIp,
+          errorResponseBuilder: () => ({ statusCode: 429, ok: false, reason: 'rate_limited' }),
+        },
+      },
+    },
+    async (req, reply) => {
+      const lat = parseFloat(req.query.lat)
+      const lng = parseFloat(req.query.lng)
+      if (!valid(lat, 5, 21) || !valid(lng, 97, 106)) return reply.code(400).send({ ok: false, reason: 'bad_location' })
+      const cell = climateCell(lat, lng)
+      reply.header('Cache-Control', 'public, max-age=86400') // open data — browsers may keep it for a day
+      try {
+        const hit = await climateStore?.get(cell.key)
+        if (hit) return { ok: true, cached: true, climate: hit }
+      } catch (e) {
+        req.log.error({ err: e.message }, 'climate cache read failed')
+      }
+      try {
+        if (!inflight.has(cell.key)) {
+          const job = (async () => {
+            const urls = climateUrls(cell.lat, cell.lng)
+            const get = async (u) => {
+              const r = await fetchImpl(u, { signal: AbortSignal.timeout(25_000) })
+              if (!r.ok) throw new Error(`${new URL(u).host} ${r.status}`)
+              return r.json()
+            }
+            const [nasa, pvgis] = await Promise.all([get(urls.nasa), get(urls.pvgis)])
+            const climate = buildClimate({ lat: cell.lat, lng: cell.lng, nasa, pvgis, cell: cell.key })
+            await climateStore?.put(cell.key, climate).catch((e) => req.log.error({ err: e.message }, 'climate cache write failed'))
+            return climate
+          })().finally(() => inflight.delete(cell.key))
+          inflight.set(cell.key, job)
+        }
+        const climate = await inflight.get(cell.key)
+        req.log.info({ cell: cell.key }, 'climate fetched')
+        return { ok: true, cached: false, climate }
+      } catch (e) {
+        req.log.error({ err: e.message }, 'climate upstream failed')
+        void notify.alert('climate_upstream', `ดึงข้อมูลภูมิอากาศ (NASA POWER / PVGIS) ไม่ได้: ${e.message}`)
+        reply.header('Cache-Control', 'no-store')
+        return reply.code(502).send({ ok: false, reason: 'upstream_error' })
       }
     },
   )
