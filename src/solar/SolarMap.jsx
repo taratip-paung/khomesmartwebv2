@@ -85,7 +85,7 @@ export default function SolarMap({ lat, lng, azimuth, roof = 'flat', insights, s
     const inset = mode === 'inset'
     map.setOptions(
       inset
-        ? { gestureHandling: 'none', disableDefaultUI: true, keyboardShortcuts: false, clickableIcons: false }
+        ? { gestureHandling: 'none', disableDefaultUI: true, fullscreenControl: false, zoomControl: false, keyboardShortcuts: false, clickableIcons: false }
         : { gestureHandling: 'cooperative', disableDefaultUI: false, keyboardShortcuts: true, mapTypeControl: false, streetViewControl: false, rotateControl: false, fullscreenControl: true },
     )
     marker.setVisible(!inset)

@@ -65,7 +65,7 @@ function poa({ sun, day, tilt, azimuth, climate: c, kind, albedo }) {
   const b = rad(tilt)
   const ci = Math.max(0, cosIncidence(sun, tilt, azimuth))
   // glass reflects more at steep angles (ASHRAE incidence-angle modifier, b0 = 0.05) — mornings/evenings lose more than noon
-  const iam = ci > 0.1 ? Math.max(0, 1 - 0.05 * (1 / ci - 1)) : 0
+  const iam = ci > 0 ? Math.max(0, 1 - 0.05 * (1 / ci - 1)) : 0 // continuous → reaches 0 at ~87° (no kink in the curve)
   const skyIam = 0.95 // diffuse light arrives from all angles
   const sky = (dhi * (1 + Math.cos(b))) / 2 + (ghi * albedo * (1 - Math.cos(b))) / 2
   return { w: dni * ci * iam + sky * skyIam, raw: dni * ci + sky } // raw = before glass reflection (to compare with PVGIS G(i))
