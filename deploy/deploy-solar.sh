@@ -29,6 +29,16 @@ if ! ssh "$HOST" "test -f $DEST/solar.env"; then
     | ssh "$HOST" "umask 077 && cat > $DEST/solar.env && chown root:root $DEST/solar.env"
 fi
 
+# S2.5 alerts: copy the contact-form bot token + chat id once (same bot, same group)
+if ! ssh "$HOST" "grep -q '^TELEGRAM_BOT_TOKEN=.' $DEST/solar.env"; then
+  if [ -f server/.env ] && grep -q '^TELEGRAM_BOT_TOKEN=.' server/.env; then
+    echo "▸ adding Telegram alert settings to solar.env (from server/.env)"
+    grep -E '^TELEGRAM_(BOT_TOKEN|CHAT_ID)=' server/.env | ssh "$HOST" "cat >> $DEST/solar.env"
+  else
+    echo "!! server/.env has no TELEGRAM_BOT_TOKEN — backend alerts stay off"
+  fi
+fi
+
 echo "▸ install + restart"
 ssh "$HOST" bash -s <<REMOTE
 set -e

@@ -12,8 +12,9 @@ import Fastify from 'fastify'
 import rateLimit from '@fastify/rate-limit'
 import { isIP } from 'node:net'
 import { fetchBuildingInsights } from '../../src/lib/solar/insights.js'
+import { noopNotifier } from './notify.mjs'
 
-export const VERSION = '0.1.0'
+export const VERSION = '0.2.0'
 const valid = (v, lo, hi) => Number.isFinite(v) && v >= lo && v <= hi
 const bare = (a = '') => a.replace(/^::ffff:/, '')
 
@@ -32,9 +33,10 @@ export function clientIp(req) {
  * @param {{take():Promise<object>, status():Promise<object>}} o.limiter   daily cap (Postgres in prod)
  * @param {() => Promise<void>} o.dbPing
  * @param {typeof fetch} [o.fetchImpl]
+ * @param {{alert(key:string, text:string, o?:object):Promise<boolean>}} [o.notify]  Telegram alerts (S2.5)
  * @param {boolean|object} [o.logger]
  */
-export async function buildApp({ config, limiter, dbPing, fetchImpl = fetch, logger = true }) {
+export async function buildApp({ config, limiter, dbPing, fetchImpl = fetch, notify = noopNotifier, logger = true }) {
   const app = Fastify({
     logger: logger && {
       level: process.env.LOG_LEVEL || 'info',
@@ -63,6 +65,7 @@ export async function buildApp({ config, limiter, dbPing, fetchImpl = fetch, log
       return { ok: true, version: VERSION, db: true, daily: await limiter.status() }
     } catch (e) {
       req.log.error({ err: e.message }, 'health: db down')
+      void notify.alert('db_down', `ฐานข้อมูลไม่ตอบ (health): ${e.message}`)
       return reply.code(503).send({ ok: false, version: VERSION, db: false })
     }
   })
@@ -95,21 +98,31 @@ export async function buildApp({ config, limiter, dbPing, fetchImpl = fetch, log
         slot = await limiter.take() // every upstream call counts — Google bills per request
       } catch (e) {
         req.log.error({ err: e.message }, 'daily limiter failed (db?)')
+        void notify.alert('db_down', `ตัวนับรายวันใช้ไม่ได้ (ฐานข้อมูล?) — หยุดเรียก Google ชั่วคราว: ${e.message}`)
         return reply.code(503).send({ found: false, reason: 'unavailable' }) // fail closed: no cap → no call
       }
       if (!slot.ok) {
         req.log.warn({ limit: slot.limit }, 'daily limit reached')
+        void notify.alert(`daily_limit:${slot.resetsAt}`, `ใช้ Solar API ครบเพดาน ${slot.limit} ครั้งของวันนี้แล้ว — ผู้ใช้จะเห็นค่าเฉลี่ยจนถึงเที่ยงคืน`, { throttleMs: 86_400_000 })
         return reply.code(429).send({ found: false, reason: 'daily_limit', limit: slot.limit, resetsAt: slot.resetsAt })
+      }
+
+      if (slot.used === Math.ceil(slot.limit * 0.8)) {
+        void notify.alert(`daily_80:${slot.resetsAt}`, `ใช้ Solar API ไปแล้ว ${slot.used}/${slot.limit} ครั้งวันนี้ (80%)`, { throttleMs: 86_400_000 })
       }
 
       try {
         const out = await fetchBuildingInsights({ lat, lng, key: config.key, fetchImpl, signal: AbortSignal.timeout(10_000) })
-        if (out.reason === 'api_error') req.log.error({ status: out.status, msg: out.message }, 'solar api error')
+        if (out.reason === 'api_error') {
+          req.log.error({ status: out.status, msg: out.message }, 'solar api error')
+          void notify.alert('google_api_error', `Google Solar API error ${out.status}: ${out.message ?? '-'}`)
+        }
         else req.log.info({ found: out.found, used: slot.used }, 'insights')
         const { status, message, ...safe } = out // don't pass Google's error text to the browser
         return safe
       } catch (e) {
         req.log.error({ err: e.message }, 'solar api fetch failed')
+        void notify.alert('google_unreachable', `ติดต่อ Google Solar API ไม่ได้: ${e.message}`)
         return reply.code(502).send({ found: false, reason: 'upstream_error' })
       }
     },

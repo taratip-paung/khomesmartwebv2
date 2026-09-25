@@ -7,6 +7,7 @@
  *   TRUSTED_PROXIES     peers allowed to call the API, default "10.10.13.13,127.0.0.1"
  *   SOLAR_DAILY_LIMIT   Google calls per Bangkok day, all users combined, default 300
  *   SOLAR_IP_HOURLY     /insights calls per client IP per hour, default 20
+ *   TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID  alerts (S2.5) — same bot + group as the contact form; optional
  *   PGHOST/PGDATABASE/PGUSER  default unix socket /var/run/postgresql, db+user "solar" (peer auth, no password)
  */
 import fs from 'node:fs'
@@ -34,6 +35,7 @@ export function readConfig(env = process.env) {
     trustedProxies: list(env.TRUSTED_PROXIES, '10.10.13.13,127.0.0.1'),
     dailyLimit: int(env.SOLAR_DAILY_LIMIT, 300),
     ipHourly: int(env.SOLAR_IP_HOURLY, 20),
+    telegram: { token: env.TELEGRAM_BOT_TOKEN ?? '', chatId: env.TELEGRAM_CHAT_ID ?? '' },
     pg: {
       host: env.PGHOST || '/var/run/postgresql',
       database: env.PGDATABASE || 'solar',

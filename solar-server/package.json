@@ -1,7 +1,7 @@
 {
   "name": "beconnected-solar-server",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Solar Builder backend (CT 1330): Google Solar API proxy + daily cap; auth/projects come in S5",
   "type": "module",
   "engines": {
@@ -10,7 +10,8 @@
   "scripts": {
     "start": "node src/server.mjs",
     "migrate": "node src/migrate.mjs",
-    "test": "node --test \"test/*.test.mjs\""
+    "test": "node --test \"test/*.test.mjs\"",
+    "alert:test": "node src/alertTest.mjs"
   },
   "dependencies": {
     "@fastify/rate-limit": "^10.3.0",
