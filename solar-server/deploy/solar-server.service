@@ -1,0 +1,26 @@
+# /etc/systemd/system/solar-server.service  (CT 1330 beconnected-solar, 10.10.13.30)
+# Installed by deploy/deploy-solar.sh — edit here, not on the server.
+[Unit]
+Description=Solar Builder backend (Google Solar API proxy) for beconnectedcm.com/solar
+After=network-online.target postgresql.service
+Wants=network-online.target postgresql.service
+
+[Service]
+Type=simple
+User=solar
+Group=solar
+WorkingDirectory=/opt/beconnected-solar/app/solar-server
+# secrets: root-owned, chmod 600, read by systemd before dropping to user solar
+EnvironmentFile=/opt/beconnected-solar/solar.env
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node /opt/beconnected-solar/app/solar-server/src/server.mjs
+Restart=on-failure
+RestartSec=5
+# code is root-owned and read-only for the service
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
