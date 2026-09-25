@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import solarDevApi from './solar-server/devPlugin.mjs'
+import solarOgPage from './solar-server/solarOgPage.mjs'
 
 export default defineConfig({
-  plugins: [react(), solarDevApi()], // solarDevApi: /api/solar/insights in dev (runs before the /api proxy)
+  plugins: [react(), solarDevApi(), solarOgPage()], // solarDevApi: /api/solar/* in dev (runs before the /api proxy) · solarOgPage: dist/solar/index.html with /solar share tags
   server: {
     // contact form → server/contact-server.mjs during development
     proxy: { '/api': 'http://127.0.0.1:8787' },
