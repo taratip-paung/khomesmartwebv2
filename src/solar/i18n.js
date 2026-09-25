@@ -171,7 +171,11 @@ export const SOLAR_STRINGS = {
       ok: 'เข้าใจแล้ว ใช้ค่าเฉลี่ยไปก่อน',
       short: 'วันนี้ใช้ข้อมูลดาวเทียมครบโควต้าแล้ว — ใช้ค่าแดดเฉลี่ยภาคเหนือ และตั้งทิศเอง',
     },
-    map: { search: 'ค้นหาที่อยู่', hintPick: 'แตะบนหลังคาบ้านเพื่อปักหมุด', hintDrag: 'ลากหมุดให้อยู่กลางหลังคา' },
+    map: {
+      search: 'ค้นหาที่อยู่',
+      placeholder: 'ที่อยู่ ชื่อหมู่บ้าน หรือสถานที่ใกล้บ้าน',
+      tip: 'ตัวอย่าง: “นิมมานเหมินท์ ซอย 7” · “ตลาดวโรรส” · “สนามบินเชียงใหม่” — เลือกจากรายการ แล้วแตะหลังคาบ้านให้หมุดอยู่กลางหลังคา',
+      hintPick: 'แตะบนหลังคาบ้านเพื่อปักหมุด', hintDrag: 'ลากหมุดให้อยู่กลางหลังคา' },
     sat: {
       loading: 'กำลังดูหลังคาจากข้อมูลดาวเทียม…',
       found: 'พบหลังคา {n} ผืนจากข้อมูลดาวเทียม',
@@ -353,7 +357,11 @@ export const SOLAR_STRINGS = {
       ok: 'OK, use the average for now',
       short: "Today's satellite-data quota is used up — using average northern-Thailand sunshine; set the facing yourself",
     },
-    map: { search: 'Search address', hintPick: 'Tap your roof to drop the pin', hintDrag: 'Drag the pin to the middle of the roof' },
+    map: {
+      search: 'Search address',
+      placeholder: 'Address, village or a place nearby',
+      tip: 'e.g. “Nimmanhaemin Soi 7” · “Warorot Market” · “Chiang Mai Airport” — pick from the list, then tap your roof so the pin sits in the middle',
+      hintPick: 'Tap your roof to drop the pin', hintDrag: 'Drag the pin to the middle of the roof' },
     sat: {
       loading: 'Looking at the roof from satellite data…',
       found: '{n} roof faces found in satellite data',

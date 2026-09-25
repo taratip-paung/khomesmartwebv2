@@ -640,15 +640,97 @@
   flex-direction: column;
   gap: 8px;
 }
+/* address search: rounded glass pill like our buttons (owner 2026-09-25 — the bare Google box was square and empty) */
 .sb-map__search {
-  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
+.sb-map__search[hidden] {
+  display: none;
+}
+.sb-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 8px 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-2);
+  box-shadow: var(--glow);
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.sb-search.is-ready {
+  padding: 0;
+}
+.sb-search:hover {
+  border-color: var(--glass-border-hi);
+}
+.sb-search:focus-within {
+  border-color: var(--glass-border-hi);
+  box-shadow: 0 0 0 4px var(--accent-soft), var(--glow);
+}
+.sb-search__icon {
+  flex: none;
+  color: var(--accent-text);
+}
+.sb-search__slot {
+  flex: 1;
+  min-width: 0;
+}
+.sb-search:not(.is-ready) .sb-search__slot {
+  display: none;
+}
+.sb-search__ph {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 15px;
+  color: var(--ink);
+}
+.sb-search__ph::placeholder {
+  color: var(--ink-3);
+}
+.sb-search__tip {
+  margin: 0;
+  padding: 0 16px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+/* Google's <gmp-place-autocomplete> (Maps JS 3.66): border / background / radius live on the host element
+   (checked on prod 2026-09-25) — so it goes see-through and borderless and fills our pill */
 .sb-pac {
+  display: block;
   width: 100%;
   color-scheme: light;
+  background-color: transparent;
+  border: 0;
+  border-radius: 999px;
+  font-family: var(--font);
+  font-size: 15px;
+  color: var(--ink);
 }
 :root[data-theme='dark'] .sb-pac {
   color-scheme: dark;
+}
+.sb-pac::part(prediction-list) {
+  margin-top: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  overflow: hidden;
+  box-shadow: var(--lg-shadow);
+}
+.sb-pac::part(prediction-item) {
+  padding: 10px 14px;
+}
+.sb-pac::part(prediction-item-selected) {
+  background: var(--accent-soft);
 }
 .sb-map__canvas {
   width: 100%;

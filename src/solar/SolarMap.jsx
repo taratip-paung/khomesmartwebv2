@@ -18,6 +18,7 @@ export default function SolarMap({ lat, lng, azimuth, roof = 'flat', insights, s
   const g = useRef({})
   const [err, setErr] = useState(null)
   const [ready, setReady] = useState(false)
+  const [pacReady, setPacReady] = useState(false)
   const onPickRef = useRef(onPick)
   onPickRef.current = onPick
   const onSegRef = useRef(onSegment)
@@ -56,7 +57,12 @@ export default function SolarMap({ lat, lng, azimuth, roof = 'flat', insights, s
         if (searchBox.current && maps.places?.PlaceAutocompleteElement) {
           const pac = new maps.places.PlaceAutocompleteElement({ includedRegionCodes: ['th'] })
           pac.className = 'sb-pac'
+          // example text inside the box (property on current Maps JS, attribute as a fallback)
+          pac.placeholder = S.map.placeholder
+          pac.setAttribute('placeholder', S.map.placeholder)
           searchBox.current.replaceChildren(pac)
+          g.current.pac = pac
+          setPacReady(true)
           const onPlace = async (place) => {
             await place.fetchFields({ fields: ['location', 'viewport'] })
             if (!place.location) return
@@ -77,6 +83,14 @@ export default function SolarMap({ lat, lng, azimuth, roof = 'flat', insights, s
       dead = true
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // language switch → example text follows
+  useEffect(() => {
+    const pac = g.current.pac
+    if (!pac) return
+    pac.placeholder = S.map.placeholder
+    pac.setAttribute('placeholder', S.map.placeholder)
+  }, [S.map.placeholder, pacReady])
 
   // full ↔ inset (step 3 shows this same map, small, over the 3D view — same instance, so no extra map load)
   useEffect(() => {
@@ -165,7 +179,21 @@ export default function SolarMap({ lat, lng, azimuth, roof = 'flat', insights, s
   return (
     <div className={`sb-map${mode === 'inset' ? ' is-inset' : ''}`}>
       {/* always rendered (hidden when unused) so the search box survives going back to step 1 */}
-      <div className="sb-map__search" ref={searchBox} aria-label={S.map.search} hidden={!showSearch || mode === 'inset'} />
+      <div className="sb-map__search" hidden={!showSearch || mode === 'inset'}>
+        <div className={`sb-search${pacReady ? ' is-ready' : ''}`}>
+          {/* Google's element brings its own magnifier — ours only shows until it has loaded */}
+          {!pacReady && (
+            <svg className="sb-search__icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" strokeWidth="2" />
+              <path d="M16 16l4.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          )}
+          {/* Google's element is put in here once Maps has loaded; until then a look-alike box shows the example */}
+          <div className="sb-search__slot" ref={searchBox} aria-label={S.map.search} />
+          {!pacReady && <input className="sb-search__ph" placeholder={S.map.placeholder} disabled aria-hidden="true" tabIndex={-1} />}
+        </div>
+        <p className="sb-search__tip">{S.map.tip}</p>
+      </div>
       <div className="sb-map__canvas" ref={box} />
       {mode === 'inset' ? (
         <div className="sb-map__inset-label">

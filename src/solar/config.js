@@ -4,7 +4,7 @@
  *                 /solar itself is always reachable by URL and shows a "preview" badge while false.
  * showDraft()   — draft (unverified) catalog items are visible in dev, or with ?draft on the URL.
  */
-export const SOLAR_PUBLIC = false
+export const SOLAR_PUBLIC = true // M1 signed off 2026-09-25 (Mac + iPhone + Android on prod)
 
 export const showDraft = () => {
   try {

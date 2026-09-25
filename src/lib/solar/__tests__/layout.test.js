@@ -35,11 +35,12 @@ test('layout: each extra panel adds less — energy grows less than linearly', (
   assert.ok(kwhFor(c, 29) < (first.kwh / first.m) * 29 * 0.75)
 })
 
-test('layout: default ≈ 5 kWp, Google outline count, empty input', () => {
+test('layout: default = standard 8 × 625 W (5 kWp), capped by the roof; Google outline count, empty input', () => {
   const c = layoutCurve(CFG)
-  const d = defaultPanels(c, 5)
-  assert.ok(c.find((p) => p.m === d).kwp >= 5)
-  assert.ok(c.filter((p) => p.m > 0 && p.m < d).every((p) => p.kwp < 5))
+  assert.equal(DEFAULTS.standardPanels, 8)
+  assert.equal(defaultPanels(c), 8)
+  assert.equal((defaultPanels(c) * DEFAULTS.panel.wp) / 1000, 5)
+  assert.equal(defaultPanels(c.slice(0, 3)), c[2].m) // small roof: as many as fit
   assert.equal(googleCountFor(c, 29), 40)
   assert.equal(defaultPanels([], 5), null)
   assert.deepEqual(layoutCurve([]), [])

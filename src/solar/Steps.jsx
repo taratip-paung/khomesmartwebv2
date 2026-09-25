@@ -213,7 +213,7 @@ export function usePreviewNumbers(state, ins) {
   const curve = useMemo(() => (main ? layoutCurve(g.configs ?? [], { gW: g.panelW, gSize: g.panelSizeM, panel: P }) : []), [main, g, P])
   const maxM = g ? oursFromGoogle(g.maxPanels, g.panelSizeM, P) : 0
   const max = { m: maxM, kwp: (maxM * P.wp) / 1000 }
-  const n = curve.length ? Math.min(state.pn ?? defaultPanels(curve, 5), curve[curve.length - 1].m) : null
+  const n = curve.length ? Math.min(state.pn ?? defaultPanels(curve), curve[curve.length - 1].m) : null
   if (n) {
     const kwp = (n * P.wp) / 1000
     const annualKwh = kwhFor(curve, n)

@@ -33,6 +33,8 @@ export const DEFAULTS = {
   // --- the equipment the company installs today (owner, 2026-09-25) ---------
   // Google's Solar API sizes layouts with its own 400 W · 1.879 × 1.045 m panel; we convert by roof area (layout.js)
   // JA Solar JAM66D45-625/LB (n-type TOPCon, bifacial 80 %) — specs per ComparePV / jasolar.eu; confirm with the supplier datasheet
+  // standard residential set (owner 2026-09-25): 8 × JA 625 W = 5.0 kWp on one Huawei SUN2000-5K-MAP0
+  standardPanels: 8,
   panel: { model: 'JA Solar JAM66D45-625/LB', wp: 625, sizeM: [2.382, 1.134], gammaPmax: -0.0029, noctC: 45 },
   // Huawei SUN2000-5K/6K/8K/10K/12K-MAP0 (datasheet 02-202406): 5,000 W rated, 97.5 % European weighted efficiency
   inverter: { model: 'Huawei SUN2000-MAP0', sizesKw: [5, 6, 8, 10, 12], efficiency: 0.975, maxDcAc: 1.3 },

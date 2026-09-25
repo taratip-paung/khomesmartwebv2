@@ -51,10 +51,13 @@ export const googleCountFor = (curve, m) => Math.round(interp(curve, m, 'n'))
 /** energy the m-th panel adds (kWh/yr) */
 export const marginal = (curve, m) => kwhFor(curve, m) - kwhFor(curve, m - 1)
 
-/** the smallest layout at or above `kwp` (default example size), capped at the roof maximum */
-export function defaultPanels(curve, kwp = 5) {
+/**
+ * default panel count = the company's standard set (DEFAULTS.standardPanels: 8 × 625 W on a Huawei 5K),
+ * capped at what Google says fits on this roof
+ */
+export function defaultPanels(curve, count = DEFAULTS.standardPanels) {
   if (!curve.length) return null
-  return (curve.find((p) => p.kwp >= kwp) ?? curve[curve.length - 1]).m
+  return Math.min(count, curve[curve.length - 1].m)
 }
 
 /** layouts available (for a stepped slider), in our panels */
